@@ -1,97 +1,83 @@
 
-# Socket io chat example backend and frontend
+# Agil Facil
 
-##Tech Stack
-
-**Spring Boot**
-
-**React**
-
-**SocketIO**
-
-**H2 db**
-
-## Example Images
-
-![example](./frontend/images/ex1.png)
-
-![example](./frontend/images/ex2.png)
-
-### Example Video:
-
-[https://www.youtube.com/watch?v=y7jnF7MuNLI](https://www.youtube.com/watch?v=y7jnF7MuNLI)
-
-
-
-## BACKEND
-
-**Spring Boot**
-
-**Netty Socket IO:** socket server
-
-**H2 db:** socket server
-
-
-### How to run
-
-#### clone the project: https://github.com/gurkanucar/socketio-simple-chat
+### Preparação do ambiente
 
 ```bash
-  git clone https://github.com/gurkanucar/socketio-simple-chat
+ apt update
+ apt install -y nodejs
+ apt install npm -y
+ apt install nginx -y
+ npm install pm2@latest -g
+ sudo apt install net-tools
 ```
 
-#### run
+### Clonar projeto do git
 
 ```bash
-  cd backend
-  
-  mvn spring-boot:run
+git clone https://github.com/mmgabri/agilfacil_v2.git
 ```
 
-### Note that!
-#### You have to configure ip and port details from "application.properties" file.
-
-socket-server.host=192.168.0.10 // write your ip address not local host
-
-
-## FRONTEND
-
-
-### Used Packages
-
-**SocketIO:** socket io client (must be version 2)
-
-**React icons**: icon package
-
-
-
-### How to run
-
-#### clone the project: https://github.com/gurkanucar/socketio-simple-chat
+### Configurando o Frontend - Reacj js
 
 ```bash
-  git clone https://github.com/gurkanucar/socketio-simple-chat
-  cd socketio-simple-chat
+  cd agilfacil_v2
   cd frontend
-```
-
-#### install packages
-
-```bash
   npm install
+  npm run build
+  pm2 start --name agilfacil npm -- start
+  pm2 startup systemd
 ```
 
-#### run app
+
+#### Configurando o Nginx
 
 ```bash
-  npm start
+  cd /etc/nginx/sites-available
+  sudo nano agilfacil
+  sudo ln -s /etc/nginx/sites-available/agilfacil /etc/nginx/sites-enabled/
+  sudo nginx -t
+  sudo systemctl restart nginx
+  pm2 restart agilfacil  
 ```
 
-### Note that!
-#### You have to configure ip and port details from "apiConstants" file.
+#### Código Nginx: agilfacil
 
-export const SOCKET_BASE_URL = "http://192.168.0.10:8085"; // write your ip address not local host
+```bash
+  server {
+    listen 80;
+    listen [::]:80;
+    server_name 54.160.193.178 agilfacil.com.br www.agilfacil.com.br;
+    return 301 https://$host$request_uri;
 
-export const API_BASE_URL = "http://192.168.0.10:8080"; // write your ip address not local host
+    location /socket/ {
+         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		 proxy_set_header Host $host;
+		 proxy_pass http://localhost:9000;
+		 proxy_http_version 1.1;
+         proxy_set_header Upgrade $http_upgrade;
+         proxy_set_header Connection "upgrade";
+    }
+
+    location / {
+        proxy_pass http://localhost:3000;
+    }
+}
+```
+
+#### No browser de sua preferência, coloque o ip publico do host para abrir a pagina principal, por ex:
+```bash
+  http://54.160.193.178/
+```
 
 
+
+### Configurando o Backend - Node js
+
+```bash
+  cd /home/ubuntu/agilfacil_v2/backend/src
+  npm install
+  npm node server/js
+  pm2 start --name agilfacil npm -- start
+  pm2 startup systemd
+```
