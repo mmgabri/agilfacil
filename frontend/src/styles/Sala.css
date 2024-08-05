@@ -1,0 +1,102 @@
+.mg-5{
+  margin-top: 0vh;
+  margin-left: 3vh;
+  margin-right: 3vh;
+}
+.cardbtn {
+  margin-top: -4vh;  
+}
+
+.mgtop4 {
+  margin-top: 4vh;  
+}
+
+.mgtop-1 {
+  margin-top: 1vh;  
+}
+.card2 {
+  height: 8rem
+}
+
+.btn-nota {
+  height: 5rem;
+  width: 4rem;
+  ;
+
+}
+
+.btn-nota-select {
+  height: 5rem;
+  width: 4rem;
+  background-color: green;
+
+}
+
+.margin-top-5 {
+  margin-top: 5vh;
+}
+
+.message_root_div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.login {
+  display: flex;
+  justify-content: center;
+  margin-top: 15vh;
+}
+
+.login_root {
+  display: flex-start;
+  justify-content: center;
+  display:inline-block;
+  margin-top: 5vh;
+}
+
+.login_form {
+  gap: 20px;
+  min-width: 300px;
+  display: flex;
+  justify-content: center;
+  width: 30%;
+  padding: 20px;
+  align-items: center;
+  border-radius: 20px;
+  flex-direction: column;
+  background-color: rgb(88, 113, 255);
+}
+
+input[type="text"],
+select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  font-size: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+input[type="text"]:focus,
+select {
+  outline: none;
+}
+
+input[type="submit"] {
+  font-size: 20px;
+  width: 100%;
+  background-color: #313131;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type="submit"]:hover {
+  background-color: #1d1d1d;
+}
