@@ -2,7 +2,7 @@ const { connectClient, desconnectClient, updateStatusRoom, updateVote } = requir
 
 const setupSocketIo = (io) => {
   io.on('connection', async (socket) => {
-    console.log('A user connected:', socket.id, socket.handshake.query);
+    console.log('A user connected:');
     const { userName, userId, roomId } = socket.handshake.query;
 
     try {
@@ -14,7 +14,7 @@ const setupSocketIo = (io) => {
     }
 
     socket.on('disconnect', async () => {
-      console.log('A user disconnected:', socket.id, socket.handshake.query);
+      console.log('A user disconnected:');
       const { userName, userId, roomId } = socket.handshake.query;
       try {
         let room = await desconnectClient(userId, roomId);
@@ -25,7 +25,7 @@ const setupSocketIo = (io) => {
     });
 
     socket.on('update_status_room', async (data) => {
-      console.info('update_status_room', data);
+      console.info('update_status_room');
 
       try {
         let room = await updateStatusRoom(roomId, data.status);
@@ -36,14 +36,14 @@ const setupSocketIo = (io) => {
     });
 
     socket.on('votar', async (data) => {
-      console.info('votar', data);
+      console.info('votar');
 
       try {
         let room = await updateVote(data.roomId, data.userId, data.vote);
         io.to(roomId).emit('data_room', room);
       } catch (erro) {
         console.error('Erro ao processar votar', erro);
-      }  
+      }
     });
   });
 };

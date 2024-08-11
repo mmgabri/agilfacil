@@ -5,7 +5,7 @@ import axios from "axios";
 import { SERVER_BASE_URL } from "../constants/apiConstants";
 import "../styles/CriarSala.css"
 
-export const Sala = ({ }) => {
+export const Guest = ({ }) => {
   const [userName, setUserName] = useState("");
   const [roomId, setRoomId] = useState("");
   
@@ -23,7 +23,7 @@ export const Sala = ({ }) => {
     axios
       .post(SERVER_BASE_URL + '/joinRoom', { roomId: roomId, userName: userName })
       .then(response => {
-        navigate('/sala', { state: {roomId: response.data.roomId, roomName: response.data.roomName,  userId: response.data.userId ,  userName: response.data.userName, moderator: response.data.moderator }});
+        navigate('/room', { state: {roomId: response.data.roomId, roomName: response.data.roomName,  userId: response.data.userId ,  userName: response.data.userName, moderator: response.data.moderator }});
       })
       .catch((error) => {
         console.log("Respoposta da api com erro:", error, error.response?.status)
@@ -61,4 +61,4 @@ export const Sala = ({ }) => {
     </div>
   );
 }
-export default Sala
+export default Guest

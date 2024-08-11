@@ -5,7 +5,7 @@ import { SERVER_BASE_URL } from "../constants/apiConstants";
 import "../styles/CriarSala.css"
 
 
-export const CriarSala = ({ }) => {
+export const CreateRoom  = ({ }) => {
   const [userName, setUserName] = useState("");
   const [roomName, setRoomName] = useState("");
   let navigate = useNavigate();
@@ -16,7 +16,7 @@ export const CriarSala = ({ }) => {
     axios
       .post(SERVER_BASE_URL + '/createRoom', { roomName: roomName, userName: userName })
       .then(response => {
-        navigate('/sala', { state: {roomId: response.data.roomId, roomName: response.data.roomName,  userId: response.data.userId ,  userName: response.data.userName, moderator: response.data.moderator }});
+        navigate('/room', { state: {roomId: response.data.roomId, roomName: response.data.roomName,  userId: response.data.userId ,  userName: response.data.userName, moderator: response.data.moderator }});
       })
       .catch((error) => {
         console.log("Respoposta da api com erro:", error, error.response?.status)
@@ -54,4 +54,4 @@ export const CriarSala = ({ }) => {
     </div>
   );
 }
-export default CriarSala
+export default CreateRoom 

@@ -5,11 +5,11 @@ function Home() {
     let navigate = useNavigate();
 
     const handleCriarSala = () => {
-        navigate("criarsala")
+        navigate("createroom")
     }
 
     const handleEntrarComoConvidado = () => {
-        navigate("convidado")
+        navigate("guest")
     }
 
 
