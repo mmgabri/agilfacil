@@ -14,7 +14,7 @@ body {
     font-family: 'Poppins', sans-serif;
     background: radial-gradient(circle at top right, #6e8efb, #a777e3);
     color: #fff;
-    overflow: hidden;
+    overflow: auto;
   }
   
   .container {

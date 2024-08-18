@@ -6,7 +6,7 @@ export const ProgressContainer = styled.div`
   max-width: 600px; /* Ajuste o valor conforme necessário */
   background-color: #e0e0e0;
   border-radius: 8px;
-  overflow: hidden;
+  overflow: auto;
   margin: 1rem auto; /* Centraliza o contêiner horizontalmente */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 0.0rem;
