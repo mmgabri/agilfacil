@@ -34,7 +34,7 @@ const joinRoom = async (req, res) => {
   try {
     room = await findOneRoomDb(req.body.roomId)
   } catch (error) {
-    return res.status(400).json({ error: 'Erro ao obter sala' });
+    return res.status(error.statusCode).json({ error: error.message });
   }
 
   let user = {
@@ -55,4 +55,19 @@ const joinRoom = async (req, res) => {
 
 };
 
-module.exports = { createRoom, joinRoom };
+const getRoom = async (req, res) => {
+  const { id } = req.params
+  console.log("getRoom - roomId: ", id);
+
+  try {
+    const room = await findOneRoomDb(id)
+    return res.status(200).json(room);
+  } catch (error) {
+    console.log('Erro ao consultar room:', error)
+    return res.status(error.statusCode).json({ error: error.message });
+  }
+
+};
+
+
+module.exports = { createRoom, joinRoom, getRoom };

@@ -26,7 +26,7 @@ const findOneRoomDb = (roomId) => {
       } else if (room) {
         resolve(room);
       } else {
-        reject('Sala inexistente');
+        reject({ statusCode: 404 , message: 'Sala inexistente'});
       }
     });
   });

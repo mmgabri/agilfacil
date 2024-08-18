@@ -5,10 +5,12 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
-import Home from "../pages/Home";
-import CreateRoom from "../pages/CreateRoom";
-import Room from "../pages/Room";
-import Guest from "../pages/Guest";
+import HomePage from "../pages/HomePage";
+import CreateRoomPage from "../pages/CreateRoomPage";
+import RoomPage from "../pages/RoomPage";
+import GuestPage from "../pages/GuestPage";
+import GuestUrlPage from "../pages/GuestUrlPage";
+import NotificationPage from "../pages/NotificationPage"
 
 
 function App() {
@@ -16,10 +18,12 @@ function App() {
 
     <BrowserRouter>
       <Routes>
-        <Route exact path="/" element={<Home />} />
-        <Route exact path="createroom" element={<CreateRoom />} />
-        <Route exact path="room" element={<Room />} />
-        <Route exact path="guest" element={<Guest />} />
+        <Route exact path="/" element={<HomePage />} />
+        <Route exact path="createroom" element={<CreateRoomPage />} />
+        <Route exact path="room" element={<RoomPage />} />
+        <Route exact path="guest" element={<GuestPage />} />
+        <Route path="/guest/:id" element={<GuestUrlPage />} />
+        <Route path="/notification" element={<NotificationPage />} />
       </Routes>
     </BrowserRouter>
 

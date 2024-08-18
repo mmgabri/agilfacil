@@ -3,22 +3,25 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { useSocket } from "../customHooks/useSocket";
-import "../styles/Sala.css"
-import Header from './components/Header';
+import "../styles/Room.css"
+import Header from './components/HeaderRoom';
 import StatusSection from './components/StatusSection';
 import Users from './components/Users';
 import VotingCards from './components/VotingCards';
 import VotingResults from './components/VotingResults';
 import Progress from './components/ProgressBar';
+import Invite from './components/Invite';
 
 
-export const Room = ({ }) => {
+export const RoomPage = ({ }) => {
+  let navigate = useNavigate();
   const location = useLocation();
   const [userName, setUserName] = useState("");
   const [roomName, setRoomName] = useState("");
   const [nota, setNota] = useState("");
   const [roomId, setRoomId] = useState([]);
   const [moderator, setModerator] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
   const [roomData, setRoomData] = useState({
     roomName: '',
     status: '',
@@ -27,6 +30,8 @@ export const Room = ({ }) => {
   });
 
   const cards = [1, 2, 3, 5, 8, 13, 21, "?"];
+  const handleShowInvite = () => setShowInvite(true);
+  const handleCloseInvite = () => setShowInvite(false);
 
   const { isConnected, socketResponse, updateStatusRoom, votar } = useSocket(
     location.state.userName,
@@ -61,19 +66,25 @@ export const Room = ({ }) => {
     updateStatusRoom({ status: status, roomId: { roomId } })
   }
 
+  const sairSala = e => {
+    navigate('/');
+  }
+
 
   return (
 
     <div className="bg-black-custom">
 
-      <Header userName={userName} roomName={roomName} />
+      <Header userName={userName} roomName={roomName} handleShowInvite={handleShowInvite} handleCloseInvite={handleCloseInvite} sairSala={sairSala}/>
       <StatusSection roomData={roomData} moderator={moderator} handlerupdateStatusRoom={handlerupdateStatusRoom} />
+
+      {showInvite && <Invite roomId={roomId} onClose={handleCloseInvite} />}
 
       {roomData.status == "VOTACAO_FINALIZADA"
         ?
         <div className="user-box">
           <div style={{ flex: 1, minWidth: '300px' }}>
-            <Progress roomData={roomData}  />
+            <Progress roomData={roomData} />
             <Users roomData={roomData} />
           </div>
           <div>
@@ -96,4 +107,4 @@ export const Room = ({ }) => {
     </div>
   );
 }
-export default Room
+export default RoomPage

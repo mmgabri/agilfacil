@@ -1,18 +1,12 @@
 import React from 'react';
 import { HeaderContainer, Logo, Nav, NavItem, Label } from '../../styles/HeaderStyles';
 
-const Header = ({userName, roomName}) => {
+const Header = () => {
   return (
     <HeaderContainer>
-      <Logo>Planning Poker</Logo>
-      <div>
-        <Label>Apelido: {userName}</Label>
-        <Label>Sala: {roomName}</Label>
-      </div>
-
+      <Logo>Agil Facil - Planning Poker</Logo>
       <Nav>
-        <NavItem href="#home">Convidar</NavItem>
-        <NavItem href="#about">Sair</NavItem>
+        <NavItem>Sobre</NavItem>
       </Nav>
     </HeaderContainer>
   );

@@ -1,0 +1,92 @@
+/* Form.css */
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #f3f4f6, #e0e5ec);
+  color: #333;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 2.0rem;
+  margin-bottom: 20px;
+  color: #C0C0C0;
+  font-weight: 400;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form {
+  background: #2c2c2c;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #C0C0C0;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+.submit-button {
+  display: inline-block;
+  width: 100%;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #4a4a4a, #5a5a5a); /* Novo gradiente para o botão */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.submit-button:hover {
+  background: linear-gradient(135deg, #5a5a5a, #4a4a4a); /* Gradiente invertido para hover */
+  transform: translateY(-3px);
+}
+
+@media (max-width: 600px) {
+  .form-container {
+    padding: 15px;
+  }
+}
+
+.disabled-input:disabled {
+  background-color: 		#C0C0C0; /* Cor de fundo personalizada */
+  color: #666; /* Cor do texto */
+  border: 1px solid #ccc; /* Borda */
+  cursor: not-allowed; /* Cursor indicando que o campo está desativado */
+  opacity: 1; /* Garantir total visibilidade do fundo e texto */
+}
