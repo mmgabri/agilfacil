@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { useNavigate } from 'react-router-dom'
 import { SERVER_BASE_URL } from "../constants/apiConstants";
-import "../styles/CreateRoom.css"
+import "../styles/CreateRoomAndGuest.css"
 import Header from './components/Header';
 
 
