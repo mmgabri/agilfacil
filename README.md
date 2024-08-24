@@ -87,6 +87,7 @@ git clone https://github.com/mmgabri/agilfacil_v2.git
 ```bash
   sudo apt install certbot python3-certbot-nginx -y
   sudo certbot --nginx -d agilfacil.com.br -d www.agilfacil.com.br
+  sudo certbot renew --dry-run
 ```
 #### Atualize a configuração do nginx com o código abaixo
 ```bash
