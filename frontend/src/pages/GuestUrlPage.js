@@ -25,7 +25,7 @@ export const GuestUrlPage = ({ }) => {
         axios
             .get(`${SERVER_BASE_URL}/rooms/${id}`)
             .then((response) => {
-                console.log('Retorno da API getRoom:', response);
+                //console.log('Retorno da API getRoom:', response);
                 setRoomId(response.data._id)
                 setRoomName(response.data.roomName)
             })

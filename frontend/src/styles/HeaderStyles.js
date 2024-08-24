@@ -2,17 +2,16 @@ import styled from 'styled-components';
 
 // Cabeçalho
 export const HeaderContainer = styled.header`
-  display: flex;
+display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
   background-color: #282c34;
   color: white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  position: fixed;
-  width: 100%;
+  position: sticky;
   top: 0;
-  left: 0;
+  width: 100%;
   z-index: 1000;
 `;
 

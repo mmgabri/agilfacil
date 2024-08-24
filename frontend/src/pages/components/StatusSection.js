@@ -21,18 +21,18 @@ const StatusSection = ({ roomData, moderator, handlerupdateStatusRoom }) => {
 
         switch (roomData.status) {
             case "AGUARDANDO_LIBERACAO":
-                return <button type="button" class="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_EM_ANDAMENTO")}>Liberar Votação</button>
+                return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_EM_ANDAMENTO")}>Liberar Votação</button>
             case "VOTACAO_EM_ANDAMENTO":
-                return <button type="button" class="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_FINALIZADA")}>Finalizar Votação</button>
+                return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_FINALIZADA")}>Finalizar Votação</button>
             case "VOTACAO_FINALIZADA":
-                return <button type="button" class="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_ENCERRADA")}>Encerrar Votação</button>
+                return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_ENCERRADA")}>Encerrar Votação</button>
             case "VOTACAO_ENCERRADA":
-                return <button type="button" class="btn btn-primary" onClick={() => handlerupdateStatusRoom("AGUARDANDO_LIBERACAO")}>Nova Votação</button>
+                return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("AGUARDANDO_LIBERACAO")}>Nova Votação</button>
         }
     };
 
     return (
-        <div style={{ padding: '2rem', display: 'flex', justifyContent: 'center' }}>
+        <div style={{ padding: '0.8rem', display: 'flex', justifyContent: 'center' }}>
             <StatusContainer>
                 {handleBuildStatus()}
                 {moderator

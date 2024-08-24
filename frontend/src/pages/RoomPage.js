@@ -40,7 +40,7 @@ export const RoomPage = ({ }) => {
 
 
   useEffect(() => {
-    console.log("useEffect-principal==>", location.state.userId, location.state.userName, location.state.roomId, location.state.roomName)
+   // console.log("useEffect-principal==>", location.state.userId, location.state.userName, location.state.roomId, location.state.roomName)
     setUserName(location.state.userName)
     setRoomId(location.state.roomId)
     setRoomName(location.state.roomName)

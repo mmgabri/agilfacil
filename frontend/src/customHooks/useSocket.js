@@ -53,16 +53,16 @@ export const useSocket = (
     setSocket(socketio);
 
     socketio.on("connect", () => {
-      console.log('useSocket - Connected to the server');
+      //console.info('useSocket - Connected to the server');
       setConnected(true);
     })
 
     socketio.on('error', (error) => {
-      console.log('useSocket - Error: ', error);
+      //console.error('useSocket - Error: ', error);
     });
 
     socketio.on('connect_error', (error) => {
-      console.error('useSocket - Connection error:', error);
+      //console.error('useSocket - Connection error:', error);
     });
 
     socketio.on("data_room", (res) => {
@@ -70,7 +70,7 @@ export const useSocket = (
     });
 
     return () => {
-      console.log('useSocket - Disconnect to the server');
+      //console.info('useSocket - Disconnect to the server');
       socketio.disconnect();
     };
   }, [roomId]);

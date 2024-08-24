@@ -22,8 +22,8 @@ const Users = ({ roomData }) => {
 
   return (
     <div className="user-list">
-      {roomData.users.map(user => (
-        <div key={user.id} className="user-item">
+      {roomData.users.map((user, index) => (
+        <div key={index} className="user-item">
           <span className="user-name">{user.userName}</span>
           {user.vote == 0
             ? <FaUserClock style={iconStyleClock} />
