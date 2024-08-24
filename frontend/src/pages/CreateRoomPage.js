@@ -20,6 +20,7 @@ export const CreateRoomPage = ({ }) => {
 
   const handleSubmit = e => {
     e.preventDefault()
+    console.log('SERVER_BASE_URL==>', SERVER_BASE_URL)
 
     axios
       .post(SERVER_BASE_URL + '/createRoom', { roomName: formData.roomName, userName: formData.userName })
