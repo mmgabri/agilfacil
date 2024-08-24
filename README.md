@@ -25,7 +25,7 @@ git clone https://github.com/mmgabri/agilfacil_v2.git
   cd frontend
   npm install
   npm run build
-  pm2 start --name agilfacil npm -- start
+  pm2 start --name agilfacil-frontend npm -- start
   pm2 startup systemd
 ```
 
@@ -78,6 +78,6 @@ git clone https://github.com/mmgabri/agilfacil_v2.git
   cd /home/ubuntu/agilfacil_v2/backend/src
   npm install
   npm node server/js
-  pm2 start --name agilfacil npm -- start
+  pm2 start --name agilfacil-backend npm -- start
   pm2 startup systemd
 ```
