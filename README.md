@@ -15,18 +15,17 @@
 ### Clonar projeto do git
 
 ```bash
-git clone https://github.com/mmgabri/agilfacil_v2.git
+git clone https://github.com/mmgabri/agilfacil.git
 ```
 
 ### Configurando o Frontend - Reacj js
 
 ```bash
-  cd agilfacil_v2
+  cd agilfacil
   cd frontend
   npm install
   npm run build
   pm2 start --name agilfacil-frontend npm -- start
-  pm2 startup systemd
 ```
 
 
@@ -38,7 +37,6 @@ git clone https://github.com/mmgabri/agilfacil_v2.git
   sudo ln -s /etc/nginx/sites-available/agilfacil /etc/nginx/sites-enabled/
   sudo nginx -t
   sudo systemctl restart nginx
-  pm2 restart agilfacil  
 ```
 
 #### Código Nginx para http: agilfacil
@@ -75,7 +73,7 @@ git clone https://github.com/mmgabri/agilfacil_v2.git
 ### Configurando o Backend - Node js
 
 ```bash
-  cd /home/ubuntu/agilfacil_v2/backend/src
+  cd /home/ubuntu/agilfacil/backend
   npm install
   npm node server/js
   pm2 start --name agilfacil-backend npm -- start

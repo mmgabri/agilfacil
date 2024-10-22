@@ -69,5 +69,9 @@ const getRoom = async (req, res) => {
 
 };
 
+const healthcheck = async (req, res) => {
+  console.log("Health Check OK");
+  return res.status(200).json("Health Check OK");
+};
 
-module.exports = { createRoom, joinRoom, getRoom };
+module.exports = { createRoom, joinRoom, getRoom, healthcheck };
