@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  agilfacil.com.br
+
+Globals:
+  Function:
+    Timeout: 10
+
+#------------  Parameters ------------#
+Parameters:
+  UrlApiHealth:
+    Type: String
+    Default: "https://agilfacil.com.br:9000/healthcheck"
+Resources:
+  
+  #------------ Topic SNS ------------#
+  SNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: "AlertInstanceEC2"
+      TopicName: "alert-agilfacil"
+
+  EmailSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref SNSTopic
+      Protocol: email
+      Endpoint: "marcelomgabriel@gmail.com"
+
+
+  #------------ Lambda Function ------------#
+  AgilfacilHealthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: "agilfacil-health"
+      CodeUri:  ./FunctionHealth
+      Handler: agilfacil-health.lambda_handler
+      Runtime: python3.8
+      MemorySize: 128
+      Environment:
+        Variables:
+          SNS_TOPIC_ARN: !Ref SNSTopic
+          URL_API_HEALTH: !Ref UrlApiHealth
