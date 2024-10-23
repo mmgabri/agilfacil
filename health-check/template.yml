@@ -12,6 +12,11 @@ Parameters:
   UrlApiHealth:
     Type: String
     Default: "https://agilfacil.com.br:9000/healthcheck"
+
+  LayerRequests:
+    Type: String
+    Default: "arn:aws:lambda:sa-east-1:140023369634:layer:requests-layer:1"
+
 Resources:
   
   #------------ Topic SNS ------------#
@@ -42,3 +47,9 @@ Resources:
         Variables:
           SNS_TOPIC_ARN: !Ref SNSTopic
           URL_API_HEALTH: !Ref UrlApiHealth
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action: "sns:Publish"
+              Resource: !Ref SNSTopic

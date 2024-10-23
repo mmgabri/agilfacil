@@ -119,7 +119,17 @@ server {
 sudo systemctl restart nginx
 ```
 
-## Observações Importantes
+## Configuração do Lambda Health Check
+
+#### No ambiente local, na pasta health-check, executar os seguintes comandos, e verificar se os recusrsos foram criados no ambiente aws:
+
+```bash
+pip install -r requirements.txt -t ./FunctionHealth
+sam build
+sam deploy --guided
+```
+
+#### Observações Importantes
 
 1. **Liberar Portas no Security Group:**
    - Certifique-se de liberar as portas **9000** e **3000** no grupo de segurança (security group) para permitir o tráfego necessário para a aplicação.

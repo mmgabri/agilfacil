@@ -32,13 +32,14 @@ def lambda_handler(event, context):
                 Message='Service is DOWN on instance!',
                 Subject='EC2 agilfacil Health Check Alert'
             )
+            logger.info("Alerta enviado via tópico sns!")
             return {
                 'statusCode': 500,
                 'body': json.dumps('Service is DOWN')
             }
 
     except Exception as e:
-        logger.exception(f"Ocorreu um erro: {str(e)}")
+        logger.exception(f"Ocorreu um erro ao chamar api health check : {str(e)}")
         return {
             'statusCode': 500,
             'body': json.dumps(f'Error: {str(e)}')
