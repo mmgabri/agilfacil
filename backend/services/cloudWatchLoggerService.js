@@ -13,9 +13,9 @@ const {
   
       this.logGroupName = logGroupName;
       this.logStreamName = logStreamName;
-      this.client = new CloudWatchLogsClient({ region: 'sa-east-1' }); // Altere a região, se necessário.
+      this.client = new CloudWatchLogsClient({ region: 'sa-east-1' });
   
-      this.init(); // Inicializa a criação do grupo e do stream
+      this.init();
     }
   
     async init() {
