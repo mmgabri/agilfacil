@@ -1,7 +1,14 @@
 const { v4: uuidv4 } = require('uuid');
 const { insertRoomDb, findOneRoomDb, updateRoomDb } = require('./dbService');
+const logger = require('./cloudWatchLoggerService');
+
+const sendLogger = async (type, interacao, roomId, roomName, userId, userName, moderator, vote,  statusRoom, elapsedTime, executionStatus, message ) => {
+  const logMessage = logger.createLogObject(type, interacao, roomId, roomName, userId, userName, moderator, vote,  statusRoom, elapsedTime, executionStatus, message );
+  logger.log(logMessage);
+};
 
 const createRoom = async (req, res) => {
+  const start = performance.now()
   console.log("createRoom");
 
   let user = {
@@ -20,7 +27,11 @@ const createRoom = async (req, res) => {
   try {
     let newRoom = await insertRoomDb(room);
     res.status(201).json({ roomId: newRoom._id, roomName: room.roomName, userId: user.userId, userName: user.userName, moderator: user.moderator });
+    const elapsedTime = (performance.now() - start).toFixed(3);
+    sendLogger('API', 'createRoom', newRoom._id, room.roomName, user.userId, user.userName, user.moderator, user.vote,  room.statusRoom, elapsedTime, 'success', 'Room created successfully.' )
   } catch (error) {
+    const elapsedTime = (performance.now() - start).toFixed(3);
+    sendLogger('API', 'createRoom', '', room.roomName, user.userId, user.userName, user.moderator, user.vote, room.statusRoom, elapsedTime, 'failed', 'Error creating room.' )
     return res.status(500).json({ error: 'Error creating room' });
   }
 };
