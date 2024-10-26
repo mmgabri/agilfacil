@@ -26,7 +26,7 @@ const createRoom = async (req, res) => {
     logger.log('API', 'createRoom', newRoom._id, room.roomName, user.userId, user.userName, user.moderator, user.vote,  room.status, elapsedTime, 'success', 'Room created successfully.' )
   } catch (error) {
     const elapsedTime = (performance.now() - start).toFixed(3);
-    logger.log('API', 'createRoom', '', room.roomName, user.userId, user.userName, user.moderator, user.vote, room.status, elapsedTime, 'failed', 'Error creating room.' )
+    logger.log('API', 'createRoom', '', room.roomName, user.userId, user.userName, user.moderator, user.vote, room.status, elapsedTime, 'failed', error.message )
     return res.status(500).json({ error: 'Error creating room' });
   }
 };
@@ -42,7 +42,7 @@ const joinRoom = async (req, res) => {
     room = await findOneRoomDb(req.body.roomId)
   } catch (error) {
     const elapsedTime = (performance.now() - start).toFixed(3);
-    logger.log('API', 'joinRoom', req.body.roomId, '', '', req.body.userName, false, 0, '', elapsedTime, 'failed', 'Room not found.' )
+    logger.log('API', 'joinRoom', req.body.roomId, '', '', req.body.userName, false, 0, '', elapsedTime, 'failed', error.message)
     return res.status(error.statusCode).json({ error: error.message });
   }
 
@@ -63,7 +63,7 @@ const joinRoom = async (req, res) => {
     logger.log('API', 'joinRoom', roomUpd._id, room.roomName, user.userId, user.userName, user.moderator, user.vote,  room.status, elapsedTime, 'success', 'User join successfully.' )
   } catch (error) {
     const elapsedTime = (performance.now() - start).toFixed(3);
-    logger.log('API', 'joinRoom', room._id, room.roomName, user.userId, user.userName, user.moderator, user.vote, room.status, elapsedTime, 'failed', 'Error join room.' )
+    logger.log('API', 'joinRoom', room._id, room.roomName, user.userId, user.userName, user.moderator, user.vote, room.status, elapsedTime, 'failed', error.message )
     return res.status(400).json({ error: 'Erro ao obter sala' });
   }
 

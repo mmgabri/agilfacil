@@ -33,6 +33,7 @@ export const useSocket = (
       socket.emit("votar", {
         roomId: roomId,
         userId: userId,
+        userName: userName,
         vote: payload.vote,
         
       });

@@ -78,7 +78,7 @@ class CloudWatchLogger {
 
     try {
       await this.client.send(new PutLogEventsCommand(params));
-      //console.log('Log sent to CloudWatch:', message);
+      console.log('Log sent to CloudWatch:', message);
     } catch (error) {
       console.error('Error logging to CloudWatch:', error);
     }
