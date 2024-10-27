@@ -13,10 +13,6 @@ Parameters:
     Type: String
     Default: "https://agilfacil.com.br:9000/healthcheck"
 
-  LayerRequests:
-    Type: String
-    Default: "arn:aws:lambda:sa-east-1:140023369634:layer:requests-layer:1"
-
 Resources:
   
   #------------ Topic SNS ------------#

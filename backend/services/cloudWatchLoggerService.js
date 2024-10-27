@@ -21,7 +21,7 @@ class CloudWatchLogger {
 
     this.logGroupName = logGroupName;
     this.logStreamName = logStreamName;
-    this.client = new CloudWatchLogsClient({ region: 'sa-east-1' });
+    this.client = new CloudWatchLogsClient({ region: 'us-east-1' });
 
     this.init();
   }
