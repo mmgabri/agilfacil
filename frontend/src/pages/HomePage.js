@@ -1,33 +1,64 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import "../styles/Home.css"
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from './components/Header';
+import SuggestionForm from './components/SuggestionForm'
+import {
+  Container,
+  Title,
+  Paragraph,
+  ServiceList,
+  ServiceItem,
+  ServiceLink,
+  ServiceTitle,
+  StyledPokerHand,
+  HighlightedText
+} from '../styles/HomePageStyles';
 
-function HomePage() {
-    let navigate = useNavigate();
+const HomePage = () => {
+  let navigate = useNavigate();
+  const [isModalOpen, setModalOpen] = useState(false);
 
-    const handleCriarSala = () => {
-        navigate("createroom")
-    }
+  const handleAbout = () => {
+    navigate("/about")
+  }
 
-    const handleEntrarComoConvidado = () => {
-        navigate("guest")
-    }
+  const handleHome = () => {
+    navigate("/")
+  }
+
+  const handleHomePlanning = () => {
+    navigate("/planning")
+  }
+
+  const handleOpen = () => {
+    setModalOpen(true);
+  }
 
 
-    return (
-        <div className="bg-black-custom">
-            <Header />
-            <div className="container">
-                <h2>Bem-vindo!</h2>
-                <p className="instruction">Escolha uma das opções abaixo para continuar:</p>
-                <div className="button-container">
-                    <button className="button" onClick={handleCriarSala}>Criar Sala</button>
-                    <button className="button" onClick={handleEntrarComoConvidado}>Entrar como convidado</button>
-                </div>
-            </div>
-        </div>
-    );
+  return (
+    <div className="bg-black-custom">
+      <Header handleHome={handleHome} handleAbout={handleAbout} handleOpen={handleOpen} />
+      <Container>
+        <Title>Serviços Disponíveis</Title>
+        <Paragraph>
+          No momento, o AgilFacil oferece a funcionalidade de <HighlightedText onClick={handleHomePlanning}>Planning Poker</HighlightedText> para equipes que desejam aprimorar suas estimativas e promover uma colaboração eficiente. Em breve, novos serviços estarão disponíveis para melhorar ainda mais seus processos.
+        </Paragraph>
+        <Paragraph>Mais serviços e funcionalidades estão a caminho. Acompanhe nosso site para ficar por dentro das novidades e futuras funcionalidades que irão transformar a gestão de projetos ágeis.
+        </Paragraph>
 
-}
-export default HomePage
+        <ServiceList>
+          <ServiceItem onClick={handleHomePlanning}>
+            <StyledPokerHand />
+            <ServiceTitle>Planning Poker</ServiceTitle> {/* Título destacado */}
+            <ServiceLink>Estime suas histórias de forma colaborativa e eficaz.</ServiceLink> {/* Descrição */}
+          </ServiceItem>
+        </ServiceList>
+      </Container>
+
+      {isModalOpen && <SuggestionForm onClose={() => setModalOpen(false)} />}
+
+    </div>
+  );
+};
+
+export default HomePage;

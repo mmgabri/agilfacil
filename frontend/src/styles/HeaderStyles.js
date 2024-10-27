@@ -16,10 +16,20 @@ display: flex;
 `;
 
 export const Logo = styled.div`
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
 `;
 
+export const LogoText = styled.span`
+  font-weight: Medium ;
+  margin-right: 5px;
+`;
+
+export const SubText = styled.span`
+  font-size: 16px; /* Menor que o logo */
+  color: #aaa; /* Cor mais suave */
+`;
 export const Nav = styled.nav`
   display: flex;
   gap: 1rem;
@@ -52,4 +62,10 @@ export const Label = styled.div`
   padding: 0.5rem 1rem;
   background-color: #20232a;
   border-radius: 4px;
+`;
+
+export const LogoImage = styled.img`
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
 `;
