@@ -4,11 +4,19 @@ const {
   CreateLogStreamCommand,
   PutLogEventsCommand,
 } = require('@aws-sdk/client-cloudwatch-logs');
+require('dotenv').config();
 
 class CloudWatchLogger {
+  logger_ativ = false;
+
   constructor(logGroupName, logStreamName) {
     if (!logGroupName || !logStreamName) {
       throw new Error('Both logGroupName and logStreamName are required.');
+    }
+
+    if (process.env.NODE_ENV === 'dev') {
+      console.log('Logger ativo')
+      this.logger_ativ = true
     }
 
     this.logGroupName = logGroupName;
@@ -62,8 +70,8 @@ class CloudWatchLogger {
 
   // Envia logs para o CloudWatch
 
-  async log(type, interacao, roomId, roomName, userId, userName, moderator, vote, statusRoom, elapsedTime, executionStatus, msg) {
-    const message = this.createLogObject(type, interacao, roomId, roomName, userId, userName, moderator, vote, statusRoom, elapsedTime, executionStatus, msg);
+  async log(type, interacao, roomId, roomName, userId, userName, moderator, vote, statusRoom, elapsedTime, executionStatus, msg, email, suggestion) {
+    const message = this.createLogObject(type, interacao, roomId, roomName, userId, userName, moderator, vote, statusRoom, elapsedTime, executionStatus, msg, email, suggestion);
     const timestamp = Date.now();
     const params = {
       logGroupName: this.logGroupName,
@@ -78,13 +86,13 @@ class CloudWatchLogger {
 
     try {
       await this.client.send(new PutLogEventsCommand(params));
-      console.log('Log sent to CloudWatch:', message);
+      if (this.logger_ativ) { console.log('Log sent to CloudWatch:', message); }
     } catch (error) {
       console.error('Error logging to CloudWatch:', error);
     }
   }
 
-  createLogObject(type, interacao, roomId, roomName, userId, userName, moderator, vote, statusRoom, elapsedTime, executionStatus, message) {
+  createLogObject(type, interacao, roomId, roomName, userId, userName, moderator, vote, statusRoom, elapsedTime, executionStatus, message, email, suggestion) {
     return {
       timestamp: new Date().toLocaleString(),
       type,
@@ -98,7 +106,9 @@ class CloudWatchLogger {
       statusRoom,
       elapsedTime,
       executionStatus,
-      message
+      message,
+      email,
+      suggestion
     };
   }
 }
