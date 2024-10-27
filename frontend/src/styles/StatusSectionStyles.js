@@ -27,8 +27,6 @@ export const Status = styled.div`
 `;
 
 // Botão de Comando
-// Botão de Comando
-// Botão de Comando
 export const CommandButton = styled.button`
   background-color: #007bff; /* Azul claro */
   color: #ffffff; /* Cor da fonte */

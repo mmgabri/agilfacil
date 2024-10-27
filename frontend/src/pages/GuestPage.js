@@ -1,23 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SuggestionForm from './components/SuggestionForm'
 
 import { useNavigate } from 'react-router-dom'
 import { SERVER_BASE_URL } from "../constants/apiConstants";
 import "../styles/CreateRoomAndGuest.css"
+import { Title } from '../styles/GenericTitleStyles';
 import Header from './components/Header';
 
 
 export const GuestPage = ({ }) => {
+  let navigate = useNavigate();
+  const [isModalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState({ userName: '', roomId: '' });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
-  let navigate = useNavigate();
 
   const handleSubmit = e => {
     e.preventDefault()
@@ -49,13 +51,25 @@ export const GuestPage = ({ }) => {
     });
   }
 
+  const handleAbout = () => {
+    navigate("/about")
+  }
+
+  const handleHome = () => {
+    navigate("/")
+  }
+
+  const handleOpen = () => {
+    setModalOpen(true);
+  }
 
   return (
+
     <div className="bg-black-custom">
-      <Header />
+      <Header handleHome={handleHome} handleAbout={handleAbout} handleOpen={handleOpen} />
 
       <div className="form-container">
-        <h1>Informe os dados abaixo</h1>
+        <Title>Preencha os campos abaixo para entrar na sala de Planning Poker</Title>
         <form onSubmit={handleSubmit} className="form">
           <div className="form-group">
             <label htmlFor="name">Nome</label>
@@ -82,10 +96,10 @@ export const GuestPage = ({ }) => {
               required
             />
           </div>
-          <button type="submit" className="submit-button">Enviar</button>
+          <button type="submit" className="submit-button">Entrar</button>
         </form>
       </div>
-      <ToastContainer />
+      {isModalOpen && <SuggestionForm onClose={() => setModalOpen(false)} />}
     </div>
   );
 }

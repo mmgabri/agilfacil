@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useParams } from 'react-router-dom'
 import { SERVER_BASE_URL } from "../constants/apiConstants";
 import "../styles/CreateRoomAndGuest.css"
+import { Title } from '../styles/GenericTitleStyles';
 import Header from './components/Header';
-
+import SuggestionForm from './components/SuggestionForm'
 
 export const GuestUrlPage = ({ }) => {
     const { id } = useParams(); // Obtém o ID da URL
     let navigate = useNavigate();
+    const [isModalOpen, setModalOpen] = useState(false);
     const [formData, setFormData] = useState({ userName: '' });
     const [roomId, setRoomId] = useState('');
     const [roomName, setRoomName] = useState('');
@@ -50,12 +52,25 @@ export const GuestUrlPage = ({ }) => {
             });
     }
 
+    const handleHome = () => {
+        navigate("/")
+    }
+
+    const handleAbout = () => {
+        navigate("/about")
+    }
+
+
+    const handleOpen = () => {
+        setModalOpen(true);
+    }
+
     return (
         <div className="bg-black-custom">
-            <Header />
+            <Header handleHome={handleHome} handleAbout={handleAbout} handleOpen={handleOpen} />
 
             <div className="form-container">
-                <h1>Informe os dados abaixo</h1>
+                <Title>Informe seu nome para entrar na sala de Planning Poker </Title>
                 <form onSubmit={handleSubmit} className="form">
                     <div className="form-group">
                         <label htmlFor="name">Nome</label>
@@ -91,7 +106,7 @@ export const GuestUrlPage = ({ }) => {
                     <button type="submit" className="submit-button">Entrar</button>
                 </form>
             </div>
-            <ToastContainer />
+            {isModalOpen && <SuggestionForm onClose={() => setModalOpen(false)} />}
         </div>
     );
 }

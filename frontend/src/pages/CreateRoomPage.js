@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom'
 import { SERVER_BASE_URL } from "../constants/apiConstants";
 import "../styles/CreateRoomAndGuest.css"
+import { Title } from '../styles/GenericTitleStyles';
 import Header from './components/Header';
-
+import SuggestionForm from './components/SuggestionForm'
 
 export const CreateRoomPage = ({ }) => {
+  let navigate = useNavigate();
   const [formData, setFormData] = useState({ userName: '', roomName: '' });
-
+  const [isModalOpen, setModalOpen] = useState(false);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
-  let navigate = useNavigate();
 
   const handleSubmit = e => {
     e.preventDefault()
@@ -49,13 +49,24 @@ export const CreateRoomPage = ({ }) => {
     });
   }
 
+  const handleAbout = () => {
+    navigate("/about")
+  }
+
+  const handleHome = () => {
+    navigate("/")
+  }
+
+  const handleOpen = () => {
+    setModalOpen(true);
+  }
+
 
   return (
     <div className="bg-black-custom">
-      <Header />
-
+      <Header handleHome={handleHome} handleAbout={handleAbout} handleOpen={handleOpen} />
       <div className="form-container">
-        <h1>Informe os dados abaixo</h1>
+        <Title>Preencha os campos abaixo para criar a sala de Planning Poker</Title>
         <form onSubmit={handleSubmit} className="form">
           <div className="form-group">
             <label htmlFor="name">Nome</label>
@@ -86,7 +97,7 @@ export const CreateRoomPage = ({ }) => {
           <button type="submit" className="submit-button">Criar Sala</button>
         </form>
       </div>
-      <ToastContainer />
+      {isModalOpen && <SuggestionForm onClose={() => setModalOpen(false)} />}
     </div>
   );
 }

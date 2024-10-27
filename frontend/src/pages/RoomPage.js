@@ -4,18 +4,19 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { useSocket } from "../customHooks/useSocket";
 import "../styles/Room.css"
-import Header from './components/HeaderRoom';
+import Header from './components/HeaderPlanning';
 import StatusSection from './components/StatusSection';
 import Users from './components/Users';
 import VotingCards from './components/VotingCards';
 import VotingResults from './components/VotingResults';
 import Progress from './components/ProgressBar';
 import Invite from './components/Invite';
-
+import SuggestionForm from './components/SuggestionForm'
 
 export const RoomPage = ({ }) => {
   let navigate = useNavigate();
   const location = useLocation();
+  const [isModalOpen, setModalOpen] = useState(false);
   const [userName, setUserName] = useState("");
   const [roomName, setRoomName] = useState("");
   const [nota, setNota] = useState("");
@@ -40,7 +41,7 @@ export const RoomPage = ({ }) => {
 
 
   useEffect(() => {
-   // console.log("useEffect-principal==>", location.state.userId, location.state.userName, location.state.roomId, location.state.roomName)
+    // console.log("useEffect-principal==>", location.state.userId, location.state.userName, location.state.roomId, location.state.roomName)
     setUserName(location.state.userName)
     setRoomId(location.state.roomId)
     setRoomName(location.state.roomName)
@@ -70,12 +71,16 @@ export const RoomPage = ({ }) => {
     navigate('/');
   }
 
+  const handleOpen = () => {
+    setModalOpen(true);
+  }
+
 
   return (
 
     <div className="bg-black-custom">
 
-      <Header userName={userName} roomName={roomName} handleShowInvite={handleShowInvite} handleCloseInvite={handleCloseInvite} sairSala={sairSala}/>
+      <Header userName={userName} roomName={roomName} handleShowInvite={handleShowInvite} handleCloseInvite={handleCloseInvite} sairSala={sairSala} handleOpen={handleOpen} />
       <StatusSection roomData={roomData} moderator={moderator} handlerupdateStatusRoom={handlerupdateStatusRoom} />
 
       {showInvite && <Invite roomId={roomId} onClose={handleCloseInvite} />}
@@ -104,6 +109,7 @@ export const RoomPage = ({ }) => {
         ? <VotingCards onCardClick={onCardClick} cards={cards} nota={nota} />
         : <></>}
 
+      {isModalOpen && <SuggestionForm onClose={() => setModalOpen(false)} />}
     </div>
   );
 }

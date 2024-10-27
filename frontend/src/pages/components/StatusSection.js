@@ -6,28 +6,28 @@ const StatusSection = ({ roomData, moderator, handlerupdateStatusRoom }) => {
     const handleBuildStatus = () => {
 
         switch (roomData.status) {
-            case "AGUARDANDO_LIBERACAO":
+            case "NOVA_VOTACAO":
                 return <Status>Aguardando liberação da votação</Status>
             case "VOTACAO_EM_ANDAMENTO":
                 return <Status>Votação em andamento</Status>
             case "VOTACAO_FINALIZADA":
                 return <Status>Votação finalizada</Status>
             case "VOTACAO_ENCERRADA":
-                return <Status>Votação encerrada</Status>
+                return <Status>Aguardando nova votação</Status>
         }
     };
 
     const handleBuildButtonStatus = () => {
 
         switch (roomData.status) {
-            case "AGUARDANDO_LIBERACAO":
+            case "NOVA_VOTACAO":
                 return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_EM_ANDAMENTO")}>Liberar Votação</button>
             case "VOTACAO_EM_ANDAMENTO":
                 return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_FINALIZADA")}>Finalizar Votação</button>
             case "VOTACAO_FINALIZADA":
                 return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_ENCERRADA")}>Encerrar Votação</button>
             case "VOTACAO_ENCERRADA":
-                return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("AGUARDANDO_LIBERACAO")}>Nova Votação</button>
+                return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_EM_ANDAMENTO")}>Nova Votação</button>
         }
     };
 
