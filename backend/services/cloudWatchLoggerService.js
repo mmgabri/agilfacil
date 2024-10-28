@@ -8,20 +8,22 @@ require('dotenv').config();
 
 class CloudWatchLogger {
   logger_ativ = false;
+  region = process.env.REGION
+  env = process.env.NODE_ENV
 
   constructor(logGroupName, logStreamName) {
     if (!logGroupName || !logStreamName) {
       throw new Error('Both logGroupName and logStreamName are required.');
     }
 
-    if (process.env.NODE_ENV === 'dev') {
+    if (this.env === 'dev') {
       console.log('Logger ativo')
       this.logger_ativ = true
     }
 
     this.logGroupName = logGroupName;
     this.logStreamName = logStreamName;
-    this.client = new CloudWatchLogsClient({ region: 'us-east-1' });
+    this.client = new CloudWatchLogsClient({region: this.region});
 
     this.init();
   }

@@ -1,15 +1,17 @@
 import React from 'react';
-import { HeaderContainer, Logo, LogoText, LogoImage, SubText, Nav, NavItem, Label } from '../../styles/HeaderStyles';
+import { HeaderContainer, LogoContainer, LogoTop, LogoText, LogoImage, SubText, Nav, NavItem, Label } from '../../styles/HeaderStyles';
 import favicon from '../../images/favicon.ico';
 
 const HeaderRoom = ({ userName, roomName, handleShowInvite, sairSala, handleOpen }) => {
   return (
     <HeaderContainer>
-      <Logo>
-        <LogoImage src={favicon} alt="Logo" />
-        <LogoText>AgilFacil</LogoText>
-        <SubText>- Planning Poker</SubText>
-      </Logo>
+      <LogoContainer>
+        <LogoTop>
+          <LogoImage src={favicon} alt="Logo" />
+          <LogoText>AgilFacil</LogoText>
+        </LogoTop>
+        <SubText>Planning Poker</SubText>
+      </LogoContainer>
       <div>
         <Label>Apelido: {userName}</Label>
         <Label>Sala: {roomName}</Label>

@@ -15,21 +15,48 @@ display: flex;
   z-index: 1000;
 `;
 
-export const Logo = styled.div`
+export const LogoContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   font-size: 20px;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    text-align: left;
+  }
+`;
+
+export const LogoTop = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
+`;
+
+export const LogoImage = styled.img`
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
 `;
 
 export const LogoText = styled.span`
-  font-weight: Medium ;
+  font-weight: 500; /* Medium equivalente */
   margin-right: 5px;
 `;
 
 export const SubText = styled.span`
-  font-size: 16px; /* Menor que o logo */
-  color: #aaa; /* Cor mais suave */
+  font-size: 17px;
+  color: #aaa;
+  margin-top: 5px;
+
+  @media (min-width: 768px) {
+    margin-top: 0;
+    margin-left: 10px;
+  }
 `;
+
+
 export const Nav = styled.nav`
   display: flex;
   gap: 1rem;
@@ -62,10 +89,4 @@ export const Label = styled.div`
   padding: 0.5rem 1rem;
   background-color: #20232a;
   border-radius: 4px;
-`;
-
-export const LogoImage = styled.img`
-  width: 32px;
-  height: 32px;
-  margin-right: 10px;
 `;

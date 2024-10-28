@@ -1,31 +1,25 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-max-width: 1200px; /* Aumenta a largura máxima */
-  width: 75%; /* Garante que ocupe 90% da tela */
-  margin: 20px auto; /* Ajusta o espaçamento superior e inferior */
-  padding: 10px; /* Adiciona mais espaçamento interno */
-  background-color: #1C1C1C;
+  max-width: 900px;
+  margin: 1px auto;
+  padding: 30px;
+  background-color: #1C1C1C; 
   border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Deixa a sombra mais evidente */
-  min-height: 600px; /* Define uma altura mínima */
-  display: flex;
-  flex-direction: column;
-  text-align: justify;
-  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 `;
 
+
 export const Title = styled.h2`
-  font-size: 32px;
+  font-size: 36px;
+  text-align: center;
   margin-bottom: 20px;
   color: #C0C0C0;
-  text-align: center;
-  font-weight: 700;
 `;
 
 export const Paragraph = styled.p`
-  line-height: 1.8;
   font-size: 18px;
+  line-height: 1.8;
   color: #C0C0C0;
   margin-bottom: 20px;
 `;
