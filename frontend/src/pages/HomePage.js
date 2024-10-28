@@ -34,14 +34,13 @@ const HomePage = () => {
     setModalOpen(true);
   }
 
-
   return (
     <div className="bg-black-custom">
       <Header handleHome={handleHome} handleAbout={handleAbout} handleOpen={handleOpen} />
       <Container>
         <Title>Serviços Disponíveis</Title>
         <Paragraph>
-          No momento, o AgilFacil oferece a funcionalidade de <HighlightedText onClick={handleHomePlanning}>Planning Poker</HighlightedText> para equipes que desejam aprimorar suas estimativas e promover uma colaboração eficiente. Em breve, novos serviços estarão disponíveis para melhorar ainda mais seus processos.
+          No momento, o AgilFacil oferece a funcionalidade de <HighlightedText onClick={handleHomePlanning}>Planning Poker</HighlightedText> para equipes que desejam aprimorar suas estimativas e promover uma colaboração eficiente.
         </Paragraph>
         <Paragraph>Mais serviços e funcionalidades estão a caminho. Acompanhe nosso site para ficar por dentro das novidades e futuras funcionalidades que irão transformar a gestão de projetos ágeis.
         </Paragraph>

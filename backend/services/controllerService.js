@@ -1,7 +1,8 @@
 const { v4: uuidv4 } = require('uuid');
 const { insertRoomDb, findOneRoomDb, updateRoomDb } = require('./dbService');
 const logger = require('./cloudWatchLoggerService');
-
+const snsService = require('./SnsService');
+const sns = new snsService('us-east-1');
 
 const createRoom = async (req, res) => {
   const start = performance.now()
@@ -95,6 +96,7 @@ const suggestion = async (req, res) => {
   console.log("suggestion");
 
   try {
+    sns.suggestionNotification(req.body.userName, req.body.email, req.body.suggestion )
     res.status(200).json('sucess!');
     const elapsedTime = (performance.now() - start).toFixed(3);
     logger.log('API', 'suggestion', '', '', '', req.body.userName, '', '',  '', elapsedTime, 'success', 'Suggestion created successfully.',  req.body.email, req.body.suggestion, )
