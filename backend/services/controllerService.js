@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { v4: uuidv4 } = require('uuid');
 const { insertRoomDb, findOneRoomDb, updateRoomDb } = require('./dbService');
 const logger = require('./cloudWatchLoggerService');
