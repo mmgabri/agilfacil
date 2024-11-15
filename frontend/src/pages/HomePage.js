@@ -11,7 +11,10 @@ import {
   ServiceLink,
   ServiceTitle,
   StyledPokerHand,
-  HighlightedText
+  HighlightedText,
+  StyledAiFillLike,
+  StyledAiFillDislike,
+  IconContainer
 } from '../styles/HomePageStyles';
 
 const HomePage = () => {
@@ -28,6 +31,10 @@ const HomePage = () => {
 
   const handleHomePlanning = () => {
     navigate("/planning")
+  }
+
+  const handleHomeRetro = () => {
+    navigate("/retro")
   }
 
   const handleOpen = () => {
@@ -51,6 +58,15 @@ const HomePage = () => {
             <ServiceTitle>Planning Poker</ServiceTitle> {/* Título destacado */}
             <ServiceLink>Estime suas histórias de forma colaborativa e eficaz.</ServiceLink> {/* Descrição */}
           </ServiceItem>
+          <ServiceItem onClick={handleHomeRetro}>
+            <IconContainer>
+              <StyledAiFillDislike />
+              <StyledAiFillLike />
+            </IconContainer>
+            <ServiceTitle>Retro Agil</ServiceTitle> {/* Título destacado */}
+            <ServiceLink>Reflexão e melhoria com retrospectiva ágil.</ServiceLink> {/* Descrição */}
+          </ServiceItem>
+
         </ServiceList>
       </Container>
 

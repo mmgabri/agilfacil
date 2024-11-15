@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 import { GiPokerHand } from 'react-icons/gi';
+import { AiFillLike } from "react-icons/ai";
+import { AiFillDislike } from "react-icons/ai";
 
 export const Container = styled.div`
   max-width: 900px;
@@ -55,7 +57,7 @@ export const ServiceItem = styled.li`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 300px;
   text-align: center;
-
+  margin-right: 16px; /* Ajuste o valor conforme necessário */
   &:hover {
     transform: scale(1.05);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
@@ -81,4 +83,23 @@ export const StyledPokerHand = styled(GiPokerHand)`
   color: #10b981;
   margin-top: 0px;
   margin-bottom: 0px;
+`;
+export const StyledAiFillLike = styled(AiFillLike)`
+  width: 40px;
+  height: 40px;
+  color: #10b981;
+  margin-top: 0px;
+  margin-bottom: 0px;
+`;
+export const StyledAiFillDislike = styled(AiFillDislike)`
+  width: 40px;
+  height: 40px;
+  color: #10b981;
+  margin-top: 0px;
+  margin-bottom: 0px;
+`;
+export const IconContainer = styled.div`
+  display: flex;
+  align-items: center; /* Opcional: Alinha verticalmente se necessário */
+  gap: 8px; /* Ajuste o espaço entre os ícones conforme necessário */
 `;
