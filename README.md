@@ -75,7 +75,6 @@ git clone https://github.com/mmgabri/agilfacil.git
 ```bash
   cd /home/ubuntu/agilfacil/backend
   npm install
-  npm node server/js
   pm2 start --name agilfacil-backend npm -- start
   pm2 startup systemd
 ```
