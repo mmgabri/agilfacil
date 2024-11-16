@@ -15,11 +15,17 @@ const ColumnTitle = styled.h3`
   color: #333;
 `;
 
-const Column = ({ column, handleDragStart, handleDrop, handleColumnDrop }) => {
+const Column = ({ column, handleDragStart, handleDrop }) => {
+  const handleColumnDrop = (e) => {
+    e.preventDefault();  // Previne o comportamento padrão do navegador
+    e.stopPropagation(); // Impede a propagação do evento para os elementos pai
+    handleDrop(e, null, column);  // Passa o evento e indica que foi solto na coluna
+  };
+
   return (
     <ColumnContainer
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={handleColumnDrop}
+      onDragOver={(e) => e.preventDefault()}  // Permite o "drop"
+      onDrop={handleColumnDrop}  // Passa o evento para a função handleDrop
     >
       <ColumnTitle>{column.title}</ColumnTitle>
       {column.cards.map((card) => (
@@ -27,7 +33,7 @@ const Column = ({ column, handleDragStart, handleDrop, handleColumnDrop }) => {
           key={card.id}
           card={card}
           handleDragStart={handleDragStart}
-          handleDrop={() => handleDrop(card)}
+          handleDrop={(e) => handleDrop(e, card, column)}  // Passa o evento e o card para a função handleDrop
         />
       ))}
     </ColumnContainer>
