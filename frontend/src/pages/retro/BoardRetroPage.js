@@ -14,16 +14,16 @@ const Board = () => {
       id: 'column-1',
       title: 'Todo',
       cards: [
-        { id: 'card-1', text: 'Card 1', column: 'column-1' },
-        { id: 'card-2', text: 'Card 2', column: 'column-1' },
+        { id: 'card-1', text: 'Card 1', columnId: 'column-1' },
+        { id: 'card-2', text: 'Card 2', columnId: 'column-1' },
       ],
     },
     {
       id: 'column-2',
       title: 'Doing',
       cards: [
-        { id: 'card-3', text: 'Card 3', column: 'column-2' },
-        { id: 'card-4', text: 'Card 4', column: 'column-2' },
+        { id: 'card-3', text: 'Card 3', columnId: 'column-2' },
+        { id: 'card-4', text: 'Card 4', columnId: 'column-2' },
       ],
     },
   ]);
@@ -35,30 +35,36 @@ const Board = () => {
     setDraggedCard(card);
   };
 
-  // Ao soltar o card
-  const handleDrop = (targetCard) => {
-    console.log('------------------------------handleDrop -------------------------------')
-    console.log('draggedCard ==>', draggedCard)
-    console.log('targetCard ==>', targetCard)
-    console.log('----------------------------------')
+ // Ao soltar o card
+const handleDrop = (targetCard) => {
+  console.log('------------------------------handleDrop -------------------------------');
+  console.log('draggedCard ==>', draggedCard);
+  console.log('targetCard ==>', targetCard);
+  console.log('----------------------------------');
 
-    if (!draggedCard || draggedCard.id === targetCard.id) return;
+  if (!draggedCard || draggedCard.id === targetCard.id) return;
 
-    const newColumns = columns.map((column) => {
-      const updatedCards = column.cards.map((card) => {
-        if (card.id === targetCard.id) {
-          // Combina o texto
-          return { ...card, text: `${card.text} ------- ${draggedCard.text}` };
-        }
-        return card;
-      }).filter((card) => card.id !== draggedCard.id);
+  // Pergunta ao usuário se ele deseja juntar os cards
+  const confirmMerge = window.confirm("Você deseja realmente juntar esses cards?");
+  
+  // Se o usuário não confirmar, interrompe a execução
+  if (!confirmMerge) return;
 
-      return { ...column, cards: updatedCards };
-    });
+  const newColumns = columns.map((column) => {
+    const updatedCards = column.cards.map((card) => {
+      if (card.id === targetCard.id) {
+        // Combina o texto
+        return { ...card, text: `${card.text} ------- ${draggedCard.text}` };
+      }
+      return card;
+    }).filter((card) => card.id !== draggedCard.id);
 
-    setColumns(newColumns);
-    setDraggedCard(null);
-  };
+    return { ...column, cards: updatedCards };
+  });
+
+  setColumns(newColumns);
+  setDraggedCard(null);
+};
 
   const handleColumnDrop = (targetColumnId) => {
     console.log('------------------------------handleColumnDrop -------------------------------')
@@ -66,25 +72,35 @@ const Board = () => {
     console.log('targetColumnId ==>', targetColumnId)
     console.log('----------------------------------')
 
-    if (draggedCard.column === targetColumnId ) return;
+    if (draggedCard.columnId === targetColumnId) return;
 
     if (!draggedCard) return;
 
-    draggedCard.column = targetColumnId;
+    let columnIdOrig = draggedCard.columnId
+    draggedCard.columnId = targetColumnId;
 
     const updatedColumns = columns.map((column) => {
-      if (column.id === draggedCard.columnId) {
+      console.log('column (parametro) ==>', column.id)
+      console.log('draggedCard.columnId==>', draggedCard.columnId)
+      console.log(' targetColumnId==>', targetColumnId)
+      //Verifica se a coluna atual (column) é a coluna de origem, de onde o card foi arrastado.
+      if (column.id === columnIdOrig) {
+        console.log('remove card da coluna destino')
+        //Se for a coluna de origem, ele cria uma nova versão dela, removendo o card arrastado da lista de cards dessa coluna.
         return {
           ...column,
           cards: column.cards.filter((card) => card.id !== draggedCard.id),
         };
       }
+      // Verifica se a coluna atual é a coluna de destino, para onde o card foi arrastado.
       if (column.id === targetColumnId) {
+        console.log('adiciona card na coluna destino')
         return {
           ...column,
           cards: [...column.cards, { ...draggedCard }],
         };
       }
+      console.log('Fim')
       return column;
     });
 
