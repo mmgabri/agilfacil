@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 import Column from './Column';
 import styled from 'styled-components';
 
@@ -8,7 +6,6 @@ const BoardContainer = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 20px;
-  flex-wrap: wrap;
 `;
 
 const Board = () => {
@@ -17,62 +14,97 @@ const Board = () => {
       id: 'column-1',
       title: 'Todo',
       cards: [
-        { id: 'card-1', text: 'Card 1' },
-        { id: 'card-2', text: 'Card 2' },
+        { id: 'card-1', text: 'Card 1', column: 'column-1' },
+        { id: 'card-2', text: 'Card 2', column: 'column-1' },
       ],
     },
     {
       id: 'column-2',
       title: 'Doing',
       cards: [
-        { id: 'card-3', text: 'Card 3' },
-        { id: 'card-4', text: 'Card 4' },
-      ],
-    },
-    {
-      id: 'column-3',
-      title: 'Done',
-      cards: [
-        { id: 'card-5', text: 'Card 5' },
-        { id: 'card-6', text: 'Card 6' },
+        { id: 'card-3', text: 'Card 3', column: 'column-2' },
+        { id: 'card-4', text: 'Card 4', column: 'column-2' },
       ],
     },
   ]);
 
-  const moveCard = (cardId, targetColumnId) => {
-    const sourceColumnIndex = columns.findIndex((col) =>
-      col.cards.some((card) => card.id === cardId)
-    );
-    const sourceColumn = columns[sourceColumnIndex];
-    const targetColumnIndex = columns.findIndex((col) => col.id === targetColumnId);
-    const targetColumn = columns[targetColumnIndex];
+  const [draggedCard, setDraggedCard] = useState(null);
 
-    const cardToMove = sourceColumn.cards.find((card) => card.id === cardId);
-
-    // Remove o card da coluna de origem
-    sourceColumn.cards = sourceColumn.cards.filter((card) => card.id !== cardId);
-
-    // Adiciona o card na coluna de destino
-    targetColumn.cards.push(cardToMove);
-
-    // Atualiza o estado das colunas
-    setColumns([...columns]);
+  // Define o card sendo arrastado
+  const handleDragStart = (card) => {
+    setDraggedCard(card);
   };
 
+  // Ao soltar o card
+  const handleDrop = (targetCard) => {
+    console.log('------------------------------handleDrop -------------------------------')
+    console.log('draggedCard ==>', draggedCard)
+    console.log('targetCard ==>', targetCard)
+    console.log('----------------------------------')
+
+    if (!draggedCard || draggedCard.id === targetCard.id) return;
+
+    const newColumns = columns.map((column) => {
+      const updatedCards = column.cards.map((card) => {
+        if (card.id === targetCard.id) {
+          // Combina o texto
+          return { ...card, text: `${card.text} ------- ${draggedCard.text}` };
+        }
+        return card;
+      }).filter((card) => card.id !== draggedCard.id);
+
+      return { ...column, cards: updatedCards };
+    });
+
+    setColumns(newColumns);
+    setDraggedCard(null);
+  };
+
+  const handleColumnDrop = (targetColumnId) => {
+    console.log('------------------------------handleColumnDrop -------------------------------')
+    console.log('draggedCard ==>', draggedCard)
+    console.log('targetColumnId ==>', targetColumnId)
+    console.log('----------------------------------')
+
+    if (draggedCard.column === targetColumnId ) return;
+
+    if (!draggedCard) return;
+
+    draggedCard.column = targetColumnId;
+
+    const updatedColumns = columns.map((column) => {
+      if (column.id === draggedCard.columnId) {
+        return {
+          ...column,
+          cards: column.cards.filter((card) => card.id !== draggedCard.id),
+        };
+      }
+      if (column.id === targetColumnId) {
+        return {
+          ...column,
+          cards: [...column.cards, { ...draggedCard }],
+        };
+      }
+      return column;
+    });
+
+    setColumns(updatedColumns);
+    setDraggedCard(null);
+  };
+
+
   return (
-    <DndProvider backend={HTML5Backend}>
-      <BoardContainer>
-        {columns.map((column) => (
-          <Column
-            key={column.id}
-            id={column.id}
-            title={column.title}
-            cards={column.cards}
-            moveCard={moveCard}
-          />
-        ))}
-      </BoardContainer>
-    </DndProvider>
+    <BoardContainer>
+      {columns.map((column) => (
+        <Column
+          key={column.id}
+          column={column}
+          handleDragStart={handleDragStart}
+          handleDrop={handleDrop}
+          handleColumnDrop={() => handleColumnDrop(column.id)}
+        />
+      ))}
+    </BoardContainer>
   );
 };
 
