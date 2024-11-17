@@ -9,6 +9,9 @@ const BoardContainer = styled.div`
 `;
 
 const Board = () => {
+  const [draggedCard, setDraggedCard] = useState(null);
+  const [overlappingCardId, setOverlappingCardId] = useState(null);
+
   const [columns, setColumns] = useState([
     {
       id: 'column-1',
@@ -30,15 +33,13 @@ const Board = () => {
     },
   ]);
 
-  const [draggedCard, setDraggedCard] = useState(null);
+  
 
-  // Define o card sendo arrastado
   const handleDragStart = (card) => {
     setDraggedCard(card);
   };
 
-
-
+  
   // Ao soltar o card
   const handleDrop = (event, targetCard, targetColumn) => {
     console.log('-------------- handleDrop ----------------')
@@ -77,7 +78,11 @@ const Board = () => {
         console.log('draggedCard.id ==>', draggedCard.id)
         if (card.id === targetCard.id) {
           console.log('Juntou texto')
-          return { ...card, text: `${card.text} ------- ${draggedCard.text}` };
+          //return { ...card, text: `${card.text} ------- ${draggedCard.text}` };
+          return { 
+            ...card, 
+            text: `${card.text}<br />--------<br />${draggedCard.text}` 
+          };
         }
         return card;
       }).filter((card) => card.id !== draggedCard.id);
@@ -87,6 +92,7 @@ const Board = () => {
 
     setColumns(newColumns);
     setDraggedCard(null);
+    setOverlappingCardId(null);  // Resetando o estado do card sobre o qual o card foi solto
 
   };
 
@@ -141,6 +147,8 @@ const Board = () => {
           column={column}
           handleDragStart={handleDragStart}
           handleDrop={handleDrop}
+          overlappingCardId={overlappingCardId}
+          setOverlappingCardId={setOverlappingCardId}
         />
       ))}
     </BoardContainer>

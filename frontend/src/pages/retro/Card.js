@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const CardContainer = styled.div`
@@ -7,25 +7,48 @@ const CardContainer = styled.div`
   border-radius: 4px;
   margin: 8px 0;
   cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  ${({ isOverlapping, isDragging }) => `
+    box-shadow: ${isOverlapping ? '0 6px 12px rgba(0, 0, 0, 0.3)' : isDragging ? '0 8px 16px rgba(0, 0, 0, 0.4)' : 'none'};
+    transform: ${isOverlapping ? 'scale(1.15)' : isDragging ? 'rotate(3deg) scale(1.1)' : 'scale(1.0)'};
+    background-color: ${isOverlapping ? '#ffcc80' : '#ffeb3b'};
+    border: ${isDragging ? '2px dashed #ffa726' : 'none'};
+  `}
 `;
 
-const Card = ({ card, handleDragStart, handleDrop }) => {
+const Card = ({ card, handleDragStart, handleDrop, onDragEnter, onDragLeave, isOverlapping }) => {
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragStartInternal = () => {
+    setIsDragging(true);
+    handleDragStart(card);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
   const handleDropEvent = (e) => {
-    e.preventDefault();  // Previne o comportamento padrão do navegador
- //   console.log('Card drop event', e);  // Aqui podemos ver se o evento chega
-    handleDrop(e, card);  // Passa o evento e o card
+    e.preventDefault();
+    setIsDragging(false);
+    handleDrop(e, card);
   };
 
   return (
     <CardContainer
       draggable
-      onDragStart={(e) => handleDragStart(card)}  // Passa o card ao iniciar o drag
-      onDragOver={(e) => e.preventDefault()}  // Impede o comportamento padrão para permitir o "drop"
-      onDrop={handleDropEvent}  // Passa o evento para a função handleDrop
+      onDragStart={handleDragStartInternal}
+      onDragEnd={handleDragEnd}
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={handleDropEvent}
+      onDragEnter={onDragEnter}
+      onDragLeave={onDragLeave}
+      isOverlapping={isOverlapping}
+      isDragging={isDragging}
       key={card.id}
       id={`card-${card.id}`}
     >
-      {card.text}
+      <div dangerouslySetInnerHTML={{ __html: card.text }} />
     </CardContainer>
   );
 };
