@@ -7,8 +7,8 @@ const socketIo = require('socket.io');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { PORT, CORS_OPTIONS } = require('./config');
-const { setupSocketIo } = require('./socket');
-const routes = require('./routes');
+const { setupSocketIo } = require('./socket/indexSocket');
+const routes = require('./routes/indexRoutes');
 
 const app = express();
 let options = '';

@@ -1,8 +1,8 @@
 require('dotenv').config();
 const { v4: uuidv4 } = require('uuid');
 const { insertRoomDb, findOneRoomDb, updateRoomDb } = require('./dbService');
-const logger = require('./cloudWatchLoggerService');
-const snsService = require('./snsService');
+const logger = require('../generic/cloudWatchLoggerService');
+const snsService = require('../generic/snsService');
 const sns = new snsService('us-east-1');
 
 const createRoom = async (req, res) => {

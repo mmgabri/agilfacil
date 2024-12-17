@@ -1,5 +1,5 @@
-const { connectClient, desconnectClient, updateStatusRoom, updateVote } = require('../services/socketService');
-const logger = require('../services/cloudWatchLoggerService');
+const { connectClient, desconnectClient, updateStatusRoom, updateVote } = require('../services/poker/socketService');
+const logger = require('../services/generic/cloudWatchLoggerService');
 
 const setupSocketIo = (io) => {
 

@@ -1,4 +1,4 @@
-const roomsDb = require('../database');
+const roomsDb = require('../../database');
 const { findOneRoomDb, updateRoomDb } = require('./dbService');
 
 const connectClient = (userName, userId, roomId) => {

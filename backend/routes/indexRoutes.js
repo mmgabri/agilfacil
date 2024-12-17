@@ -1,5 +1,5 @@
 const express = require('express');
-const { createRoom, joinRoom, suggestion, getRoom, healthcheck } = require('../services/controllerService');
+const { createRoom, joinRoom, suggestion, getRoom, healthcheck } = require('../services/poker/controllerService');
 
 const router = express.Router();
 

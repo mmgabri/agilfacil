@@ -1,4 +1,4 @@
-const roomsDb = require('../database');
+const roomsDb = require('../../database');
 
 const insertRoomDb = (room) => {
   return new Promise((resolve, reject) => {
