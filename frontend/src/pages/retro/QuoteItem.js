@@ -136,6 +136,8 @@ function QuoteItem(props) {
     index
   } = props;
 
+  //console.log('quote ==>', quote)
+
   //const colors = quote.author.colors;
 
   const cl = useStyles({ ...props, colors });

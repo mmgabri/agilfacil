@@ -54,6 +54,10 @@ const Container = styled.div``;
 /* stylelint-enable */
 
 const InnerQuoteList = React.memo(function InnerQuoteList(props) {
+  //console.log('props.quotes ==>', props.quotes)
+
+ 
+
   return props.quotes.map((quote, index) => (
     <Draggable key={quote.id} draggableId={quote.id} index={index}>
       {(dragProvided, dragSnapshot) => (
@@ -109,13 +113,13 @@ export default function QuoteList(props) {
       renderClone={
         useClone
           ? (provided, snapshot, descriptor) => (
-              <QuoteItem
-                quote={quotes[descriptor.source.index]}
-                provided={provided}
-                // isDragging={snapshot.isDragging}
-                isClone
-              />
-            )
+            <QuoteItem
+              quote={quotes[descriptor.source.index]}
+              provided={provided}
+              // isDragging={snapshot.isDragging}
+              isClone
+            />
+          )
           : null
       }
     >

@@ -1,16 +1,13 @@
 import "./styles.css";
 import { getQuotes } from "./data";
+import {retrospectiveData} from "./data2";
 import QuoteApp from "./QuoteApp";
 
-const quoteMap = {
-  alpha: getQuotes(7),
-  beta: getQuotes(7)
-};
 
 export default function App() {
   return (
     <div className="App">
-      <QuoteApp initial={quoteMap} isCombineEnabled />
+      <QuoteApp initial={retrospectiveData} isCombineEnabled />
     </div>
   );
 }
