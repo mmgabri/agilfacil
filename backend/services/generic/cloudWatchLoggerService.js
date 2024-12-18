@@ -4,6 +4,7 @@ const {
   CreateLogStreamCommand,
   PutLogEventsCommand,
 } = require('@aws-sdk/client-cloudwatch-logs');
+
 require('dotenv').config();
 
 class CloudWatchLogger {

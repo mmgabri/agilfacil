@@ -17,12 +17,12 @@ Resources:
       AttributeDefinitions: 
         - AttributeName: "user_id"
           AttributeType: "S"
-        - AttributeName: "timestamp"
+        - AttributeName: "date_time"
           AttributeType: "S"
       KeySchema: 
         - AttributeName: "user_id"
           KeyType: "HASH"
-        - AttributeName: "timestamp"
+        - AttributeName: "date_time"
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: 'board_user'
@@ -33,12 +33,12 @@ Resources:
       AttributeDefinitions: 
         - AttributeName: "board_id"
           AttributeType: "S"
-        - AttributeName: "timestamp"
+        - AttributeName: "date_time"
           AttributeType: "S"
       KeySchema: 
         - AttributeName: "board_id"
           KeyType: "HASH"
-        - AttributeName: "timestamp"
+        - AttributeName: "date_time"
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: 'board'      
