@@ -11,29 +11,15 @@ Parameters:
 
 Resources:
 
-  TableBoardUser: 
-    Type: AWS::DynamoDB::Table
-    Properties: 
-      AttributeDefinitions: 
-        - AttributeName: "user_id"
-          AttributeType: "S"
-        - AttributeName: "date_time"
-          AttributeType: "S"
-      KeySchema: 
-        - AttributeName: "user_id"
-          KeyType: "HASH"
-        - AttributeName: "date_time"
-          KeyType: "RANGE"
-      BillingMode: PAY_PER_REQUEST
-      TableName: 'board_user'
-
   TableBoard: 
     Type: AWS::DynamoDB::Table
     Properties: 
       AttributeDefinitions: 
-        - AttributeName: "board_id"
+        - AttributeName: "user_id"
           AttributeType: "S"
         - AttributeName: "date_time"
+          AttributeType: "S"
+        - AttributeName: "board_id"
           AttributeType: "S"
       KeySchema: 
         - AttributeName: "board_id"
@@ -41,4 +27,20 @@ Resources:
         - AttributeName: "date_time"
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
-      TableName: 'board'      
+      TableName: 'board'
+
+      GlobalSecondaryIndexes: 
+        - IndexName: "gsi_board_user"
+          KeySchema: 
+            - AttributeName: "user_id"
+              KeyType: "HASH"
+            - AttributeName: "date_time"
+              KeyType: "RANGE"
+          Projection: 
+            ProjectionType: INCLUDE
+            NonKeyAttributes: 
+              - board_id
+              - board_name
+              - user_name
+              - squad_name
+              - area_name

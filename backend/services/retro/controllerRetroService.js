@@ -1,52 +1,94 @@
 require('dotenv').config();
 const config = require('../../config');
+const { convertArrayToCamelCase, convertObjectKeysToCamelCase } = require('../../utils/utils');
 const { v4: uuidv4 } = require('uuid');
-const {putTable} = require('./dynamoRetroService');
+const { putTable, getBoardDb, getBoardByUserDb } = require('./dynamoRetroService');
 const logger = require('../generic/cloudWatchLoggerService');
 
-const createBoard = async (req, res) => {
+const saveBoard = async (req, res) => {
   const start = performance.now()
   console.log("createBoard");
 
-  let obj = {
-    boardId: uuidv4(),
-    date_time: new Date().toISOString(),
-    user_id: req.body.user_id,
-    userName: req.body.userName,
-    boardName: req.body.boardName,
-    squadName: req.body.squadName,
-    areaName: req.body.areaName,
-    boardData: req.body.boardData
-  };
+  let boardId = null
+  let dateTime = null
 
-  let userBoard = {
-    user_id: req.body.user_id,
-    date_time: obj.date_time,
-    boardId: obj.boardId,
-    userName: req.body.userName,
-    boardName: req.body.boardName,
-    squadName: req.body.squadName,
-    areaName: req.body.areaName,
-  };
+  if (!req.body.boardId) {
+    boardId = uuidv4()
+  } else {
+    boardId = req.body.boardId
+  }
 
-  let board = {
-    board_id: obj.boardId,
-    date_time: new Date().toISOString(),
-    dateTimeLastUpdate: new Date().toISOString(),
-    boardData: req.body.boardData
+  if (!req.body.dateTime) {
+    dateTime = new Date().toISOString()
+  } else {
+    dateTime = req.body.dateTime
+  }
+
+  let boardDb = {
+    board_id: boardId,
+    user_id: req.body.userId,
+    date_time: dateTime,
+    user_name: req.body.userName,
+    board_name: req.body.boardName,
+    squad_name: req.body.squadName,
+    area_name: req.body.areaName,
+    board_data: req.body.boardData,
+    date_time_last_update: new Date().toISOString()
   };
 
   try {
-    await putTable(config.TABLE_USER_BOARD, userBoard);
-    await putTable(config.TABLE_BOARD, board);
-    res.status(201).json(obj);
+    const data = await putTable(config.TABLE_BOARD, boardDb);
+    res.status(201).json(convertObjectKeysToCamelCase(data));
     const elapsedTime = (performance.now() - start).toFixed(3);
-    logger.log('API-RETRO', 'createBoard', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName,  '', elapsedTime, 'success', 'Board created successfully.' )
+   // logger.log('API-RETRO', 'createBoard', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName, '', elapsedTime, 'success', 'Board created successfully.')
   } catch (error) {
     const elapsedTime = (performance.now() - start).toFixed(3);
-    logger.log('API-RETRO', 'createBoard', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName,  '', elapsedTime, 'failed', error.message )
+  //  logger.log('API-RETRO', 'createBoard', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName, '', elapsedTime, 'failed', error.message)
     return res.status(500).json({ error: 'Error creating board' });
   }
 };
 
-module.exports = { createBoard };
+const getBoard = async (req, res) => {
+  const start = performance.now()
+
+  console.log("getBoard");
+
+  const { boardId } = req.params
+
+  try {
+    const dataItems = await getBoardDb(config.TABLE_BOARD, boardId);
+    res.status(200).json(convertObjectKeysToCamelCase(dataItems));
+    //res.status(200).json(dataItems);
+    const elapsedTime = (performance.now() - start).toFixed(3);
+    //  logger.log('API-RETRO', 'getBoardByUser', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName,  '', elapsedTime, 'success', 'Get board successfully.' )
+  } catch (error) {
+    const elapsedTime = (performance.now() - start).toFixed(3);
+    if (error === 'NOT_FOUND') {
+      return res.status(404).json({ error: 'Board não encontrado' });
+    } else {
+      return res.status(500).json({ error: 'Error ao obter board' });
+    }
+  }
+};
+
+
+const getBoardByUser = async (req, res) => {
+  const start = performance.now()
+
+  console.log("getBoardByUser");
+
+  const { userId } = req.params
+
+  try {
+    const dataItems = await getBoardByUserDb(config.TABLE_BOARD, config.INDEX_NAME_USER, userId);
+    res.status(200).json(convertArrayToCamelCase(dataItems));
+    const elapsedTime = (performance.now() - start).toFixed(3);
+    //  logger.log('API-RETRO', 'getBoardByUser', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName,  '', elapsedTime, 'success', 'Get board successfully.' )
+  } catch (error) {
+    const elapsedTime = (performance.now() - start).toFixed(3);
+    //   logger.log('API-RETRO', 'getBoardByUser', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName,  '', elapsedTime, 'failed', error.message )
+    return res.status(500).json({ error: 'Error creating board' });
+  }
+};
+
+module.exports = { saveBoard, getBoardByUser, getBoard };

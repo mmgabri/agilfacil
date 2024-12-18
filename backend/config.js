@@ -7,8 +7,8 @@ const CORS_OPTIONS = {
 
 const REGION = 'ap-south-1'
 
-const TABLE_USER_BOARD = 'board_user'
-
 const TABLE_BOARD = 'board'
 
-module.exports = { PORT, CORS_OPTIONS, TABLE_USER_BOARD, TABLE_BOARD, REGION  };
+const INDEX_NAME_USER = 'gsi_board_user'
+
+module.exports = { PORT, CORS_OPTIONS, TABLE_BOARD, INDEX_NAME_USER, REGION  };
