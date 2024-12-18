@@ -82,12 +82,12 @@ const useStyles = createUseStyles({
     display: "flex",
     flexDirection: "column"
   },
-  blockQuote: {
+  blockCard: {
     "&::before": {
-      content: "open-quote"
+      content: "open-card"
     },
     "&::after": {
-      content: "close-quote"
+      content: "close-card"
     }
   },
   footer: {
@@ -104,7 +104,7 @@ const useStyles = createUseStyles({
     fontWeight: "normal",
     padding: 4
   },
-  quoteId: {
+  cardId: {
     flexGrow: 1,
     flexShrink: 1,
     margin: 0,
@@ -125,9 +125,9 @@ function getStyle(provided, style) {
   };
 }
 
-function QuoteItem(props) {
+function CardItem(props) {
   const {
-    quote,
+    card,
     isDragging,
     // isGroupedOver,
     provided,
@@ -136,34 +136,25 @@ function QuoteItem(props) {
     index
   } = props;
 
-  //console.log('quote ==>', quote)
-
-  //const colors = quote.author.colors;
-
-  const cl = useStyles({ ...props, colors });
+    const cl = useStyles({ ...props, colors });
 
   return (
     <a
       className={cl.container}
-      //href={quote.author.url}
-      // isDragging={isDragging}
-      // isGroupedOver={isGroupedOver}
-      // isClone={isClone}
-      // colors={quote.author.colors}
       ref={provided.innerRef}
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       style={getStyle(provided, style)}
       data-is-dragging={isDragging}
-      data-testid={quote.id}
+      data-testid={card.id}
       data-index={index}
     >
       {isClone ? <div className={cl.cloneBadge}>Clone</div> : null}
       <div className={cl.content}>
-        <div>{quote.content}</div>
+        <div>{card.content}</div>
       </div>
     </a>
   );
 }
 
-export default React.memo(QuoteItem);
+export default React.memo(CardItem);

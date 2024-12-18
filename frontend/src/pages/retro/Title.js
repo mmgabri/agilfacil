@@ -1,11 +1,8 @@
 import styled from "@emotion/styled";
 import { colors } from "@atlaskit/theme";
-// import { grid } from "../constants";
 
 export const grid = 8;
-// export const borderRadius = 2;
 
-// $ExpectError - not sure why
 export default styled.h4`
   padding: ${grid}px;
   transition: background-color ease 0.2s;

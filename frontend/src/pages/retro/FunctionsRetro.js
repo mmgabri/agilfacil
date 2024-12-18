@@ -8,19 +8,19 @@ const reorder = (list, startIndex, endIndex) => {
 
 export default reorder;
 
-export const reorderQuoteMap = (quoteMap, source, destination) => {
-  console.log('--- reorderQuoteMap ---')
-  //-const current = [...quoteMap[source.droppableId]];
-  const current = [...quoteMap.columns.find(col => col.id === source.droppableId).cards];
-  //-const next = [...quoteMap[destination.droppableId]];
-  const next = [...quoteMap.columns.find(col => col.id === destination.droppableId).cards];
+export const reorderboardData = (boardData, source, destination) => {
+  console.log('--- reorderboardData ---')
+  //-const current = [...boardData[source.droppableId]];
+  const current = [...boardData.columns.find(col => col.id === source.droppableId).cards];
+  //-const next = [...boardData[destination.droppableId]];
+  const next = [...boardData.columns.find(col => col.id === destination.droppableId).cards];
   const target = current[source.index];
 
   // moving to same list
   if (source.droppableId === destination.droppableId) {
     const reordered = reorder(current, source.index, destination.index);
 
-    const result = quoteMap.columns.map(column =>
+    const result = boardData.columns.map(column =>
       column.id === source.droppableId ? { ...column, cards: reordered } : column
     );
 
@@ -34,7 +34,7 @@ export const reorderQuoteMap = (quoteMap, source, destination) => {
   // insert into next
   next.splice(destination.index, 0, target);
 
-  const result = quoteMap.columns.map(column => {
+  const result = boardData.columns.map(column => {
     if (column.id === source.droppableId) {
       return { ...column, cards: current };
     }
@@ -47,47 +47,47 @@ export const reorderQuoteMap = (quoteMap, source, destination) => {
   return result;
 };
 
-export const processCombine = (quoteMap, source, combine) => {
+export const processCombine = (boardData, source, combine) => {
   if (combine.droppableId === source.droppableId) {
-    const result = processCombineSameColumn(quoteMap, source, combine)
+    const result = processCombineSameColumn(boardData, source, combine)
     return result
   } else {
-    const result = processCombineDifferentColumn(quoteMap, source, combine)
+    const result = processCombineDifferentColumn(boardData, source, combine)
     return result
   }
 }
 
-const processCombineDifferentColumn = (quoteMap, source, combine) => {
-  const sourceQuotes = [...quoteMap.columns.find(col => col.id === source.droppableId).cards];
-  const combineQuotes = [...quoteMap.columns.find(col => col.id === combine.droppableId).cards];
+const processCombineDifferentColumn = (boardData, source, combine) => {
+  const sourceCards = [...boardData.columns.find(col => col.id === source.droppableId).cards];
+  const combineCards = [...boardData.columns.find(col => col.id === combine.droppableId).cards];
 
   //Obtem card movido
-  const sourceQuote = sourceQuotes[source.index];
-  console.log('combineQuotes ==>', combineQuotes)
-  console.log('sourceQuotes ==>', sourceQuotes)
+  const sourceCard = sourceCards[source.index];
+  console.log('combineCards ==>', combineCards)
+  console.log('sourceCards ==>', sourceCards)
   console.log('source.droppableId -->', source.droppableId)
 
   // Remove o item da origem e destino
-  sourceQuotes.splice(source.index, 1);
-  console.log('sourceQuotes - após remove - ==>', sourceQuotes)
+  sourceCards.splice(source.index, 1);
+  console.log('sourceCards - após remove - ==>', sourceCards)
 
-  const combineQuoteIndex = combineQuotes.findIndex(
+  const combineCardIndex = combineCards.findIndex(
     (x) => x.id === combine.draggableId
   );
-  const combineQuote = combineQuotes[combineQuoteIndex];
-  combineQuotes[combineQuoteIndex] = {
-    ...combineQuote,
-    content: `${combineQuote.content} ${sourceQuote.content}`
+  const combineCard = combineCards[combineCardIndex];
+  combineCards[combineCardIndex] = {
+    ...combineCard,
+    content: `${combineCard.content} ${sourceCard.content}`
   };
 
-  const updatedColumns = quoteMap.columns.map(column => {
+  const updatedColumns = boardData.columns.map(column => {
     if (column.id === combine.droppableId) {
       // Atualiza os cards da coluna que combinou
-      return { ...column, cards: combineQuotes };
+      return { ...column, cards: combineCards };
     }
     if (column.id === source.droppableId) {
       // Atualiza os cards da coluna de origem
-      return { ...column, cards: sourceQuotes };
+      return { ...column, cards: sourceCards };
     }
     return column; // Retorna as colunas não alteradas
   });
@@ -96,34 +96,34 @@ const processCombineDifferentColumn = (quoteMap, source, combine) => {
 
 }
 
-const processCombineSameColumn = (quoteMap, source, combine) => {
-  const sourceQuotes = [...quoteMap.columns.find(col => col.id === source.droppableId).cards];
-  const combineQuotes = [...quoteMap.columns.find(col => col.id === combine.droppableId).cards];
+const processCombineSameColumn = (boardData, source, combine) => {
+  const sourceCards = [...boardData.columns.find(col => col.id === source.droppableId).cards];
+  const combineCards = [...boardData.columns.find(col => col.id === combine.droppableId).cards];
 
   //Obtem card movido
-  const sourceQuote = combineQuotes[source.index];
+  const sourceCard = combineCards[source.index];
 
   // Remove o item da origem e destino
-  combineQuotes.splice(source.index, 1);
-  //sourceQuotes.splice(source.index, 1);
+  combineCards.splice(source.index, 1);
+  //sourceCards.splice(source.index, 1);
 
   // Obtem o card com o qual foi combinado
-  const combineQuoteIndex = combineQuotes.findIndex(
+  const combineCardIndex = combineCards.findIndex(
     (x) => x.id === combine.draggableId
   );
-  const combineQuote = combineQuotes[combineQuoteIndex];
+  const combineCard = combineCards[combineCardIndex];
 
   // Atualiza o conteúdo do item combinado, concatenando os textos
-  combineQuotes[combineQuoteIndex] = {
-    ...combineQuote,
-    content: `${combineQuote.content} ${sourceQuote.content}`
+  combineCards[combineCardIndex] = {
+    ...combineCard,
+    content: `${combineCard.content} ${sourceCard.content}`
   };
 
   //Atualiza estado
-  const updatedQuoteMap = quoteMap.columns.map(column =>
-    column.id === combine.droppableId ? { ...column, cards: combineQuotes } : column
+  const updatedboardData = boardData.columns.map(column =>
+    column.id === combine.droppableId ? { ...column, cards: combineCards } : column
   );
 
-  return updatedQuoteMap;
+  return updatedboardData;
 }
 

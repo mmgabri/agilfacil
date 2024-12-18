@@ -15,7 +15,7 @@ import GuestPage from "../pages/GuestPage";
 import GuestUrlPage from "../pages/GuestUrlPage";
 import NotificationPage from "../pages/NotificationPage"
 import AboutPage from "../pages/AboutPage"
-import BoardRetroPage from "../pages/retro/BoardRetroPage"
+import CreateBoardPage from "../pages/retro/CreateBoardPage"
 
 const StyledToastContainer = styled(ToastContainer)`
   z-index: 9999;
@@ -37,7 +37,7 @@ function App() {
           <Route path="/guest/:id" element={<GuestUrlPage />} />
           <Route path="/notification" element={<NotificationPage />} />
 
-          <Route path="/retro" element={<BoardRetroPage />} />
+          <Route path="/retro" element={<CreateBoardPage />} />
         </Routes>
       </BrowserRouter>
     </>
