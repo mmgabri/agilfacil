@@ -32,7 +32,7 @@ const saveBoard = async (req, res) => {
     board_name: req.body.boardName,
     squad_name: req.body.squadName,
     area_name: req.body.areaName,
-    board_data: req.body.boardData,
+    columns: req.body.columns,
     date_time_last_update: new Date().toISOString()
   };
 

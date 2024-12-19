@@ -12,11 +12,11 @@ const scrollContainerHeight = 250;
 const getBackgroundColor = (isDraggingOver, isDraggingFrom) => {
   if (isDraggingOver) return colors.R50;
   if (isDraggingFrom) return colors.T50;
-  return colors.N30;
+  return "#282c34";
 };
 
 // Componentes estilizados
-const ColumnWrapper  = styled.div`
+const ColumnWrapper = styled.div`
   background-color: ${(props) =>
     getBackgroundColor(props.isDraggingOver, props.isDraggingFrom)};
   display: flex;
@@ -27,8 +27,11 @@ const ColumnWrapper  = styled.div`
   padding-bottom: 0;
   transition: background-color 0.2s ease, opacity 0.1s ease;
   user-select: none;
-  width: 250px;
+  flex: 1; /* Faz a coluna ocupar todo o espaço disponível */
+  min-width: 250px; /* Tamanho mínimo da coluna */
+  max-width: 100%; /* Limita a largura para 100% */
 `;
+
 
 const DropZone = styled.div`
   min-height: ${scrollContainerHeight}px;
@@ -41,7 +44,7 @@ const ScrollContainer = styled.div`
   max-height: ${scrollContainerHeight}px;
 `;
 
-const InnerContainer  = styled.div``;
+const InnerContainer = styled.div``;
 
 // Subcomponente para renderizar a lista de cards
 const DraggableCardList = React.memo(({ cards }) =>
@@ -62,7 +65,9 @@ const DraggableCardList = React.memo(({ cards }) =>
 // Subcomponente para renderizar o título e os cards dentro da área droppable
 const ColumnContent = ({ cards, dropProvided, title }) => (
   <InnerContainer>
-    {title && <Title>{title}</Title>}
+    <Title
+      columnTitle={title}>
+    </Title>
     <DropZone ref={dropProvided.innerRef}>
       <DraggableCardList cards={cards} />
       {dropProvided.placeholder}
@@ -72,7 +77,7 @@ const ColumnContent = ({ cards, dropProvided, title }) => (
 
 // Componente principal
 export default function Column(props) {
-  const { ignoreContainerClipping, internalScroll, scrollContainerStyle, isDropDisabled, isCombineEnabled, listId = "LIST", listType, style, cards, title, useClone  } = props;
+  const { ignoreContainerClipping, internalScroll, scrollContainerStyle, isDropDisabled, isCombineEnabled, listId = "LIST", listType, style, cards, title, useClone } = props;
 
   return (
     <Droppable
@@ -94,7 +99,7 @@ export default function Column(props) {
       }
     >
       {(dropProvided, dropSnapshot) => (
-        <ColumnWrapper 
+        <ColumnWrapper
           style={style}
           isDraggingOver={dropSnapshot.isDraggingOver}
           isDropDisabled={isDropDisabled}

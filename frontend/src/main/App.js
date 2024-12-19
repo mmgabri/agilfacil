@@ -17,6 +17,7 @@ import GuestPage from "../pages/poker/GuestPage";
 import GuestUrlPage from "../pages/poker/GuestUrlPage";
 import NotificationPage from "../pages/poker/NotificationPage"
 
+import BoardPage from "../pages/retro/BoardPage"
 import CreateBoardPage from "../pages/retro/CreateBoardPage"
 
 const StyledToastContainer = styled(ToastContainer)`
@@ -40,6 +41,7 @@ function App() {
           <Route path="/notification" element={<NotificationPage />} />
 
           <Route path="/retro" element={<CreateBoardPage />} />
+          <Route path="/board" element={<BoardPage />} />
         </Routes>
       </BrowserRouter>
     </>

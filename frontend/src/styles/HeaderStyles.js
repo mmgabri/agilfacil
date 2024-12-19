@@ -13,6 +13,7 @@ display: flex;
   top: 0;
   width: 100%;
   z-index: 1000;
+   height: 55px; 
 `;
 
 export const LogoContainer = styled.div`
