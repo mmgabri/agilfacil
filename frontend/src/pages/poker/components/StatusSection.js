@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusContainer, Status, CommandButton } from '../../styles/StatusSectionStyles';
+import { StatusContainer, Status, CommandButton } from '../../../styles/StatusSectionStyles';
 
 const StatusSection = ({ roomData, moderator, handlerupdateStatusRoom }) => {
 

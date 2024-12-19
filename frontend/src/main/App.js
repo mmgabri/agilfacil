@@ -7,14 +7,16 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
-import HomePage from "../pages/HomePage";
-import HomePagePlanning from "../pages/HomePagePlanning";
-import CreateRoomPage from "../pages/CreateRoomPage";
-import RoomPage from "../pages/RoomPage";
-import GuestPage from "../pages/GuestPage";
-import GuestUrlPage from "../pages/GuestUrlPage";
-import NotificationPage from "../pages/NotificationPage"
-import AboutPage from "../pages/AboutPage"
+import HomePage from "../pages/generic/HomePage";
+import AboutPage from "../pages/generic/AboutPage"
+
+import HomePagePlanning from "../pages/poker/HomePagePlanning";
+import CreateRoomPage from "../pages/poker/CreateRoomPage";
+import RoomPage from "../pages/poker/RoomPage";
+import GuestPage from "../pages/poker/GuestPage";
+import GuestUrlPage from "../pages/poker/GuestUrlPage";
+import NotificationPage from "../pages/poker/NotificationPage"
+
 import CreateBoardPage from "../pages/retro/CreateBoardPage"
 
 const StyledToastContainer = styled(ToastContainer)`

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SuggestionForm from './components/SuggestionForm'
-import "../styles/Home.css"
-import Header from './components/Header';
+import SuggestionForm from '../components/SuggestionForm'
+import "../../styles/Home.css"
+import Header from '../components/Header';
 
 function HomePage() {
     let navigate = useNavigate();

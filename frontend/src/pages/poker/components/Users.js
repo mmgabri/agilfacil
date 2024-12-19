@@ -1,7 +1,7 @@
 // src/components/UserList.js
 import { React, useState } from 'react';
 import { FaUserCheck, FaUserClock } from 'react-icons/fa';
-import "../../styles/Users.css"
+import "../../../styles/Users.css"
 
 const Users = ({ roomData }) => {
 

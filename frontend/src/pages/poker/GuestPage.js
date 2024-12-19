@@ -2,17 +2,20 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom'
-import { SERVER_BASE_URL } from "../constants/apiConstants";
-import "../styles/CreateRoomAndGuest.css"
-import { Title } from '../styles/GenericTitleStyles';
-import Header from './components/Header';
-import SuggestionForm from './components/SuggestionForm'
+import SuggestionForm from '../components/SuggestionForm'
 
-export const CreateRoomPage = ({ }) => {
+import { useNavigate } from 'react-router-dom'
+import { SERVER_BASE_URL } from "../../constants/apiConstants";
+import "../../styles/CreateRoomAndGuest.css"
+import { Title } from '../../styles/GenericTitleStyles';
+import Header from '../components/Header';
+
+
+export const GuestPage = ({ }) => {
   let navigate = useNavigate();
-  const [formData, setFormData] = useState({ userName: '', roomName: '' });
   const [isModalOpen, setModalOpen] = useState(false);
+  const [formData, setFormData] = useState({ userName: '', roomId: '' });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -22,13 +25,12 @@ export const CreateRoomPage = ({ }) => {
     e.preventDefault()
 
     axios
-      .post(SERVER_BASE_URL + '/createRoom', { roomName: formData.roomName, userName: formData.userName })
+      .post(SERVER_BASE_URL + '/joinRoom', { roomId: formData.roomId, userName: formData.userName })
       .then(response => {
         navigate('/room', { state: { roomId: response.data.roomId, roomName: response.data.roomName, userId: response.data.userId, userName: response.data.userName, moderator: response.data.moderator } });
       })
       .catch((error) => {
-        console.log("Respoposta da api com erro:", error, error.response?.status)
-        triggerError()
+        triggerError(error.response?.status)
       });
   }
 
@@ -61,12 +63,13 @@ export const CreateRoomPage = ({ }) => {
     setModalOpen(true);
   }
 
-
   return (
+
     <div className="bg-black-custom">
       <Header handleHome={handleHome} handleAbout={handleAbout} handleOpen={handleOpen} />
+
       <div className="form-container">
-        <Title>Preencha os campos abaixo para criar a sala de Planning Poker</Title>
+        <Title>Preencha os campos abaixo para entrar na sala de Planning Poker</Title>
         <form onSubmit={handleSubmit} className="form">
           <div className="form-group">
             <label htmlFor="name">Nome</label>
@@ -82,23 +85,22 @@ export const CreateRoomPage = ({ }) => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="id">Nome da sala</label>
+            <label htmlFor="id">Id da sala</label>
             <input
               type="text"
-              id="roomName"
-              name="roomName"
-              value={formData.roomName}
+              id="roomId"
+              name="roomId"
+              value={formData.roomId}
               onChange={handleChange}
-              placeholder="Digite o nome da sala"
+              placeholder="Digite o id da sala"
               required
-              maxLength={30}
             />
           </div>
-          <button type="submit" className="submit-button">Criar Sala</button>
+          <button type="submit" className="submit-button">Entrar</button>
         </form>
       </div>
       {isModalOpen && <SuggestionForm onClose={() => setModalOpen(false)} />}
     </div>
   );
 }
-export default CreateRoomPage 
+export default GuestPage 

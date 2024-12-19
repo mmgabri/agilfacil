@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useParams } from 'react-router-dom'
-import { SERVER_BASE_URL } from "../constants/apiConstants";
-import "../styles/CreateRoomAndGuest.css"
-import { Title } from '../styles/GenericTitleStyles';
-import Header from './components/Header';
-import SuggestionForm from './components/SuggestionForm'
+import { SERVER_BASE_URL } from "../../constants/apiConstants";
+import "../../styles/CreateRoomAndGuest.css"
+import { Title } from '../../styles/GenericTitleStyles';
+import Header from '../components/Header';
+import SuggestionForm from '../components/SuggestionForm'
 
 export const GuestUrlPage = ({ }) => {
     const { id } = useParams(); // Obtém o ID da URL

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from './components/Header';
-import SuggestionForm from './components/SuggestionForm'
+import Header from '../components/Header';
+import SuggestionForm from '../components/SuggestionForm'
 import {
   Container,
   Title,
@@ -15,7 +15,7 @@ import {
   StyledAiFillLike,
   StyledAiFillDislike,
   IconContainer
-} from '../styles/HomePageStyles';
+} from '../../styles/HomePageStyles';
 
 const HomePage = () => {
   let navigate = useNavigate();

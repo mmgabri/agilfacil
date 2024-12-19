@@ -2,16 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { useSocket } from "../customHooks/useSocket";
-import "../styles/Room.css"
-import Header from './components/HeaderPlanning';
-import StatusSection from './components/StatusSection';
-import Users from './components/Users';
-import VotingCards from './components/VotingCards';
-import VotingResults from './components/VotingResults';
-import Progress from './components/ProgressBar';
-import Invite from './components/Invite';
-import SuggestionForm from './components/SuggestionForm'
+import { useSocket } from "../../customHooks/useSocket";
+import "../../styles/Room.css"
+import Header from '../poker/components/HeaderPlanning';
+import StatusSection from '../poker/components/StatusSection';
+import Users from '../poker/components/Users';
+import VotingCards from '../poker/components/VotingCards';
+import VotingResults from '../poker/components/VotingResults';
+import Progress from '../poker/components/ProgressBar';
+import Invite from '../components/Invite';
+import SuggestionForm from '../components/SuggestionForm'
 
 export const RoomPage = ({ }) => {
   let navigate = useNavigate();

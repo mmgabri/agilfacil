@@ -1,5 +1,5 @@
 import React from 'react';
-import { ResultsContainer, ResultsHeader, AverageContainer, AverageLabel, AverageValue, ResultItem, ResultLabel, ResultValue, TableTitle } from '../../styles/VotingResultsStyles';
+import { ResultsContainer, ResultsHeader, AverageContainer, AverageLabel, AverageValue, ResultItem, ResultLabel, ResultValue, TableTitle } from '../../../styles/VotingResultsStyles';
 
 const VotingResults = ({ roomData, cards }) => {
 

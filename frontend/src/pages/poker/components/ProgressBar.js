@@ -1,5 +1,5 @@
 import React from 'react';
-import { ProgressContainer, ProgressBar, ProgressTitle } from '../../styles/ProgressBarStyles';
+import { ProgressContainer, ProgressBar, ProgressTitle } from '../../../styles/ProgressBarStyles';
 
 const Progress = ({ roomData }) => {
 

@@ -1,5 +1,5 @@
 import { React, useState } from 'react';
-import { CardSelected, Card, Title, Container, CardList } from '../../styles/VotingCardsStyles';
+import { CardSelected, Card, Title, Container, CardList } from '../../../styles/VotingCardsStyles';
 
 const VotingCards = ({ onCardClick, nota, cards }) => {
 
