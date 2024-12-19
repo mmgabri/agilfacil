@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { createUseStyles } from "react-jss";
 import { colors } from "@atlaskit/theme";
 import { DragDropContext } from "react-beautiful-dnd";
@@ -20,13 +20,11 @@ const useStyles = createUseStyles({
   }
 });
 
-const BoardPage = (props) => {
-  const { initial, isCombineEnabled } = props;
-  const [boardData, setboardData] = useState(initial);
-
+const BoardPage = ({ initial, isCombineEnabled }) => {
+  const [boardData, setBoardData] = useState(initial);
   const cl = useStyles();
 
-
+  // Função de manuseio do fim do arraste
   const onDragEnd = (result) => {
     console.log('--- onDragEnd ---')
     console.log('result', result);
@@ -34,12 +32,13 @@ const BoardPage = (props) => {
     const { source, destination, combine } = result;
 
     if (destination) {
-      const updatedboardData = reorderboardData(boardData, source, destination);
-      setboardData({ ...boardData, columns: updatedboardData });
+      const updatedColumns = reorderboardData(boardData, source, destination);
+      setBoardData({ ...boardData, columns: updatedColumns });
     } else if (combine) {
-      const updatedboardData = processCombine(boardData, source, combine)
-      setboardData({ ...boardData, columns: updatedboardData });
+      const updatedColumns = processCombine(boardData, source, combine);
+      setBoardData({ ...boardData, columns: updatedColumns });
     }
+
   };
 
   return (
@@ -50,9 +49,9 @@ const BoardPage = (props) => {
             <Columns
               title={column.title}
               listId={column.id}
-              listType="card" 
-              cards={column.cards} 
-              isCombineEnabled={isCombineEnabled} 
+              listType="card"
+              cards={column.cards}
+              isCombineEnabled={isCombineEnabled}
             />
           </div>
         ))}

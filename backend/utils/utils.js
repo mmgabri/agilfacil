@@ -19,4 +19,3 @@ const convertObjectKeysToCamelCase = (obj) => {
 };
 
 module.exports = { convertArrayToCamelCase, convertObjectKeysToCamelCase };
-
