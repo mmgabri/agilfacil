@@ -15,15 +15,33 @@ const useStyles = createUseStyles({
     backgroundColor: "#1C1C1C",
     boxSizing: "border-box",
     padding: 16,
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start"
+    height: "auto", // Ajusta automaticamente a altura conforme o conteúdo
+    display: "grid",
+    gridAutoFlow: "column",
+    gridAutoColumns: "1fr",
+    gap: "16px",
+    width: "100%",
+    overflowX: "auto", // Pode ser necessário manter a rolagem horizontal, dependendo da largura
   },
+  
   column: {
-    margin: "0 8px"
+    minWidth: "250px",
+    minHeight: "400px", // Altura mínima para evitar que a coluna encolha demais
+    height: "auto", // Permite que a coluna se ajuste conforme o conteúdo
+    backgroundColor: "#282c34",
+    border: "1px solid #444",
+    borderRadius: "8px",
+    boxSizing: "border-box",
+    padding: "16px",
+    transition: "width 0.3s ease, height 0.3s ease", // Animação também para a altura
+    display: "flex",
+    flexDirection: "column",
+    overflow: "auto", // Faz com que a altura da coluna se ajuste conforme o conteúdo
   }
+  
 });
+
+
 
 export const BoardPage = ({ }) => {
   let navigate = useNavigate();

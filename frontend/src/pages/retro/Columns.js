@@ -15,7 +15,6 @@ const getBackgroundColor = (isDraggingOver, isDraggingFrom) => {
   return "#282c34";
 };
 
-// Componentes estilizados
 const ColumnWrapper = styled.div`
   background-color: ${(props) =>
     getBackgroundColor(props.isDraggingOver, props.isDraggingFrom)};
@@ -27,11 +26,29 @@ const ColumnWrapper = styled.div`
   padding-bottom: 0;
   transition: background-color 0.2s ease, opacity 0.1s ease;
   user-select: none;
-  flex: 1; /* Faz a coluna ocupar todo o espaço disponível */
-  min-width: 250px; /* Tamanho mínimo da coluna */
-  max-width: 100%; /* Limita a largura para 100% */
+  flex: 1; /* Faz a coluna ocupar o mesmo espaço disponível, mas sem exceder o espaço total */
+  min-width: 200px; /* Tamanho mínimo da coluna para telas menores */
+  max-width: 300px; /* Limita a largura para 300px */
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    min-width: 150px; /* Reduz o tamanho mínimo em telas menores */
+    max-width: 200px;
+  }
+
+  @media (max-width: 480px) {
+    min-width: 120px;
+    max-width: 180px;
+  }
 `;
 
+const ColumnsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap; /* Permite quebrar as colunas para a próxima linha em telas menores */
+  justify-content: center; /* Centraliza as colunas */
+  width: 100%; /* A largura total deve ocupar 100% do espaço */
+  gap: 10px; /* Adiciona um pequeno espaço entre as colunas */
+`;
 
 const DropZone = styled.div`
   min-height: ${scrollContainerHeight}px;
@@ -65,9 +82,7 @@ const DraggableCardList = React.memo(({ cards }) =>
 // Subcomponente para renderizar o título e os cards dentro da área droppable
 const ColumnContent = ({ cards, dropProvided, title }) => (
   <InnerContainer>
-    <Title
-      columnTitle={title}>
-    </Title>
+    <Title columnTitle={title}></Title>
     <DropZone ref={dropProvided.innerRef}>
       <DraggableCardList cards={cards} />
       {dropProvided.placeholder}
@@ -77,7 +92,19 @@ const ColumnContent = ({ cards, dropProvided, title }) => (
 
 // Componente principal
 export default function Column(props) {
-  const { ignoreContainerClipping, internalScroll, scrollContainerStyle, isDropDisabled, isCombineEnabled, listId = "LIST", listType, style, cards, title, useClone } = props;
+  const {
+    ignoreContainerClipping,
+    internalScroll,
+    scrollContainerStyle,
+    isDropDisabled,
+    isCombineEnabled,
+    listId = "LIST",
+    listType,
+    style,
+    cards,
+    title,
+    useClone,
+  } = props;
 
   return (
     <Droppable
@@ -89,39 +116,41 @@ export default function Column(props) {
       renderClone={
         useClone
           ? (provided, snapshot, descriptor) => (
-            <CardsItem
-              card={cards[descriptor.source.index]}
-              provided={provided}
-              isClone
-            />
-          )
+              <CardsItem
+                card={cards[descriptor.source.index]}
+                provided={provided}
+                isClone
+              />
+            )
           : null
       }
     >
       {(dropProvided, dropSnapshot) => (
-        <ColumnWrapper
-          style={style}
-          isDraggingOver={dropSnapshot.isDraggingOver}
-          isDropDisabled={isDropDisabled}
-          isDraggingFrom={Boolean(dropSnapshot.draggingFromThisWith)}
-          {...dropProvided.droppableProps}
-        >
-          {internalScroll ? (
-            <ScrollContainer style={scrollContainerStyle}>
+        <ColumnsContainer>
+          <ColumnWrapper
+            style={style}
+            isDraggingOver={dropSnapshot.isDraggingOver}
+            isDropDisabled={isDropDisabled}
+            isDraggingFrom={Boolean(dropSnapshot.draggingFromThisWith)}
+            {...dropProvided.droppableProps}
+          >
+            {internalScroll ? (
+              <ScrollContainer style={scrollContainerStyle}>
+                <ColumnContent
+                  cards={cards}
+                  title={title}
+                  dropProvided={dropProvided}
+                />
+              </ScrollContainer>
+            ) : (
               <ColumnContent
                 cards={cards}
                 title={title}
                 dropProvided={dropProvided}
               />
-            </ScrollContainer>
-          ) : (
-            <ColumnContent
-              cards={cards}
-              title={title}
-              dropProvided={dropProvided}
-            />
-          )}
-        </ColumnWrapper >
+            )}
+          </ColumnWrapper>
+        </ColumnsContainer>
       )}
     </Droppable>
   );
