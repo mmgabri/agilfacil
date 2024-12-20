@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { colors } from "@atlaskit/theme";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import CardsItem from "./CardsItem";
-import Title from "./Title";
+import ColumnHeader from "./ColumnHeader";
 
 const grid = 8;
 const scrollContainerHeight = 250;
@@ -82,7 +82,7 @@ const DraggableCardList = React.memo(({ cards }) =>
 // Subcomponente para renderizar o título e os cards dentro da área droppable
 const ColumnContent = ({ cards, dropProvided, title }) => (
   <InnerContainer>
-    <Title columnTitle={title}></Title>
+    <ColumnHeader columnTitle={title}></ColumnHeader>
     <DropZone ref={dropProvided.innerRef}>
       <DraggableCardList cards={cards} />
       {dropProvided.placeholder}
