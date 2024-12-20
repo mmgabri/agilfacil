@@ -5,8 +5,29 @@ import { colors } from "@atlaskit/theme";
 const getBackgroundColor = (isDragging, isGroupedOver, authorColors) => {
   if (isDragging) return authorColors.soft;
   if (isGroupedOver) return colors.N30;
-  return colors.N0;
+  return "#F0E68C";
+  //Amarelo Claro: #FFFF00
+  //Amarelo Esverdeado: #9ACD32
+  //Amarelo Biscoito: #F0E68C - bom
+  //Amarelo Limão: #FFF700
+  //Amarelo Creme: #FFF5B7
+  //Amarelo Manteiga: #F6E3B4
+//Amarelo Charme: #F9D423
+//Amarelo Daffodil: #FFFF31
+//Amarelo Banana: #FFE135
+//Amarelo Marfim: #F4F1C1
+//Amarelo Envelhecido: #DDBB66 - bom
+
+
+//Verde Pastel: #77DD77
+//Verde Floresta Claro: #6DBE45
+//Rosa Pastel: #F7A7C1
+//Rosa Quartzo: #F1C6D1
+//Rosa Flamingo: #F6A5B2
+//Rosa Envelhecido: #D8968C
+
 };
+
 
 const getBorderColor = (isDragging, authorColors) =>
   isDragging ? authorColors.hard : "transparent";
@@ -31,15 +52,16 @@ const useStyles = createUseStyles({
     justifyContent: "center",
     alignItems: "center"
   },
-
+  
   container: {
-    borderRadius: 2,
+    borderRadius: 6,
     border: "2px solid transparent",
-    borderColor: (props) => getBorderColor(props.isDragging, props.colors),
     backgroundColor: (props) =>
       getBackgroundColor(props.isDragging, props.isGroupedOver, props.colors),
     boxShadow: ({ isDragging }) =>
-      isDragging ? `2px 2px 1px ${colors.N70}` : "none",
+      isDragging
+        ? `2px 2px 2px ${colors.N70}, -2px -2px 2px ${colors.N70}, 1px 1px 4px ${colors.N70}`
+        : "none", // Criando bordas "irregulares" com sombras diferentes
     boxSizing: "border-box",
     padding: 8,
     minHeight: imageSize,
@@ -56,14 +78,13 @@ const useStyles = createUseStyles({
       boxShadow: "none"
     },
     display: "flex"
-  },
-
-  content: {
-    flexGrow: 1,
-    flexBasis: "100%",
-    display: "flex",
-    flexDirection: "column"
-  },
+  }
+  
+  
+  
+  
+  
+  
 
 });
 

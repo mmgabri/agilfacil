@@ -29,6 +29,7 @@ const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard }) => {
     font-size: 17px;
   color: #C0C0C0;
   margin-top: 5px;
+  margin-bottom: 3px;
   @media (min-width: 768px) {
     margin-top: 0;
     margin-left: 10px;
@@ -48,6 +49,7 @@ const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard }) => {
     boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
     transition: 'all 0.3s ease-in-out',
     width: '100%',  // Garantir que ocupe toda a largura disponível
+    marginBottom: '7px'
   };
 
 
