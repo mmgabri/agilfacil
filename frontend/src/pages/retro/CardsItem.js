@@ -186,6 +186,16 @@ function CardItem({
     }
   };
 
+  const CustomToggle = React.forwardRef((props, ref) => (
+    <div
+      ref={ref}
+      {...props}  // Apenas as propriedades necessárias serão passadas
+      style={{ cursor: "pointer" }}
+    >
+      <MdMoreVert size={15} />
+    </div>
+  ));
+
   React.useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
     return () => {
@@ -229,22 +239,16 @@ function CardItem({
           <StyledMdCheck onClick={handleSave} style={{ cursor: "pointer" }} />
         ) : (
           <Dropdown show={isMenuOpen} onToggle={() => setIsMenuOpen((prev) => !prev)}>
-            <Dropdown.Toggle
-              as="div"
-              id="dropdown-basic"
-              style={{ cursor: "pointer" }}
-            >
-              <StyledMdMoreVert size={15} />
-            </Dropdown.Toggle>
-            <Dropdown.Menu as={StyledDropdownMenu}>
-              <StyledDropdownItem onClick={handleEdit}>
+            <Dropdown.Toggle as={CustomToggle} id="dropdown-basic" />
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={handleEdit}>
                 <MdEdit style={{ marginRight: 5 }} />
                 Editar Card
-              </StyledDropdownItem>
-              <StyledDropdownItem onClick={() => console.log("Excluir")}>
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => console.log("Excluir")}>
                 <CiTrash style={{ marginRight: 5 }} />
                 Excluir Card
-              </StyledDropdownItem>
+              </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         )}
