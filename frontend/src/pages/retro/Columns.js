@@ -10,8 +10,8 @@ const scrollContainerHeight = 250;
 
 // Função utilitária para definir o background dinamicamente
 const getBackgroundColor = (isDraggingOver, isDraggingFrom) => {
-  if (isDraggingOver) return colors.R50;
-  if (isDraggingFrom) return colors.T50;
+  if (isDraggingOver) return "#404040";
+  if (isDraggingFrom) return "#585858";
   return "#282c34";
 };
 
@@ -59,6 +59,7 @@ const ScrollContainer = styled.div`
   overflow-y: auto;
   max-height: ${scrollContainerHeight}px;
 `;
+
 
 const InnerContainer = styled.div``;
 
