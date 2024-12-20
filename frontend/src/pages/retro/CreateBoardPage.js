@@ -11,6 +11,7 @@ import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import { Title } from '../../styles/GenericTitleStyles';
 import Header from './HeaderCreateBoard';
 import SuggestionForm from '../components/SuggestionForm'
+import {retrospectiveData} from './data'
 
 export const CreateBoardPage = ({ }) => {
   let navigate = useNavigate();
@@ -75,7 +76,8 @@ export const CreateBoardPage = ({ }) => {
       })
       .then(response => {
         console.log('response ==> ', response)
-        navigate('/board', { state: { boardData: response.data } });
+        navigate('/board', { state: { boardData: retrospectiveData } });
+        //navigate('/board', { state: { boardData: response.data } });
       })
       .catch((error) => {
         console.log("Resposta da api com erro:", error, error.response?.status)

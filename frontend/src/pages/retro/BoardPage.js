@@ -14,12 +14,12 @@ const useStyles = createUseStyles({
   root: {
     backgroundColor: "#1C1C1C",
     boxSizing: "border-box",
-    padding: 16,
+    padding: 10,
     height: "auto", // Ajusta automaticamente a altura conforme o conteúdo
     display: "grid",
     gridAutoFlow: "column",
     gridAutoColumns: "1fr",
-    gap: "16px",
+    gap: "10px",
     width: "100%",
     overflowX: "auto", // Pode ser necessário manter a rolagem horizontal, dependendo da largura
   },
@@ -32,7 +32,7 @@ const useStyles = createUseStyles({
     border: "1px solid #444",
     borderRadius: "8px",
     boxSizing: "border-box",
-    padding: "16px",
+    padding: "0px",
     transition: "width 0.3s ease, height 0.3s ease", // Animação também para a altura
     display: "flex",
     flexDirection: "column",

@@ -28,7 +28,6 @@ const ColumnWrapper = styled.div`
   user-select: none;
   flex: 1; /* Faz a coluna ocupar o mesmo espaço disponível, mas sem exceder o espaço total */
   min-width: 200px; /* Tamanho mínimo da coluna para telas menores */
-  max-width: 300px; /* Limita a largura para 300px */
   box-sizing: border-box;
 
   @media (max-width: 768px) {
