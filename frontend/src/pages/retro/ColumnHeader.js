@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import styled from "@emotion/styled";
 import { Dropdown } from 'react-bootstrap';
 import { MdMoreVert, MdEdit, MdCheck } from 'react-icons/md';
 import { IoIosAddCircleOutline } from 'react-icons/io';
 import './retro.css';
 
+// Estilos em objetos, removendo o uso de styled-components
 const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(columnTitle || 'Título da Coluna');
@@ -15,7 +15,7 @@ const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard }) => {
   };
 
   const handleSaveTitle = () => {
-    console.log('handleSaveTitle ==> ', title)
+    console.log('handleSaveTitle ==> ', title);
 
     setIsEditing(false);
     setIsEdited(true);
@@ -25,22 +25,10 @@ const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard }) => {
   };
 
   // Estilo para o título da coluna
-  const ColumnTitleWrapper = styled.div`
-    font-size: 17px;
-  color: #C0C0C0;
-  margin-top: 5px;
-  margin-bottom: 3px;
-  @media (min-width: 768px) {
-    margin-top: 0;
-    margin-left: 10px;
-  }
-`;
-
-  // Estilo de destaque para a coluna
   const columnHeaderStyle = {
     display: 'flex',
-    flexDirection: 'column',  // Alinha os itens verticalmente
-    alignItems: 'center',  // Centraliza o conteúdo
+    flexDirection: 'column',
+    alignItems: 'center',
     padding: '10px',
     borderRadius: '8px',
     backgroundColor: '#2c3e50',
@@ -48,72 +36,31 @@ const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard }) => {
     border: '2px solid #34495e',
     boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
     transition: 'all 0.3s ease-in-out',
-    width: '100%',  // Garantir que ocupe toda a largura disponível
+    width: '100%',
     marginBottom: '7px'
   };
 
-
-  // Estilo para o título
   const titleStyle = {
     display: 'flex',
-    justifyContent: 'space-between', // Alinha o título à esquerda e os ícones à direita
-    width: '100%',  // Ocupa toda a largura disponível
-    alignItems: 'center',  // Alinha os itens na mesma linha
+    justifyContent: 'space-between',
+    width: '100%',
+    alignItems: 'center',
   };
 
-  const StyledMdCheck = styled(MdCheck)`
-  color: #10b981;
-  cursor: pointer; 
-  transition: color 0.2s ease;
+  const iconStyle = {
+    color: '#C0C0C0',
+    cursor: 'pointer',
+    transition: 'color 0.2s ease',
+  };
 
-  &:hover {
-    color: #3498db; // Muda a cor ao passar o mouse
-  }
-`;
-
-  const StyledMdMoreVert = styled(MdMoreVert)`
-  color: #C0C0C0;
-  cursor: pointer; 
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: #3498db; // Muda a cor ao passar o mouse
-  }
-`;
-
-  const StyledIoIosAddCircleOutline = styled(IoIosAddCircleOutline)`
-  color: #10b981;  
-  cursor: pointer; 
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: #3498db;  // Muda a cor ao passar o mouse
-  }
-`;
-
-  const StyledDropdownMenu = styled(Dropdown.Menu)`
-background-color: #2f2f2f;  // Cor de fundo do menu (cinza escuro)
-border-radius: 8px;
-padding: 10px;
-`;
-
-  const StyledDropdownItem = styled(Dropdown.Item)`
-font-size: 12px;
-color: #c0c0c0;  // Cor do texto (branco para contraste)
-background-color: #2f2f2f;  // Cor de fundo do item (cinza escuro)
-border-radius: 5px;
-
-&:hover {
-  color: #3498db;  // Cor do texto ao passar o mouse (azul)
-  background-color: #444;  // Cor de fundo ao passar o mouse (cinza mais claro)
-}
-`;
-
+  const iconHoverStyle = {
+    color: '#3498db',
+  };
 
   return (
     <div style={columnHeaderStyle}>
       <div style={titleStyle}>
-        <ColumnTitleWrapper>
+        <div style={{ fontSize: '17px', color: '#C0C0C0', marginTop: '5px', marginBottom: '3px' }}>
           {isEditing ? (
             <input
               type="text"
@@ -125,7 +72,7 @@ border-radius: 5px;
           ) : (
             title
           )}
-        </ColumnTitleWrapper>
+        </div>
 
         {/* Ícone de 3 pontinhos */}
         <Dropdown align="end">
@@ -140,29 +87,55 @@ border-radius: 5px;
               border: 'none',
               boxShadow: 'none',
             }}
-            className="custom-dropdown-toggle"
           >
-            <div className="icon-more-vert">
+            <div style={iconStyle}>
               {isEditing ? (
-                <StyledMdCheck size={19} onClick={handleSaveTitle} />
+                <MdCheck
+                  size={19}
+                  onClick={handleSaveTitle}
+                  style={iconHoverStyle}
+                />
               ) : (
-                <StyledMdMoreVert size={19} />
+                <MdMoreVert size={19} style={iconHoverStyle} />
               )}
             </div>
           </Dropdown.Toggle>
 
-          <Dropdown.Menu as={StyledDropdownMenu}>
-            <StyledDropdownItem onClick={() => setIsEditing(true)}>
+          <Dropdown.Menu
+            style={{
+              backgroundColor: '#2f2f2f',
+              borderRadius: '8px',
+              padding: '10px',
+            }}
+          >
+            <Dropdown.Item
+              onClick={() => setIsEditing(true)}
+              style={{
+                fontSize: '12px',
+                color: '#c0c0c0',
+                backgroundColor: '#2f2f2f',
+                borderRadius: '5px',
+              }}
+            >
               <MdEdit style={{ marginRight: 8 }} />
               Editar Título
-            </StyledDropdownItem>
+            </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
       </div>
 
       {/* Ícone de Adicionar Card com efeito de hover */}
-      <div className="add-icon-container" onClick={onAddCard}>
-        <StyledIoIosAddCircleOutline size={25} />
+      <div
+        className="add-icon-container"
+        onClick={onAddCard}
+        style={{ cursor: 'pointer', transition: 'color 0.2s ease' }}
+      >
+        <IoIosAddCircleOutline
+          size={25}
+          style={{ color: '#10b981', transition: 'color 0.2s ease' }}
+          onMouseOver={(e) => e.target.style.color = '#3498db'}
+          onMouseOut={(e) => e.target.style.color = '#10b981'}
+        />
       </div>
     </div>
   );
