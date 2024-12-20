@@ -64,14 +64,14 @@ const CloneBadge = styled.div`
   align-items: center;
 `;
 
-const Container = styled.a`
+const Container = styled.div`
   position: relative;
   border-radius: 6px;
-  border: 2px solid ${(props) => getBorderColor(props.isDragging)};
+  border: 2px solid ${(props) => getBorderColor(props.$isDragging)};
   background-color: ${(props) =>
-    getBackgroundColor(props.isDragging, props.isGroupedOver)};
+    getBackgroundColor(props.$isDragging, props.$isGroupedOver)};
   box-shadow: ${(props) =>
-    props.isDragging
+    props.$isDragging
       ? `2px 2px 2px ${colors.N70}, -2px -2px 2px ${colors.N70}, 1px 1px 4px ${colors.N70}`
       : "none"};
   box-sizing: border-box;
@@ -97,6 +97,7 @@ const Container = styled.a`
     box-shadow: none;
   }
 `;
+
 
 const Content = styled.div`
   flex: 1;
@@ -202,8 +203,8 @@ function CardItem({
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       style={getStyle(provided, style)}
-      isDragging={isDragging}
-      isGroupedOver={isGroupedOver} // Passando isGroupedOver corretamente
+      $isDragging={isDragging} // Use $isDragging
+      $isGroupedOver={isGroupedOver} // Use $isGroupedOver
       data-is-dragging={isDragging}
       data-testid={card.id}
       data-index={index}

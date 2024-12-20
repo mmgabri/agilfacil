@@ -36,7 +36,7 @@ const useStyles = createUseStyles({
     transition: "width 0.3s ease, height 0.3s ease", // Animação também para a altura
     display: "flex",
     flexDirection: "column",
-    overflow: "auto", // Faz com que a altura da coluna se ajuste conforme o conteúdo
+ //   overflow: "auto", // Faz com que a altura da coluna se ajuste conforme o conteúdo
   }
   
 });
