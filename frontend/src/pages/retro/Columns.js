@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import styled from "@emotion/styled";
 import { colors } from "@atlaskit/theme";
 import { Droppable, Draggable } from "react-beautiful-dnd";
@@ -63,28 +63,33 @@ const ScrollContainer = styled.div`
 
 const InnerContainer = styled.div``;
 
-// Subcomponente para renderizar a lista de cards
-const DraggableCardList = React.memo(({ cards }) =>
-  cards.map((card, index) => (
-    <Draggable key={card.id} draggableId={card.id} index={index}>
-      {(dragProvided, dragSnapshot) => (
-        <CardsItem
-          card={card}
-          isDragging={dragSnapshot.isDragging}
-          isGroupedOver={Boolean(dragSnapshot.combineTargetFor)}
-          provided={dragProvided}
-        />
-      )}
-    </Draggable>
-  ))
+const DraggableCardList = memo(({ cards, indexColumn, onSaveCard, onDeleteCard }) =>
+  cards.map((card, index) => {
+    return (
+      <Draggable key={card.id} draggableId={card.id} index={index} indexColumn={indexColumn}>
+        {(dragProvided, dragSnapshot) => (
+          <CardsItem
+            card={card}
+            isDragging={dragSnapshot.isDragging}
+            isGroupedOver={Boolean(dragSnapshot.combineTargetFor)}
+            provided={dragProvided}
+            onSaveCard={onSaveCard}
+            onDeleteCard={onDeleteCard}
+            index={index}
+            indexColumn={indexColumn}
+          />
+        )}
+      </Draggable>
+    );
+  })
 );
 
 // Subcomponente para renderizar o título e os cards dentro da área droppable
-const ColumnContent = ({ cards, dropProvided, title }) => (
+const ColumnContent = ({ cards, title, dropProvided, indexColumn, onSaveCard, onDeleteCard }) => (
   <InnerContainer>
     <ColumnHeader columnTitle={title}></ColumnHeader>
     <DropZone ref={dropProvided.innerRef}>
-      <DraggableCardList cards={cards} />
+      <DraggableCardList cards={cards} indexColumn={indexColumn} onSaveCard={onSaveCard} onDeleteCard={onDeleteCard} />
       {dropProvided.placeholder}
     </DropZone>
   </InnerContainer>
@@ -104,6 +109,9 @@ export default function Column(props) {
     cards,
     title,
     useClone,
+    onSaveCard,
+    onDeleteCard,
+    indexColumn
   } = props;
 
   return (
@@ -116,12 +124,15 @@ export default function Column(props) {
       renderClone={
         useClone
           ? (provided, snapshot, descriptor) => (
-              <CardsItem
-                card={cards[descriptor.source.index]}
-                provided={provided}
-                isClone
-              />
-            )
+            <CardsItem
+              card={cards[descriptor.source.index]}
+              provided={provided}
+              isClone
+              onSaveCard={onSaveCard}
+              onDeleteCard={onDeleteCard}
+            //   indexColumn={indexColumn}
+            />
+          )
           : null
       }
     >
@@ -140,6 +151,9 @@ export default function Column(props) {
                   cards={cards}
                   title={title}
                   dropProvided={dropProvided}
+                  indexColumn={indexColumn}
+                  onSaveCard={onSaveCard}
+                  onDeleteCard={onDeleteCard}
                 />
               </ScrollContainer>
             ) : (
@@ -147,6 +161,9 @@ export default function Column(props) {
                 cards={cards}
                 title={title}
                 dropProvided={dropProvided}
+                indexColumn={indexColumn}
+                onSaveCard={onSaveCard}
+                onDeleteCard={onDeleteCard}
               />
             )}
           </ColumnWrapper>

@@ -125,5 +125,12 @@ const processCombineSameColumn = (boardData, source, combine) => {
   );
 
   return updatedboardData;
+
 }
 
+export const saveCard = (boardData, content, indexCard, indexColumn) => {
+  const updatedBoardData = { ...boardData };
+  const columnToUpdate = updatedBoardData.columns[indexColumn];
+  columnToUpdate.cards[indexCard].content = content;
+  return updatedBoardData;
+}

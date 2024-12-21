@@ -4,7 +4,7 @@ import { createUseStyles } from "react-jss";
 import { colors } from "@atlaskit/theme";
 import { DragDropContext } from "react-beautiful-dnd";
 import Columns from "./Columns";
-import { reorderboardData, processCombine } from "./FunctionsRetro";
+import { reorderboardData, processCombine, saveCard } from "./FunctionsRetro";
 import Header from './HeaderBoard';
 import SuggestionForm from '../components/SuggestionForm'
 import 'react-toastify/dist/ReactToastify.css';
@@ -84,13 +84,22 @@ export const BoardPage = ({ }) => {
     setModalOpen(true);
   }
 
+  const onSaveCard = (content, indexCard, indexColumn) => {
+    const updatedColumns = saveCard(boardData, content, indexCard, indexColumn);
+    setBoardData({ ...boardData, updatedColumns });
+  };
+
+  const onDeleteCard = (cardId) => {
+    console.log('onDeleteCard==>', cardId)
+  };
+
 
   return (
     <div className="bg-black-custom">
       <Header boardName={boardData.boardName} handleShowInvite={handleShowInvite} handleCloseInvite={handleCloseInvite} sairSala={sairSala} handleOpen={handleOpen} />
       <DragDropContext onDragEnd={onDragEnd}>
         <div className={cl.root}>
-          {boardData.columns.map((column) => (
+          {boardData.columns.map((column, index) => (
             <div key={column.id} className={cl.column}>
               <Columns
                 title={column.title}
@@ -98,6 +107,9 @@ export const BoardPage = ({ }) => {
                 listType="card"
                 cards={column.cards}
                 isCombineEnabled={true}
+                onSaveCard={onSaveCard}
+                onDeleteCard={onDeleteCard}
+                indexColumn={index}
               />
             </div>
           ))}

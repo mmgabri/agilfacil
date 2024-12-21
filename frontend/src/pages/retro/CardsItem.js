@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, forwardRef, useEffect, memo } from "react";
 import styled from "styled-components";
 import { Dropdown } from "react-bootstrap";
 import { MdMoreVert, MdEdit, MdCheck } from 'react-icons/md';
@@ -109,8 +109,8 @@ const Content = styled.div`
   width: 100%;
 `;
 
-
-const NewDiv = styled.div`
+// Like
+const ContainerLike = styled.div`
  margin-right: 100px;
    background-color: transparent;  // Torna a div transparente
   border-radius: 6px;
@@ -119,6 +119,12 @@ const NewDiv = styled.div`
   display: flex;
   justify-content: flex-end;  // Garante que o conteúdo será alinhado à direita
   align-items: center;
+`;
+
+const LikeIconContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;  // Espaço entre o ícone e o contador
 `;
 
 const StyledAiTwotoneLike = styled(AiTwotoneLike)`
@@ -141,24 +147,14 @@ const Count = styled.span`
   color: #4169E1;      // Cor do contador
 `;
 
-const LikeIconContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;  // Espaço entre o ícone e o contador
-`;
-
-
-
+//Menu
 const IconContainer = styled.div`
   position: absolute;
-margin-left: 10px;  // Adiciona um espaço entre o texto e o ícone
+  margin-left: 10px;  // Adiciona um espaço entre o texto e o ícone
   top: 3px;
   right: 8px; /* Coloca o ícone no canto superior direito */
   z-index: 1; /* Garante que o ícone fique sobre o conteúdo */
 `;
-
-
-
 
 const StyledMdMoreVert = styled(MdMoreVert)`
   color: #4169E1;  // Cor do ícone (um tom de cinza)
@@ -173,18 +169,18 @@ const StyledMdMoreVert = styled(MdMoreVert)`
 `;
 
 const StyledMdCheck = styled(MdCheck)`
-color: #10b981;
-cursor: pointer; 
-transition: color 0.2s ease;
-margin-top: 2px;
-margin-right: 0px;
-margin-left: 2px;
-font-size: 20px;  // Tamanho do ícone (ajustado para 18px, pode ser modificado)
+  color: #10b981;
+  cursor: pointer; 
+  transition: color 0.2s ease;
+  margin-top: 2px;
+  margin-right: 0px;
+  margin-left: 2px;
+  font-size: 20px;  // Tamanho do ícone (ajustado para 18px, pode ser modificado)
 
-&:hover {
-  color: #3498db; // Muda a cor ao passar o mouse
-  transform: scale(1.4); 
-}
+  &:hover {
+    color: #3498db; // Muda a cor ao passar o mouse
+    transform: scale(1.4);  
+  }
 `;
 
 const StyledTextarea = styled.textarea`
@@ -210,42 +206,21 @@ const StyledTextarea = styled.textarea`
 `;
 
 
-function CardItem({
-  card,
-  isDragging,
-  provided,
-  style,
-  isClone,
-  index,
-  isGroupedOver,
-  onSave,
-}) {
+function CardItem({ card, isDragging, provided, style, isClone, index, isGroupedOver, indexColumn, onSaveCard, onDeleteCard }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [content, setContent] = useState(card.content);
   const [likeCount, setLikeCount] = useState(0);
   const menuRef = useRef(null);
 
-  const handleEdit = () => {
-    setIsEditing(true);
-    setIsMenuOpen(false);
-  };
+    useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
 
-  const handleSave = () => {
-    console.log(content, card.id)
-    setIsEditing(false);
-    if (onSave) {
-      onSave(content, card.id); // Chama a função de salvar passando o conteúdo e o id do card
-    }
-  };
-
-  const handleOutsideClick = (e) => {
-    if (menuRef.current && !menuRef.current.contains(e.target)) {
-      setIsMenuOpen(false);
-    }
-  };
-
-  const CustomToggle = React.forwardRef((props, ref) => (
+  const CustomToggle = forwardRef((props, ref) => (
     <div
       ref={ref}
       {...props}  // Apenas as propriedades necessárias serão passadas
@@ -255,15 +230,34 @@ function CardItem({
     </div>
   ));
 
-  React.useEffect(() => {
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, []);
+  const handleOutsideClick = (e) => {
+    if (menuRef.current && !menuRef.current.contains(e.target)) {
+      setIsMenuOpen(false);
+    }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setIsMenuOpen(false);
+  };
+
+  const handleSave = () => {
+    setIsEditing(false);
+    setIsMenuOpen(false);
+    onSaveCard(content, index, indexColumn);
+  };
+
+  const handleDelete = () => {
+    console.log(content, card.id)
+    setIsEditing(false);
+    //setIsMenuOpen(false);
+    if (onDeleteCard) {
+      onDeleteCard(content, card.id);
+    }
+  };
 
   const handleLikeClick = () => {
-    setLikeCount(likeCount === 0 ? 1 : 0);  // Alterna o contador entre 1 e 0
+    setLikeCount(likeCount === 0 ? 1 : 0);
   };
 
   function getStyle(provided, style) {
@@ -307,7 +301,7 @@ function CardItem({
                 <MdEdit style={{ marginRight: 5 }} />
                 Editar Card
               </Dropdown.Item>
-              <Dropdown.Item onClick={() => console.log("Excluir")}>
+              <Dropdown.Item onClick={handleDelete}>
                 <CiTrash style={{ marginRight: 5 }} />
                 Excluir Card
               </Dropdown.Item>
@@ -315,14 +309,14 @@ function CardItem({
           </Dropdown>
         )}
       </IconContainer>
-      <NewDiv>
+      <ContainerLike>
         <LikeIconContainer>
           <StyledAiTwotoneLike onClick={handleLikeClick} />
           <Count>{likeCount}</Count>
         </LikeIconContainer>
-      </NewDiv>
+      </ContainerLike>
     </Container>
   );
 }
 
-export default React.memo(CardItem);
+export default memo(CardItem);
