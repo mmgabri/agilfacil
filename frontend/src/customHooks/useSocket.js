@@ -8,46 +8,59 @@ import { SERVER_BASE_URL } from "../constants/apiConstants";
 export const useSocket = (
   userName,
   userId,
-  roomId) => {
+  idSession,
+  service) => {
   const [socket, setSocket] = useState();
   const [socketResponse, setSocketResponse] = useState({
     userId: userId,
     userName: userName,
-    roomId: roomId,
+    idSession: idSession,
+    service: service
   });
   const [isConnected, setConnected] = useState(false);
 
   const updateStatusRoom = useCallback(
     (payload) => {
       socket.emit("update_status_room", {
-        roomId: roomId,
+        roomId: idSession,
         status: payload.status,
       });
     },
-    [socket, roomId]
+    [socket, idSession]
   );
 
 
   const votar = useCallback(
     (payload) => {
       socket.emit("votar", {
-        roomId: roomId,
+        roomId: idSession,
         userId: userId,
         userName: userName,
         vote: payload.vote,
-        
+
       });
     },
-    [socket, roomId]
+    [socket, idSession]
   );
 
+  //retro
+  const addCardBoard = useCallback(
+    (payload) => {
+      socket.emit("add_card_board", {
+        boardId: idSession,
+        newCard: payload.newCard,
+        indexColumn: payload.indexColumn
+      });
+    },
+    [socket, idSession]
+  );
 
   useEffect(() => {
 
     const socketio = io(SERVER_BASE_URL, {
-      transports: ['websocket'], 
+      transports: ['websocket'],
       path: '/socket.io',
-      query: `userName=${userName}&userId=${userId}&roomId=${roomId}`,
+      query: `userName=${userName}&userId=${userId}&idSession=${idSession}&service=${service}`,
       withCredentials: true
     });
 
@@ -70,11 +83,23 @@ export const useSocket = (
       setSocketResponse(res)
     });
 
+    socketio.on("data_board", (res) => {
+      setSocketResponse(res)
+    });
+
+    socketio.on("retro_connection", (res) => {
+      console.log(res)
+    });
+
+    socketio.on("retro_disconnect", (res) => {
+      console.log(res)
+    });
+
     return () => {
       //console.info('useSocket - Disconnect to the server');
       socketio.disconnect();
     };
-  }, [roomId]);
+  }, [idSession]);
 
-  return { socketResponse, isConnected, updateStatusRoom, votar };
+  return { socketResponse, isConnected, updateStatusRoom, votar, addCardBoard };
 };

@@ -166,7 +166,6 @@ export const deleteColumn = (boardData, index) => {
 }
 
 export const addCard = (boardData, newCard, indexColumn) => {
-  console.log('addCard-->', newCard, indexColumn)
   const updatedBoardData = { ...boardData };
   const columnToUpdate = updatedBoardData.columns[indexColumn];
   columnToUpdate.cards.push(newCard);

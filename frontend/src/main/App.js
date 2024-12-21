@@ -19,6 +19,7 @@ import NotificationPage from "../pages/poker/NotificationPage"
 
 import BoardPage from "../pages/retro/BoardPage"
 import CreateBoardPage from "../pages/retro/CreateBoardPage"
+import GuestUrlRetroPage from "../pages/retro/GuestUrlRetroPage";
 
 const StyledToastContainer = styled(ToastContainer)`
   z-index: 9999;
@@ -42,6 +43,7 @@ function App() {
 
           <Route path="/retro" element={<CreateBoardPage />} />
           <Route path="/board" element={<BoardPage />} />
+          <Route path="/retro/guest/:id" element={<GuestUrlRetroPage />} />
         </Routes>
       </BrowserRouter>
     </>

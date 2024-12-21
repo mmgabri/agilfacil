@@ -15,6 +15,6 @@ router.get('/healthcheck', healthcheck);
 router.post('/retro/createBoard', saveBoard);
 router.put('/retro/updateBoard', saveBoard);
 router.get('/retro/getBoardByUser/:userId', getBoardByUser);
-router.get('/retro/getBoard/:boardId', getBoard);
+router.get('/retro/:boardId', getBoard);
 
 module.exports = router;

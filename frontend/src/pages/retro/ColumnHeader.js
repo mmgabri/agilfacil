@@ -75,16 +75,12 @@ const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard, index, onUpdateTi
       createdBy: "",
       likeCount: 0
     }
-
-    console.log('handleModalAddCardSubmit', newCard)
     onAddCard(newCard, index)
   };
 
 
   const handleAddCardModal = () => {
-    console.log('handleAddCardModal')
     setModalOpen(true)
-
   };
 
 

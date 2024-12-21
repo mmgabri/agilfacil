@@ -6,7 +6,7 @@ import { DragDropContext } from "react-beautiful-dnd";
 import Columns from "./Columns";
 import { reorderboardData, processCombine, saveCard, deleteCard, updateLike, updateTitleColumn, deleteColumn, addCard } from "./FunctionsRetro";
 import Header from './HeaderBoard';
-import SuggestionForm from '../components/SuggestionForm'
+import { useSocket } from "../../customHooks/useSocket";
 import 'react-toastify/dist/ReactToastify.css';
 import './retro.css';
 
@@ -52,13 +52,27 @@ export const BoardPage = ({ }) => {
   const handleShowInvite = () => setShowInvite(true);
   const handleCloseInvite = () => setShowInvite(false);
 
+  const { socketResponse, addCardBoard } = useSocket(location.state.userName, location.state.userId, location.state.boardData.boardId, 'retro')
 
   useEffect(() => {
-    console.log("useEffect-principal==>", location.state.boardData);
     setBoardData(location.state.boardData);
   }, []);
 
-  // Função de manuseio do fim do arraste
+  useEffect(() => {
+    console.log('useEffect - socketResponse ==>', socketResponse);
+  
+    if (socketResponse && socketResponse.boardId) {
+      setBoardData(prevBoardData => ({
+        ...prevBoardData,
+        ...socketResponse, // Garante que as novas referências sejam criadas
+      }));
+      console.log('Board atualizado com socketResponse:', socketResponse);
+    } else {
+      console.error('socketResponse inválido');
+    }
+  }, [socketResponse]);
+
+
   const onDragEnd = (result) => {
     console.log('--- onDragEnd ---')
     console.log('result', result);
@@ -111,11 +125,12 @@ export const BoardPage = ({ }) => {
   const onAddCard = (newCard, indexColumn) => {
     const updatedColumns = addCard(boardData, newCard, indexColumn);
     setBoardData({ ...boardData, updatedColumns });
+    addCardBoard({ newCard: newCard, indexColumn: indexColumn})
   };
 
   return (
     <div className="bg-black-custom">
-      <Header boardName={boardData.boardName} handleShowInvite={handleShowInvite} handleCloseInvite={handleCloseInvite} sairSala={sairSala} handleOpen={handleOpen} />
+      <Header boardName={boardData.boardId} handleShowInvite={handleShowInvite} handleCloseInvite={handleCloseInvite} sairSala={sairSala} handleOpen={handleOpen} />
       <DragDropContext onDragEnd={onDragEnd}>
         <div className={cl.root}>
           {boardData.columns.map((column, index) => (

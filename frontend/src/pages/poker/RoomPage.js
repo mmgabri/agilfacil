@@ -50,7 +50,6 @@ export const RoomPage = ({ }) => {
 
 
   useEffect(() => {
-
     if (socketResponse.users) {
       setRoomData(socketResponse)
       if (roomData.status == 'VOTACAO_ENCERRADA')
