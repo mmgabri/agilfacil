@@ -147,7 +147,28 @@ export const updateLike = (boardData, isIncrement, indexCard, indexColumn) => {
   const updatedBoardData = { ...boardData };
   const columnToUpdate = updatedBoardData.columns[indexColumn];
   const countLike = updatedBoardData.columns[indexColumn].cards[indexCard].likeCount;
-  const countLikeUpdate = isIncrement ?  countLike + 1 : countLike -1
+  const countLikeUpdate = isIncrement ? countLike + 1 : countLike - 1
   columnToUpdate.cards[indexCard].likeCount = countLikeUpdate;
+  return updatedBoardData;
+}
+
+export const updateTitleColumn = (boardData, content, index) => {
+  const updatedBoardData = { ...boardData };
+  const columnToUpdate = updatedBoardData.columns[index];
+  columnToUpdate.title = content;
+  return updatedBoardData;
+}
+
+export const deleteColumn = (boardData, index) => {
+  const updatedBoardData = { ...boardData };
+  updatedBoardData.columns.splice(index, 1);
+  return updatedBoardData;
+}
+
+export const addCard = (boardData, newCard, indexColumn) => {
+  console.log('addCard-->', newCard, indexColumn)
+  const updatedBoardData = { ...boardData };
+  const columnToUpdate = updatedBoardData.columns[indexColumn];
+  columnToUpdate.cards.push(newCard);
   return updatedBoardData;
 }

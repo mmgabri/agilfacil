@@ -4,7 +4,7 @@ import { createUseStyles } from "react-jss";
 import { colors } from "@atlaskit/theme";
 import { DragDropContext } from "react-beautiful-dnd";
 import Columns from "./Columns";
-import { reorderboardData, processCombine, saveCard, deleteCard, updateLike } from "./FunctionsRetro";
+import { reorderboardData, processCombine, saveCard, deleteCard, updateLike, updateTitleColumn, deleteColumn, addCard } from "./FunctionsRetro";
 import Header from './HeaderBoard';
 import SuggestionForm from '../components/SuggestionForm'
 import 'react-toastify/dist/ReactToastify.css';
@@ -98,6 +98,20 @@ export const BoardPage = ({ }) => {
     setBoardData({ ...boardData, updatedColumns });
   };
 
+  const onUpdateTitleColumn = (content, index) => {
+    const updatedColumns = updateTitleColumn(boardData, content, index);
+    setBoardData({ ...boardData, updatedColumns });
+  };
+
+  const onDeleteColumn = (index) => {
+    const updatedColumns = deleteColumn(boardData, index);
+    setBoardData({ ...boardData, updatedColumns });
+  };
+
+  const onAddCard = (newCard, indexColumn) => {
+    const updatedColumns = addCard(boardData, newCard, indexColumn);
+    setBoardData({ ...boardData, updatedColumns });
+  };
 
   return (
     <div className="bg-black-custom">
@@ -115,6 +129,9 @@ export const BoardPage = ({ }) => {
                 onSaveCard={onSaveCard}
                 onDeleteCard={onDeleteCard}
                 onUpdateLike={onUpdateLike}
+                onUpdateTitleColumn={onUpdateTitleColumn}
+                onDeleteColumn={onDeleteColumn}
+                onAddCard={onAddCard}
                 indexColumn={index}
               />
             </div>

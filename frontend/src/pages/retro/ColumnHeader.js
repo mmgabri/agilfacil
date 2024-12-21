@@ -1,30 +1,30 @@
 import React, { useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
+import { v4 as uuidv4 } from 'uuid';
 import { MdMoreVert, MdEdit, MdCheck } from 'react-icons/md';
 import { IoIosAddCircleOutline } from 'react-icons/io';
+import { FaRegTrashAlt } from "react-icons/fa";
 import './retro.css';
+import ModalAddCard from './ModalAddCard';
 
-// Estilos em objetos, removendo o uso de styled-components
-const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard }) => {
+const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard, index, onUpdateTitleColumn, onDeleteColumn }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(columnTitle || 'Título da Coluna');
   const [isEdited, setIsEdited] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
   };
 
-  const handleSaveTitle = () => {
-    console.log('handleSaveTitle ==> ', title);
-
-    setIsEditing(false);
-    setIsEdited(true);
-    if (onUpdateTitle) {
-      onUpdateTitle(title);
-    }
+  const handleMouseOver = (e) => {
+    e.currentTarget.style.color = '#3498db';
   };
 
-  // Estilo para o título da coluna
+  const handleMouseOut = (e) => {
+    e.currentTarget.style.color = '#10b981';
+  };
+
   const columnHeaderStyle = {
     display: 'flex',
     flexDirection: 'column',
@@ -57,8 +57,46 @@ const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard }) => {
     color: '#3498db',
   };
 
+  const handleSaveTitle = () => {
+    setIsEditing(false);
+    setIsEdited(true);
+    onUpdateTitleColumn(title, index)
+  };
+
+  const handleDeleteColumn = () => {
+    onDeleteColumn(index)
+  };
+
+  const handleModalAddCardSubmit = (value) => {
+  
+    const newCard = {
+      id: uuidv4(),
+      content: value,
+      createdBy: "",
+      likeCount: 0
+    }
+
+    console.log('handleModalAddCardSubmit', newCard)
+    onAddCard(newCard, index)
+  };
+
+
+  const handleAddCardModal = () => {
+    console.log('handleAddCardModal')
+    setModalOpen(true)
+
+  };
+
+
   return (
     <div style={columnHeaderStyle}>
+      <ModalAddCard
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        onSubmit={handleModalAddCardSubmit}
+        title={title}
+      />
+
       <div style={titleStyle}>
         <div style={{ fontSize: '17px', color: '#C0C0C0', marginTop: '5px', marginBottom: '3px' }}>
           {isEditing ? (
@@ -120,6 +158,18 @@ const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard }) => {
               <MdEdit style={{ marginRight: 8 }} />
               Editar Título
             </Dropdown.Item>
+            <Dropdown.Item
+              onClick={handleDeleteColumn}
+              style={{
+                fontSize: '12px',
+                color: '#c0c0c0',
+                backgroundColor: '#2f2f2f',
+                borderRadius: '5px',
+              }}
+            >
+              <FaRegTrashAlt style={{ marginRight: 8 }} />
+              Excluir coluna
+            </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
       </div>
@@ -127,14 +177,14 @@ const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard }) => {
       {/* Ícone de Adicionar Card com efeito de hover */}
       <div
         className="add-icon-container"
-        onClick={onAddCard}
         style={{ cursor: 'pointer', transition: 'color 0.2s ease' }}
       >
         <IoIosAddCircleOutline
+          onClick={handleAddCardModal}
           size={25}
           style={{ color: '#10b981', transition: 'color 0.2s ease' }}
-          onMouseOver={(e) => e.target.style.color = '#3498db'}
-          onMouseOut={(e) => e.target.style.color = '#10b981'}
+          onMouseOver={handleMouseOver}
+          onMouseOut={handleMouseOut}
         />
       </div>
     </div>

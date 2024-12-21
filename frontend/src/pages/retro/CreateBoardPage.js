@@ -3,7 +3,7 @@ import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify';
-import { MdOutlineRemoveCircleOutline } from "react-icons/md"; 
+import { MdOutlineRemoveCircleOutline } from "react-icons/md";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import 'react-toastify/dist/ReactToastify.css';
 import BoardPage from "./BoardPage";
@@ -11,7 +11,7 @@ import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import { Title } from '../../styles/GenericTitleStyles';
 import Header from './HeaderCreateBoard';
 import SuggestionForm from '../components/SuggestionForm'
-import {retrospectiveData} from './data'
+import { retrospectiveData } from './data'
 
 export const CreateBoardPage = ({ }) => {
   let navigate = useNavigate();
@@ -76,8 +76,8 @@ export const CreateBoardPage = ({ }) => {
       })
       .then(response => {
         console.log('response ==> ', response)
-        navigate('/board', { state: { boardData: retrospectiveData } });
-        //navigate('/board', { state: { boardData: response.data } });
+        //navigate('/board', { state: { boardData: retrospectiveData } });
+        navigate('/board', { state: { boardData: response.data } });
       })
       .catch((error) => {
         console.log("Resposta da api com erro:", error, error.response?.status)
@@ -141,7 +141,7 @@ export const CreateBoardPage = ({ }) => {
               type="text"
               id="squadName"
               name="squadName"
-              value={formData.boardName}
+              value={formData.squadName}
               onChange={handleFieldChange}
               placeholder="Digite o nome da squad"
               maxLength={30}

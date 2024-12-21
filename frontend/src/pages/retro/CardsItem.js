@@ -213,12 +213,16 @@ function CardItem({ card, isDragging, provided, style, isClone, index, isGrouped
   const [likeCount, setLikeCount] = useState(0);
   const menuRef = useRef(null);
 
-    useEffect(() => {
+  useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
+
+  useEffect(() => {
+    setContent(card.content); 
+  }, [card.content]);
 
   const CustomToggle = forwardRef((props, ref) => (
     <div
@@ -254,9 +258,9 @@ function CardItem({ card, isDragging, provided, style, isClone, index, isGrouped
 
   const handleLikeClick = () => {
     if (likeCount === 0) {
-      onUpdateLike (true, index, indexColumn)
-    }else{
-      onUpdateLike (false, index, indexColumn)
+      onUpdateLike(true, index, indexColumn)
+    } else {
+      onUpdateLike(false, index, indexColumn)
     }
     setLikeCount(likeCount === 0 ? 1 : 0);
   };

@@ -7,6 +7,13 @@ export const Title = styled.h2`
   margin-bottom: 25px;
 `;
 
+export const TitleAddCard = styled.h2`
+  font-size: 20px;
+  color: #4169E1;
+  text-align: center;
+  margin-bottom: 25px;
+`;
+
 export const FormContainer = styled.div`
   max-width: 500px; /* Largura máxima do container */
   margin: 20px auto; /* Centralizando horizontalmente */
