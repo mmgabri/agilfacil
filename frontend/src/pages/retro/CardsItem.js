@@ -102,6 +102,14 @@ const Container = styled.div`
   }
 `;
 
+const Content = styled.div`
+  display: flex;
+  align-items: center;  // Alinha os itens verticalmente no centro
+  justify-content: space-between;  // Cria um espaço entre os itens (texto e ícone)
+  width: 100%;
+`;
+
+
 const NewDiv = styled.div`
  margin-right: 100px;
    background-color: transparent;  // Torna a div transparente
@@ -139,29 +147,18 @@ const LikeIconContainer = styled.div`
   gap: 10px;  // Espaço entre o ícone e o contador
 `;
 
-const Content = styled.div`
-  flex: 1;
-  white-space: pre-wrap; /* Garante que as quebras de linha sejam preservadas */
-`;
+
 
 const IconContainer = styled.div`
   position: absolute;
-
+margin-left: 10px;  // Adiciona um espaço entre o texto e o ícone
   top: 3px;
   right: 8px; /* Coloca o ícone no canto superior direito */
   z-index: 1; /* Garante que o ícone fique sobre o conteúdo */
 `;
 
 
-const StyledMdCheck = styled(MdCheck)`
-color: #10b981;
-cursor: pointer; 
-transition: color 0.2s ease;
 
-&:hover {
-  color: #3498db; // Muda a cor ao passar o mouse
-}
-`;
 
 const StyledMdMoreVert = styled(MdMoreVert)`
   color: #4169E1;  // Cor do ícone (um tom de cinza)
@@ -172,6 +169,43 @@ const StyledMdMoreVert = styled(MdMoreVert)`
   &:hover {
     color: "green";  // Cor do ícone ao passar o mouse (azul)
     transform: scale(1.4); 
+  }
+`;
+
+const StyledMdCheck = styled(MdCheck)`
+color: #10b981;
+cursor: pointer; 
+transition: color 0.2s ease;
+margin-top: 2px;
+margin-right: 0px;
+margin-left: 2px;
+font-size: 20px;  // Tamanho do ícone (ajustado para 18px, pode ser modificado)
+
+&:hover {
+  color: #3498db; // Muda a cor ao passar o mouse
+  transform: scale(1.4); 
+}
+`;
+
+const StyledTextarea = styled.textarea`
+  flex-grow: 1;   // Faz o textarea crescer para ocupar o espaço restante
+  width: 100%;    // Garante que ocupe toda a largura disponível
+  height: 100%;   // Garante que ocupe toda a altura disponível
+  resize: none;   // Desabilita o redimensionamento manual
+  padding: 8px;   // Espaçamento interno para o texto
+  box-sizing: border-box;  // Inclui o padding no tamanho total
+  font-family: Arial, sans-serif;  // Define a fonte
+  font-size: 14px;  // Define o tamanho da fonte
+  color: #333;  // Cor do texto
+  background-color: #fff;  // Cor de fundo
+  border: 1px solid #ccc;  // Borda leve
+  border-radius: 4px;  // Bordas arredondadas
+  transition: border-color 0.2s ease;  // Suaviza a mudança de cor da borda
+  margin-right: 28px;
+
+  &:focus {
+    border-color: #3498db;  // Muda a cor da borda quando o campo está em foco
+    outline: none;  // Remove a borda padrão de foco
   }
 `;
 
@@ -251,16 +285,15 @@ function CardItem({
       {isClone && <CloneBadge>Clone</CloneBadge>}
       <Content>
         {isEditing ? (
-          <textarea
-            value={content} // Use a variável de estado `content` para o valor do `textarea`
-            onChange={(e) => setContent(e.target.value)} // Atualiza o estado `content` conforme o usuário digita
-            onBlur={handleSave} // Salva o conteúdo quando o `textarea` perde o foco
+          <StyledTextarea
+            value={content}
+            rows={4}
+            onChange={(e) => setContent(e.target.value)}
+            onBlur={handleSave}
             autoFocus
-            rows={4} // Ajuste a quantidade de linhas conforme necessário
-            style={{ width: "100%", resize: "none" }} // Desabilita o redimensionamento manual
           />
         ) : (
-          <div>{card.content}</div> // Exibe o conteúdo original quando não está em modo de edição
+          <div>{card.content}</div>
         )}
       </Content>
       <IconContainer ref={menuRef}>
