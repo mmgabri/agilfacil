@@ -4,7 +4,7 @@ import { createUseStyles } from "react-jss";
 import { colors } from "@atlaskit/theme";
 import { DragDropContext } from "react-beautiful-dnd";
 import Columns from "./Columns";
-import { reorderboardData, processCombine, saveCard } from "./FunctionsRetro";
+import { reorderboardData, processCombine, saveCard, deleteCard } from "./FunctionsRetro";
 import Header from './HeaderBoard';
 import SuggestionForm from '../components/SuggestionForm'
 import 'react-toastify/dist/ReactToastify.css';
@@ -23,7 +23,7 @@ const useStyles = createUseStyles({
     width: "100%",
     overflowX: "auto", // Pode ser necessário manter a rolagem horizontal, dependendo da largura
   },
-  
+
   column: {
     minWidth: "250px",
     minHeight: "400px", // Altura mínima para evitar que a coluna encolha demais
@@ -36,9 +36,9 @@ const useStyles = createUseStyles({
     transition: "width 0.3s ease, height 0.3s ease", // Animação também para a altura
     display: "flex",
     flexDirection: "column",
- //   overflow: "auto", // Faz com que a altura da coluna se ajuste conforme o conteúdo
+    //   overflow: "auto", // Faz com que a altura da coluna se ajuste conforme o conteúdo
   }
-  
+
 });
 
 
@@ -89,8 +89,9 @@ export const BoardPage = ({ }) => {
     setBoardData({ ...boardData, updatedColumns });
   };
 
-  const onDeleteCard = (cardId) => {
-    console.log('onDeleteCard==>', cardId)
+  const onDeleteCard = (indexCard, indexColumn) => {
+    const updatedColumns = deleteCard(boardData, indexCard, indexColumn);
+    setBoardData({ ...boardData, updatedColumns });
   };
 
 

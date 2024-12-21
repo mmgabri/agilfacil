@@ -134,3 +134,10 @@ export const saveCard = (boardData, content, indexCard, indexColumn) => {
   columnToUpdate.cards[indexCard].content = content;
   return updatedBoardData;
 }
+
+export const deleteCard = (boardData, indexCard, indexColumn) => {
+  const updatedBoardData = { ...boardData };
+  const columnToUpdate = updatedBoardData.columns[indexColumn];
+  columnToUpdate.cards.splice(indexCard, 1);
+  return updatedBoardData;
+}

@@ -213,7 +213,7 @@ function CardItem({ card, isDragging, provided, style, isClone, index, isGrouped
   const [likeCount, setLikeCount] = useState(0);
   const menuRef = useRef(null);
 
-    useEffect(() => {
+  useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
@@ -248,12 +248,8 @@ function CardItem({ card, isDragging, provided, style, isClone, index, isGrouped
   };
 
   const handleDelete = () => {
-    console.log(content, card.id)
     setIsEditing(false);
-    //setIsMenuOpen(false);
-    if (onDeleteCard) {
-      onDeleteCard(content, card.id);
-    }
+    onDeleteCard(index, indexColumn);
   };
 
   const handleLikeClick = () => {
