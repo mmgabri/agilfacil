@@ -63,7 +63,7 @@ const ScrollContainer = styled.div`
 
 const InnerContainer = styled.div``;
 
-const DraggableCardList = memo(({ cards, indexColumn, onSaveCard, onDeleteCard }) =>
+const DraggableCardList = memo(({ cards, indexColumn, onSaveCard, onDeleteCard, onUpdateLike }) =>
   cards.map((card, index) => {
     return (
       <Draggable key={card.id} draggableId={card.id} index={index} indexColumn={indexColumn}>
@@ -75,6 +75,7 @@ const DraggableCardList = memo(({ cards, indexColumn, onSaveCard, onDeleteCard }
             provided={dragProvided}
             onSaveCard={onSaveCard}
             onDeleteCard={onDeleteCard}
+            onUpdateLike={onUpdateLike}
             index={index}
             indexColumn={indexColumn}
           />
@@ -85,11 +86,11 @@ const DraggableCardList = memo(({ cards, indexColumn, onSaveCard, onDeleteCard }
 );
 
 // Subcomponente para renderizar o título e os cards dentro da área droppable
-const ColumnContent = ({ cards, title, dropProvided, indexColumn, onSaveCard, onDeleteCard }) => (
+const ColumnContent = ({ cards, title, dropProvided, indexColumn, onSaveCard, onDeleteCard, onUpdateLike }) => (
   <InnerContainer>
     <ColumnHeader columnTitle={title}></ColumnHeader>
     <DropZone ref={dropProvided.innerRef}>
-      <DraggableCardList cards={cards} indexColumn={indexColumn} onSaveCard={onSaveCard} onDeleteCard={onDeleteCard} />
+      <DraggableCardList cards={cards} indexColumn={indexColumn} onSaveCard={onSaveCard} onDeleteCard={onDeleteCard} onUpdateLike={onUpdateLike} />
       {dropProvided.placeholder}
     </DropZone>
   </InnerContainer>
@@ -111,6 +112,7 @@ export default function Column(props) {
     useClone,
     onSaveCard,
     onDeleteCard,
+    onUpdateLike,
     indexColumn
   } = props;
 
@@ -130,6 +132,7 @@ export default function Column(props) {
               isClone
               onSaveCard={onSaveCard}
               onDeleteCard={onDeleteCard}
+              onUpdateLike={onUpdateLike}
             //   indexColumn={indexColumn}
             />
           )
@@ -154,6 +157,7 @@ export default function Column(props) {
                   indexColumn={indexColumn}
                   onSaveCard={onSaveCard}
                   onDeleteCard={onDeleteCard}
+                  onUpdateLike={onUpdateLike}
                 />
               </ScrollContainer>
             ) : (
@@ -164,6 +168,7 @@ export default function Column(props) {
                 indexColumn={indexColumn}
                 onSaveCard={onSaveCard}
                 onDeleteCard={onDeleteCard}
+                onUpdateLike={onUpdateLike}
               />
             )}
           </ColumnWrapper>

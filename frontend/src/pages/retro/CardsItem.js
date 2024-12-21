@@ -206,14 +206,14 @@ const StyledTextarea = styled.textarea`
 `;
 
 
-function CardItem({ card, isDragging, provided, style, isClone, index, isGroupedOver, indexColumn, onSaveCard, onDeleteCard }) {
+function CardItem({ card, isDragging, provided, style, isClone, index, isGroupedOver, indexColumn, onSaveCard, onDeleteCard, onUpdateLike }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [content, setContent] = useState(card.content);
   const [likeCount, setLikeCount] = useState(0);
   const menuRef = useRef(null);
 
-  useEffect(() => {
+    useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
@@ -253,6 +253,11 @@ function CardItem({ card, isDragging, provided, style, isClone, index, isGrouped
   };
 
   const handleLikeClick = () => {
+    if (likeCount === 0) {
+      onUpdateLike (true, index, indexColumn)
+    }else{
+      onUpdateLike (false, index, indexColumn)
+    }
     setLikeCount(likeCount === 0 ? 1 : 0);
   };
 
@@ -308,7 +313,7 @@ function CardItem({ card, isDragging, provided, style, isClone, index, isGrouped
       <ContainerLike>
         <LikeIconContainer>
           <StyledAiTwotoneLike onClick={handleLikeClick} />
-          <Count>{likeCount}</Count>
+          <Count>{card.likeCount}</Count>
         </LikeIconContainer>
       </ContainerLike>
     </Container>

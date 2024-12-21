@@ -141,3 +141,13 @@ export const deleteCard = (boardData, indexCard, indexColumn) => {
   columnToUpdate.cards.splice(indexCard, 1);
   return updatedBoardData;
 }
+
+
+export const updateLike = (boardData, isIncrement, indexCard, indexColumn) => {
+  const updatedBoardData = { ...boardData };
+  const columnToUpdate = updatedBoardData.columns[indexColumn];
+  const countLike = updatedBoardData.columns[indexColumn].cards[indexCard].likeCount;
+  const countLikeUpdate = isIncrement ?  countLike + 1 : countLike -1
+  columnToUpdate.cards[indexCard].likeCount = countLikeUpdate;
+  return updatedBoardData;
+}

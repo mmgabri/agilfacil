@@ -4,7 +4,7 @@ import { createUseStyles } from "react-jss";
 import { colors } from "@atlaskit/theme";
 import { DragDropContext } from "react-beautiful-dnd";
 import Columns from "./Columns";
-import { reorderboardData, processCombine, saveCard, deleteCard } from "./FunctionsRetro";
+import { reorderboardData, processCombine, saveCard, deleteCard, updateLike } from "./FunctionsRetro";
 import Header from './HeaderBoard';
 import SuggestionForm from '../components/SuggestionForm'
 import 'react-toastify/dist/ReactToastify.css';
@@ -40,7 +40,6 @@ const useStyles = createUseStyles({
   }
 
 });
-
 
 
 export const BoardPage = ({ }) => {
@@ -94,6 +93,11 @@ export const BoardPage = ({ }) => {
     setBoardData({ ...boardData, updatedColumns });
   };
 
+  const onUpdateLike = (isIncrement, indexCard, indexColumn) => {
+    const updatedColumns = updateLike(boardData, isIncrement, indexCard, indexColumn);
+    setBoardData({ ...boardData, updatedColumns });
+  };
+
 
   return (
     <div className="bg-black-custom">
@@ -110,6 +114,7 @@ export const BoardPage = ({ }) => {
                 isCombineEnabled={true}
                 onSaveCard={onSaveCard}
                 onDeleteCard={onDeleteCard}
+                onUpdateLike={onUpdateLike}
                 indexColumn={index}
               />
             </div>
