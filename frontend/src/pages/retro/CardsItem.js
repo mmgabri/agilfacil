@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { Dropdown } from "react-bootstrap";
 import { MdMoreVert, MdEdit, MdCheck } from 'react-icons/md';
 import { CiTrash } from "react-icons/ci";
+import { AiTwotoneLike } from 'react-icons/ai';
+
 import { colors } from "@atlaskit/theme";
 
 const getBackgroundColor = (isDragging, isGroupedOver) => {
@@ -84,7 +86,9 @@ const Container = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-right: 40px; /* Adiciona espaço à direita para o ícone */
+  padding-right: 4px; /* Adiciona espaço à direita para o ícone */
+  flex-direction: column;  // Mudança para alinhar as divs verticalmente
+  align-items: flex-start;
 
   &:hover,
   &:active {
@@ -98,6 +102,42 @@ const Container = styled.div`
   }
 `;
 
+const NewDiv = styled.div`
+ margin-right: 100px;
+   background-color: transparent;  // Torna a div transparente
+  border-radius: 6px;
+  width: 100%;
+  text-align: right;  // Alinha o conteúdo à direita
+  display: flex;
+  justify-content: flex-end;  // Garante que o conteúdo será alinhado à direita
+  align-items: center;
+`;
+
+const StyledAiTwotoneLike = styled(AiTwotoneLike)`
+  color: #4169E1;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  font-size: 19px;  // Tamanho do ícone
+  margin-right: 0px;  // Distância mínima entre o ícone e o contador
+
+  &:hover {
+    color: #3498db;  // Cor ao passar o mouse (opcional)
+    transform: scale(1.2); 
+  }
+`;
+
+const Count = styled.span`
+  font-size: 14px;  // Tamanho da fonte do contador
+  margin-right: 2px;  // Distância mínima entre o ícone e o contador
+  margin-left: -6px;  // Distância mínima entre o ícone e o contador
+  color: #4169E1;      // Cor do contador
+`;
+
+const LikeIconContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;  // Espaço entre o ícone e o contador
+`;
 
 const Content = styled.div`
   flex: 1;
@@ -112,24 +152,6 @@ const IconContainer = styled.div`
   z-index: 1; /* Garante que o ícone fique sobre o conteúdo */
 `;
 
-const StyledDropdownMenu = styled(Dropdown.Menu)`
-background-color: #2f2f2f;  // Cor de fundo do menu (cinza escuro)
-border-radius: 8px;
-padding: 10px;
-
-`;
-
-const StyledDropdownItem = styled(Dropdown.Item)`
-font-size: 12px;
-color: #c0c0c0;  // Cor do texto (branco para contraste)
-background-color: #2f2f2f;  // Cor de fundo do item (cinza escuro)
-border-radius: 5px;
-
-&:hover {
-  color: #3498db;  // Cor do texto ao passar o mouse (azul)
-  background-color: #444;  // Cor de fundo ao passar o mouse (cinza mais claro)
-}
-`;
 
 const StyledMdCheck = styled(MdCheck)`
 color: #10b981;
@@ -142,13 +164,15 @@ transition: color 0.2s ease;
 `;
 
 const StyledMdMoreVert = styled(MdMoreVert)`
-color: #4F4F4F;
-cursor: pointer; 
-transition: color 0.2s ease;
-
-&:hover {
-  color: #3498db; // Muda a cor ao passar o mouse
-}
+  color: #4169E1;  // Cor do ícone (um tom de cinza)
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;  // Transição suave para cor e transformação
+  font-size: 15px;  // Tamanho do ícone (ajustado para 18px, pode ser modificado)
+  
+  &:hover {
+    color: "green";  // Cor do ícone ao passar o mouse (azul)
+    transform: scale(1.4); 
+  }
 `;
 
 
@@ -165,6 +189,7 @@ function CardItem({
   const [isEditing, setIsEditing] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [content, setContent] = useState(card.content);
+  const [likeCount, setLikeCount] = useState(0);
   const menuRef = useRef(null);
 
   const handleEdit = () => {
@@ -192,7 +217,7 @@ function CardItem({
       {...props}  // Apenas as propriedades necessárias serão passadas
       style={{ cursor: "pointer" }}
     >
-      <MdMoreVert size={15} />
+      <StyledMdMoreVert />
     </div>
   ));
 
@@ -202,6 +227,10 @@ function CardItem({
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
+
+  const handleLikeClick = () => {
+    setLikeCount(likeCount === 0 ? 1 : 0);  // Alterna o contador entre 1 e 0
+  };
 
   function getStyle(provided, style) {
     return style ? { ...provided.draggableProps.style, ...style } : provided.draggableProps.style;
@@ -253,6 +282,12 @@ function CardItem({
           </Dropdown>
         )}
       </IconContainer>
+      <NewDiv>
+        <LikeIconContainer>
+          <StyledAiTwotoneLike onClick={handleLikeClick} />
+          <Count>{likeCount}</Count>
+        </LikeIconContainer>
+      </NewDiv>
     </Container>
   );
 }
