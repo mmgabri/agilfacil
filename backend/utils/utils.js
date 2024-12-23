@@ -18,4 +18,4 @@ const convertObjectKeysToCamelCase = (obj) => {
     return newObj;
 };
 
-module.exports = { convertArrayToCamelCase, convertObjectKeysToCamelCase };
+module.exports = {  };

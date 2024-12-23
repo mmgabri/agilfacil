@@ -1,5 +1,5 @@
 const { connectClient, desconnectClient, updateStatusRoom, updateVote } = require('../services/poker/socketService');
-const { addCardBoard } = require('../services/retro/socketRetroService');
+const { addCardBoard, reorderBoard } = require('../services/retro/socketRetroService');
 const logger = require('../services/generic/cloudWatchLoggerService');
 
 const setupSocketIo = (io) => {
@@ -96,7 +96,7 @@ const setupSocketIo = (io) => {
       console.info('add_card_board');
 
       try {
-        let board = await addCardBoard(data.boardId, data.newCard);
+        let board = await addCardBoard(data.boardId, data.newCard, data.indexColumn);
         console.log('emit -->', board.id, board)
         io.to(data.boardId).emit('data_board', board);
         //   const elapsedTime = (performance.now() - start).toFixed(3);
@@ -106,6 +106,23 @@ const setupSocketIo = (io) => {
         //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
       }
     });
+    
+    socket.on('reorder_board', async (data) => {
+      const start = performance.now()
+      console.info('reorder_board');
+
+      try {
+        let board = await reorderBoard(data.boardId, data.source, data.destination);
+        console.log('emit -->', board.id, board)
+        io.to(data.boardId).emit('data_board', board);
+        //   const elapsedTime = (performance.now() - start).toFixed(3);
+        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
+      } catch (erro) {
+        console.error('Erro ao criar card', erro);
+        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+      }
+    });
+
   });
 };
 

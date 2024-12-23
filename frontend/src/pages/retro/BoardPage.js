@@ -52,7 +52,7 @@ export const BoardPage = ({ }) => {
   const handleShowInvite = () => setShowInvite(true);
   const handleCloseInvite = () => setShowInvite(false);
 
-  const { socketResponse, addCardBoard } = useSocket(location.state.userName, location.state.userId, location.state.boardData.boardId, 'retro')
+  const { socketResponse, addCardSocket, reorderBoardSocket } = useSocket(location.state.userName, location.state.userId, location.state.boardData.boardId, 'retro')
 
   useEffect(() => {
     setBoardData(location.state.boardData);
@@ -60,7 +60,7 @@ export const BoardPage = ({ }) => {
 
   useEffect(() => {
     console.log('useEffect - socketResponse ==>', socketResponse);
-  
+
     if (socketResponse && socketResponse.boardId) {
       setBoardData(prevBoardData => ({
         ...prevBoardData,
@@ -80,9 +80,12 @@ export const BoardPage = ({ }) => {
     const { source, destination, combine } = result;
 
     if (destination) {
+      console.log('reorder')
+      reorderBoardSocket({source, destination})
       const updatedColumns = reorderboardData(boardData, source, destination);
       setBoardData({ ...boardData, columns: updatedColumns });
     } else if (combine) {
+      console.log('combine')
       const updatedColumns = processCombine(boardData, source, combine);
       setBoardData({ ...boardData, columns: updatedColumns });
     }
@@ -125,7 +128,7 @@ export const BoardPage = ({ }) => {
   const onAddCard = (newCard, indexColumn) => {
     const updatedColumns = addCard(boardData, newCard, indexColumn);
     setBoardData({ ...boardData, updatedColumns });
-    addCardBoard({ newCard: newCard, indexColumn: indexColumn})
+    addCardSocket({ newCard: newCard, indexColumn: indexColumn })
   };
 
   return (

@@ -1,6 +1,5 @@
 require('dotenv').config();
 const config = require('../../config');
-const { convertArrayToCamelCase, convertObjectKeysToCamelCase } = require('../../utils/utils');
 const { v4: uuidv4 } = require('uuid');
 const { putTable, getBoardDb, getBoardByUserDb } = require('./dynamoRetroService');
 const logger = require('../generic/cloudWatchLoggerService');
@@ -25,20 +24,20 @@ const saveBoard = async (req, res) => {
   }
 
   let boardDb = {
-    board_id: boardId,
-    user_id: req.body.userId,
-    date_time: dateTime,
-    user_name: req.body.userName,
-    board_name: req.body.boardName,
-    squad_name: req.body.squadName,
-    area_name: req.body.areaName,
+    boardId: boardId,
+    userId: req.body.userId,
+    dateTime: dateTime,
+    userName: req.body.userName,
+    boardName: req.body.boardName,
+    squadName: req.body.squadName,
+    areaName: req.body.areaName,
     columns: req.body.columns,
-    date_time_last_update: new Date().toISOString()
+    dateTimeLastUpdate: new Date().toISOString()
   };
 
   try {
     const data = await putTable(config.TABLE_BOARD, boardDb);
-    res.status(201).json(convertObjectKeysToCamelCase(data));
+    res.status(201).json(data);
     const elapsedTime = (performance.now() - start).toFixed(3);
    // logger.log('API-RETRO', 'createBoard', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName, '', elapsedTime, 'success', 'Board created successfully.')
   } catch (error) {
@@ -57,7 +56,7 @@ const getBoard = async (req, res) => {
 
   try {
     const dataItems = await getBoardDb(config.TABLE_BOARD, boardId);
-    res.status(200).json(convertObjectKeysToCamelCase(dataItems));
+    res.status(200).json(dataItems);
     //res.status(200).json(dataItems);
     const elapsedTime = (performance.now() - start).toFixed(3);
     //  logger.log('API-RETRO', 'getBoardByUser', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName,  '', elapsedTime, 'success', 'Get board successfully.' )
@@ -81,7 +80,7 @@ const getBoardByUser = async (req, res) => {
 
   try {
     const dataItems = await getBoardByUserDb(config.TABLE_BOARD, config.INDEX_NAME_USER, userId);
-    res.status(200).json(convertArrayToCamelCase(dataItems));
+    res.status(200).json(dataItems);
     const elapsedTime = (performance.now() - start).toFixed(3);
     //  logger.log('API-RETRO', 'getBoardByUser', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName,  '', elapsedTime, 'success', 'Get board successfully.' )
   } catch (error) {

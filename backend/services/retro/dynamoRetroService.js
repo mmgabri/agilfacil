@@ -26,7 +26,7 @@ const getBoardByUserDb = (tableName, indexNameUser, userId) => {
     const params = {
       TableName: tableName,
       IndexName: indexNameUser,
-      KeyConditionExpression: 'user_id = :userId',
+      KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
         ':userId': { S: userId },
       },
@@ -51,7 +51,7 @@ const getBoardDb = (tableName, boardId) => {
   return new Promise((resolve, reject) => {
     const params = {
       TableName: tableName,
-      KeyConditionExpression: 'board_id = :boardId',
+      KeyConditionExpression: 'boardId = :boardId',
       ExpressionAttributeValues: {
         ':boardId': { S: boardId },
       },

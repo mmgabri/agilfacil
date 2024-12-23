@@ -44,7 +44,7 @@ export const useSocket = (
   );
 
   //retro
-  const addCardBoard = useCallback(
+  const addCardSocket = useCallback(
     (payload) => {
       socket.emit("add_card_board", {
         boardId: idSession,
@@ -54,6 +54,28 @@ export const useSocket = (
     },
     [socket, idSession]
   );
+
+
+  const reorderBoardSocket = useCallback(
+    (payload) => {
+      console.log("payload:", payload); // Adiciona log do payload
+      console.log("source:", payload.source); // Adiciona log do payload
+      console.log("destination:", payload.destination); // Adiciona log do payload
+      console.log("Emitindo reorder_board com os dados:", {
+        boardId: idSession,
+        source: payload.source,
+        destination: payload.destination
+      });
+
+      socket.emit("reorder_board", {
+        boardId: idSession,
+        source: payload.source,
+        destination: payload.destination
+      });
+    },
+    [socket, idSession]
+  );
+
 
   useEffect(() => {
 
@@ -101,5 +123,5 @@ export const useSocket = (
     };
   }, [idSession]);
 
-  return { socketResponse, isConnected, updateStatusRoom, votar, addCardBoard };
+  return { socketResponse, isConnected, updateStatusRoom, votar, addCardSocket, reorderBoardSocket };
 };
