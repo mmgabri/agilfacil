@@ -63,7 +63,7 @@ const ScrollContainer = styled.div`
 
 const InnerContainer = styled.div``;
 
-const DraggableCardList = memo(({ cards, indexColumn, onSaveCard, onDeleteCard, onUpdateLike }) =>
+const DraggableCardList = (({ cards, indexColumn, onSaveCard, onDeleteCard, onUpdateLike }) =>
   cards.map((card, index) => {
     return (
       <Draggable key={card.id} draggableId={card.id} index={index} indexColumn={indexColumn}>

@@ -58,19 +58,84 @@ export const useSocket = (
 
   const reorderBoardSocket = useCallback(
     (payload) => {
-      console.log("payload:", payload); // Adiciona log do payload
-      console.log("source:", payload.source); // Adiciona log do payload
-      console.log("destination:", payload.destination); // Adiciona log do payload
-      console.log("Emitindo reorder_board com os dados:", {
-        boardId: idSession,
-        source: payload.source,
-        destination: payload.destination
-      });
+      //     console.log("Emitindo reorder_board com os dados:", {
+      //       boardId: idSession,
+      //       source: payload.source,
+      //       destination: payload.destination
+      //     });
 
       socket.emit("reorder_board", {
         boardId: idSession,
         source: payload.source,
         destination: payload.destination
+      });
+    },
+    [socket, idSession]
+  );
+
+  const combineCardSocket = useCallback(
+    (payload) => {
+      socket.emit("combine_card", {
+        boardId: idSession,
+        source: payload.source,
+        combine: payload.combine
+      });
+    },
+    [socket, idSession]
+  );
+
+  const deleteColumnSocket = useCallback(
+    (payload) => {
+      console.log('deleteColumnSocket -->', deleteColumnSocket)
+      socket.emit("delete_column", {
+        boardId: idSession,
+        index: payload.index,
+      });
+    },
+    [socket, idSession]
+  );
+
+  const updateTitleColumnSocket = useCallback(
+    (payload) => {
+      socket.emit("update_title_column", {
+        boardId: idSession,
+        content: payload.content,
+        index: payload.index
+      });
+    },
+    [socket, idSession]
+  );
+
+  const updateLikeSocket = useCallback(
+    (payload) => {
+      socket.emit("update_like", {
+        boardId: idSession,
+        isIncrement: payload.isIncrement,
+        indexCard: payload.indexCard,
+        indexColumn: payload.indexColumn
+      });
+    },
+    [socket, idSession]
+  );
+
+  const deleteCardSocket = useCallback(
+    (payload) => {
+      socket.emit("delete_card", {
+        boardId: idSession,
+        indexCard: payload.indexCard,
+        indexColumn: payload.indexColumn
+      });
+    },
+    [socket, idSession]
+  );
+
+  const saveCardSocket = useCallback(
+    (payload) => {
+      socket.emit("save_card", {
+        boardId: idSession,
+        content: payload.content,
+        indexCard: payload.indexCard,
+        indexColumn: payload.indexColumn,
       });
     },
     [socket, idSession]
@@ -123,5 +188,5 @@ export const useSocket = (
     };
   }, [idSession]);
 
-  return { socketResponse, isConnected, updateStatusRoom, votar, addCardSocket, reorderBoardSocket };
+  return { socketResponse, isConnected, updateStatusRoom, votar, addCardSocket, reorderBoardSocket, combineCardSocket, deleteColumnSocket, updateTitleColumnSocket, updateLikeSocket, deleteCardSocket, saveCardSocket };
 };

@@ -1,5 +1,5 @@
 const { connectClient, desconnectClient, updateStatusRoom, updateVote } = require('../services/poker/socketService');
-const { addCardBoard, reorderBoard } = require('../services/retro/socketRetroService');
+const { addCardBoard, reorderBoard, processCombine, deleteColumn, updateTitleColumn, updateLike, deleteCard, saveCard } = require('../services/retro/socketRetroService');
 const logger = require('../services/generic/cloudWatchLoggerService');
 
 const setupSocketIo = (io) => {
@@ -97,7 +97,6 @@ const setupSocketIo = (io) => {
 
       try {
         let board = await addCardBoard(data.boardId, data.newCard, data.indexColumn);
-        console.log('emit -->', board.id, board)
         io.to(data.boardId).emit('data_board', board);
         //   const elapsedTime = (performance.now() - start).toFixed(3);
         //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
@@ -113,12 +112,109 @@ const setupSocketIo = (io) => {
 
       try {
         let board = await reorderBoard(data.boardId, data.source, data.destination);
-        console.log('emit -->', board.id, board)
         io.to(data.boardId).emit('data_board', board);
         //   const elapsedTime = (performance.now() - start).toFixed(3);
         //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
       } catch (erro) {
         console.error('Erro ao criar card', erro);
+        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+      }
+    });
+
+    socket.on('combine_card', async (data) => {
+      const start = performance.now()
+      console.info('combine_card');
+
+      try {
+        let board = await processCombine(data.boardId, data.source, data.combine);
+        io.to(data.boardId).emit('data_board', board);
+        //   const elapsedTime = (performance.now() - start).toFixed(3);
+        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
+      } catch (erro) {
+        console.error('Erro ao combinar card', erro);
+        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+      }
+    });
+
+
+    socket.on('delete_column', async (data) => {
+      const start = performance.now()
+      console.info('delete_column');
+
+      try {
+        let board = await deleteColumn(data.boardId, data.index);
+        io.to(data.boardId).emit('data_board', board);
+        //   const elapsedTime = (performance.now() - start).toFixed(3);
+        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
+      } catch (erro) {
+        console.error('Erro ao combinar card', erro);
+        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+      }
+    });
+
+
+    socket.on('update_title_column', async (data) => {
+      const start = performance.now()
+      console.info('update_title_column');
+
+      try {
+        let board = await updateTitleColumn(data.boardId, data.content, data.index);
+        io.to(data.boardId).emit('data_board', board);
+        //   const elapsedTime = (performance.now() - start).toFixed(3);
+        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
+      } catch (erro) {
+        console.error('Erro ao combinar card', erro);
+        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+      }
+    });
+
+
+
+    socket.on('update_like', async (data) => {
+      const start = performance.now()
+      console.info('update_like');
+
+      try {
+        let board = await updateLike(data.boardId, data.isIncrement, data.indexCard, data.indexColumn);
+        io.to(data.boardId).emit('data_board', board);
+        //   const elapsedTime = (performance.now() - start).toFixed(3);
+        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
+      } catch (erro) {
+        console.error('Erro ao combinar card', erro);
+        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+      }
+    });
+
+
+
+    socket.on('delete_card', async (data) => {
+      const start = performance.now()
+      console.info('delete_card');
+
+      try {
+        let board = await deleteCard(data.boardId, data.indexCard, data.indexColumn);
+        io.to(data.boardId).emit('data_board', board);
+        //   const elapsedTime = (performance.now() - start).toFixed(3);
+        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
+      } catch (erro) {
+        console.error('Erro ao combinar card', erro);
+        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+      }
+    });
+
+
+
+    socket.on('save_card', async (data) => {
+      const start = performance.now()
+      console.info('save_card');
+
+      try {
+        let board = await saveCard(data.boardId, data.content, data.indexCard, data.indexColumn);
+        io.to(data.boardId).emit('data_board', board);
+        //   const elapsedTime = (performance.now() - start).toFixed(3);
+        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
+      } catch (erro) {
+        console.error('Erro ao combinar card', erro);
         //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
       }
     });

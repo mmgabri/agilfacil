@@ -52,7 +52,7 @@ export const BoardPage = ({ }) => {
   const handleShowInvite = () => setShowInvite(true);
   const handleCloseInvite = () => setShowInvite(false);
 
-  const { socketResponse, addCardSocket, reorderBoardSocket } = useSocket(location.state.userName, location.state.userId, location.state.boardData.boardId, 'retro')
+  const { socketResponse, addCardSocket, reorderBoardSocket, combineCardSocket, updateTitleColumnSocket, updateLikeSocket, deleteCardSocket, saveCardSocket, deleteColumnSocket } = useSocket(location.state.userName, location.state.userId, location.state.boardData.boardId, 'retro')
 
   useEffect(() => {
     setBoardData(location.state.boardData);
@@ -60,17 +60,28 @@ export const BoardPage = ({ }) => {
 
   useEffect(() => {
     console.log('useEffect - socketResponse ==>', socketResponse);
-
+  
     if (socketResponse && socketResponse.boardId) {
-      setBoardData(prevBoardData => ({
-        ...prevBoardData,
-        ...socketResponse, // Garante que as novas referências sejam criadas
-      }));
-      console.log('Board atualizado com socketResponse:', socketResponse);
+      setBoardData(prevBoardData => {
+        const updatedBoard = {
+          ...prevBoardData,
+          columns: socketResponse.columns || prevBoardData.columns, // Atualiza as colunas
+          title: socketResponse.title || prevBoardData.title, // Caso você tenha mais campos no board
+          description: socketResponse.description || prevBoardData.description,
+        };
+        console.log('Board atualizado com socketResponse:', updatedBoard);
+        return updatedBoard;
+      });
     } else {
       console.error('socketResponse inválido');
     }
   }, [socketResponse]);
+  
+
+  useEffect(() => {
+    console.log('Estado boardData atualizado:', boardData);
+  }, [boardData]);
+  
 
 
   const onDragEnd = (result) => {
@@ -80,12 +91,11 @@ export const BoardPage = ({ }) => {
     const { source, destination, combine } = result;
 
     if (destination) {
-      console.log('reorder')
       reorderBoardSocket({source, destination})
       const updatedColumns = reorderboardData(boardData, source, destination);
       setBoardData({ ...boardData, columns: updatedColumns });
     } else if (combine) {
-      console.log('combine')
+      combineCardSocket({source, combine})
       const updatedColumns = processCombine(boardData, source, combine);
       setBoardData({ ...boardData, columns: updatedColumns });
     }
@@ -103,26 +113,32 @@ export const BoardPage = ({ }) => {
   const onSaveCard = (content, indexCard, indexColumn) => {
     const updatedColumns = saveCard(boardData, content, indexCard, indexColumn);
     setBoardData({ ...boardData, updatedColumns });
+    saveCardSocket({content:content, indexCard:indexCard, indexColumn:indexColumn})
   };
 
   const onDeleteCard = (indexCard, indexColumn) => {
     const updatedColumns = deleteCard(boardData, indexCard, indexColumn);
     setBoardData({ ...boardData, updatedColumns });
+    deleteCardSocket({indexCard:indexCard, indexColumn:indexColumn})
   };
 
   const onUpdateLike = (isIncrement, indexCard, indexColumn) => {
     const updatedColumns = updateLike(boardData, isIncrement, indexCard, indexColumn);
     setBoardData({ ...boardData, updatedColumns });
+    updateLikeSocket({isIncrement:isIncrement, indexCard:indexCard, indexColumn:indexColumn})
   };
 
   const onUpdateTitleColumn = (content, index) => {
     const updatedColumns = updateTitleColumn(boardData, content, index);
     setBoardData({ ...boardData, updatedColumns });
+    updateTitleColumnSocket({content:content, index:index})
   };
 
   const onDeleteColumn = (index) => {
+    console.log('onDeleteColumn', index)
     const updatedColumns = deleteColumn(boardData, index);
     setBoardData({ ...boardData, updatedColumns });
+    deleteColumnSocket({index:index})
   };
 
   const onAddCard = (newCard, indexColumn) => {
