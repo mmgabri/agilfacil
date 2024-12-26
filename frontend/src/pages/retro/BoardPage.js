@@ -60,29 +60,18 @@ export const BoardPage = ({ }) => {
 
   useEffect(() => {
     console.log('useEffect - socketResponse ==>', socketResponse);
-  
+
     if (socketResponse && socketResponse.boardId) {
-      setBoardData(prevBoardData => {
-        const updatedBoard = {
-          ...prevBoardData,
-          columns: socketResponse.columns || prevBoardData.columns, // Atualiza as colunas
-          title: socketResponse.title || prevBoardData.title, // Caso você tenha mais campos no board
-          description: socketResponse.description || prevBoardData.description,
-        };
-        console.log('Board atualizado com socketResponse:', updatedBoard);
-        return updatedBoard;
-      });
+      setBoardData(prevBoardData => ({
+        ...prevBoardData,
+        ...socketResponse, // Garante que as novas referências sejam criadas
+      }));
+      console.log('Board atualizado com socketResponse:', socketResponse);
     } else {
       console.error('socketResponse inválido');
     }
   }, [socketResponse]);
   
-
-  useEffect(() => {
-    console.log('Estado boardData atualizado:', boardData);
-  }, [boardData]);
-  
-
 
   const onDragEnd = (result) => {
     console.log('--- onDragEnd ---')

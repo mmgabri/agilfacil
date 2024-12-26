@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { v4 as uuidv4 } from 'uuid';
 import { MdMoreVert, MdEdit, MdCheck } from 'react-icons/md';
@@ -12,6 +12,10 @@ const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard, index, onUpdateTi
   const [title, setTitle] = useState(columnTitle || 'Título da Coluna');
   const [isEdited, setIsEdited] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => {
+    setTitle(columnTitle); 
+  }, [columnTitle]);
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
