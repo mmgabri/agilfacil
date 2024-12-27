@@ -1,5 +1,5 @@
 const { connectClient, desconnectClient, updateStatusRoom, updateVote } = require('../services/poker/socketService');
-const { addCardBoard, reorderBoard, processCombine, deleteColumn, updateTitleColumn, updateLike, deleteCard, saveCard } = require('../services/retro/socketRetroService');
+const { connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, updateTitleColumn, updateLike, deleteCard, saveCard } = require('../services/retro/socketRetroService');
 const logger = require('../services/generic/cloudWatchLoggerService');
 
 const setupSocketIo = (io) => {
@@ -12,10 +12,18 @@ const setupSocketIo = (io) => {
     console.log('service ==>', service, idSession)
 
     if (service === 'retro') {
-      //TO DO
       console.log('trata retrospectiva')
       socket.join(idSession);
-      io.to(idSession).emit('retro_connection', 'A user connected in retro');
+
+      try {
+        let board = await connectClientRetro(idSession);
+        io.to(idSession).emit('data_board', board);
+        //   const elapsedTime = (performance.now() - start).toFixed(3);
+        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
+      } catch (erro) {
+        console.error('Erro ao combinar card', erro);
+        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+      }
     } else {
       try {
         let room = await connectClient(userName, userId, idSession);
@@ -105,7 +113,7 @@ const setupSocketIo = (io) => {
         //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
       }
     });
-    
+
     socket.on('reorder_board', async (data) => {
       const start = performance.now()
       console.info('reorder_board');

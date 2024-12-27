@@ -7,6 +7,124 @@ import { AiTwotoneLike } from 'react-icons/ai';
 
 import { colors } from "@atlaskit/theme";
 
+function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColumn, onSaveCard, onDeleteCard, onUpdateLike }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [content, setContent] = useState(card.content);
+  const [likeCount, setLikeCount] = useState(0);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
+  useEffect(() => {
+    setContent(card.content);
+  }, [card.content]);
+
+  const CustomToggle = forwardRef((props, ref) => (
+    <div
+      ref={ref}
+      {...props}  // Apenas as propriedades necessárias serão passadas
+      style={{ cursor: "pointer" }}
+    >
+      <StyledMdMoreVert />
+    </div>
+  ));
+
+  const handleOutsideClick = (e) => {
+    if (menuRef.current && !menuRef.current.contains(e.target)) {
+      setIsMenuOpen(false);
+    }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setIsMenuOpen(false);
+  };
+
+  const handleSave = () => {
+    setIsEditing(false);
+    setIsMenuOpen(false);
+    onSaveCard(content, index, indexColumn);
+  };
+
+  const handleDelete = () => {
+    setIsEditing(false);
+    onDeleteCard(index, indexColumn);
+  };
+
+  const handleLikeClick = () => {
+    if (likeCount === 0) {
+      onUpdateLike(true, index, indexColumn)
+    } else {
+      onUpdateLike(false, index, indexColumn)
+    }
+    setLikeCount(likeCount === 0 ? 1 : 0);
+  };
+
+  return (
+    <Container
+      ref={provided.innerRef}
+      {...provided.draggableProps}
+      {...provided.dragHandleProps}
+      $isDragging={isDragging}
+      $isGroupedOver={isGroupedOver}
+      data-is-dragging={isDragging}
+      data-testid={card.id}
+      data-index={index}
+    >
+      <Content>
+        {isEditing ? (
+          <StyledTextarea
+            value={content}
+            rows={4}
+            onChange={(e) => setContent(e.target.value)}
+            onBlur={handleSave}
+            autoFocus
+          />
+        ) : (
+          <div>{card.content}</div>
+        )}
+      </Content>
+      <IconContainer ref={menuRef}>
+        {isEditing ? (
+          <StyledMdCheck onClick={handleSave} style={{ cursor: "pointer" }} />
+        ) : (
+          <Dropdown show={isMenuOpen} onToggle={() => setIsMenuOpen((prev) => !prev)}>
+            <Dropdown.Toggle as={CustomToggle} id="dropdown-basic" />
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={handleEdit}>
+                <MdEdit style={{ marginRight: 5 }} />
+                Editar Card
+              </Dropdown.Item>
+              <Dropdown.Item onClick={handleDelete}>
+                <CiTrash style={{ marginRight: 5 }} />
+                Excluir Card
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
+      </IconContainer>
+      <ContainerLike>
+        <LikeIconContainer>
+          <StyledAiTwotoneLike onClick={handleLikeClick} />
+          <Count>{card.likeCount}</Count>
+        </LikeIconContainer>
+      </ContainerLike>
+    </Container>
+  );
+}
+
+export default memo(CardItem);
+
+
+
+// Estilizações
+
 const getBackgroundColor = (isDragging, isGroupedOver) => {
   if (isDragging) return "#D8968C";
   if (isGroupedOver) return "#77DD77";
@@ -204,124 +322,3 @@ const StyledTextarea = styled.textarea`
     outline: none;  // Remove a borda padrão de foco
   }
 `;
-
-
-function CardItem({ card, isDragging, provided, style, isClone, index, isGroupedOver, indexColumn, onSaveCard, onDeleteCard, onUpdateLike }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [content, setContent] = useState(card.content);
-  const [likeCount, setLikeCount] = useState(0);
-  const menuRef = useRef(null);
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, []);
-
-  useEffect(() => {
-    setContent(card.content); 
-  }, [card.content]);
-
-  const CustomToggle = forwardRef((props, ref) => (
-    <div
-      ref={ref}
-      {...props}  // Apenas as propriedades necessárias serão passadas
-      style={{ cursor: "pointer" }}
-    >
-      <StyledMdMoreVert />
-    </div>
-  ));
-
-  const handleOutsideClick = (e) => {
-    if (menuRef.current && !menuRef.current.contains(e.target)) {
-      setIsMenuOpen(false);
-    }
-  };
-
-  const handleEdit = () => {
-    setIsEditing(true);
-    setIsMenuOpen(false);
-  };
-
-  const handleSave = () => {
-    setIsEditing(false);
-    setIsMenuOpen(false);
-    onSaveCard(content, index, indexColumn);
-  };
-
-  const handleDelete = () => {
-    setIsEditing(false);
-    onDeleteCard(index, indexColumn);
-  };
-
-  const handleLikeClick = () => {
-    if (likeCount === 0) {
-      onUpdateLike(true, index, indexColumn)
-    } else {
-      onUpdateLike(false, index, indexColumn)
-    }
-    setLikeCount(likeCount === 0 ? 1 : 0);
-  };
-
-  function getStyle(provided, style) {
-    return style ? { ...provided.draggableProps.style, ...style } : provided.draggableProps.style;
-  }
-
-  return (
-    <Container
-      ref={provided.innerRef}
-      {...provided.draggableProps}
-      {...provided.dragHandleProps}
-      style={getStyle(provided, style)}
-      $isDragging={isDragging} // Use $isDragging
-      $isGroupedOver={isGroupedOver} // Use $isGroupedOver
-      data-is-dragging={isDragging}
-      data-testid={card.id}
-      data-index={index}
-    >
-      {isClone && <CloneBadge>Clone</CloneBadge>}
-      <Content>
-        {isEditing ? (
-          <StyledTextarea
-            value={content}
-            rows={4}
-            onChange={(e) => setContent(e.target.value)}
-            onBlur={handleSave}
-            autoFocus
-          />
-        ) : (
-          <div>{card.content}</div>
-        )}
-      </Content>
-      <IconContainer ref={menuRef}>
-        {isEditing ? (
-          <StyledMdCheck onClick={handleSave} style={{ cursor: "pointer" }} />
-        ) : (
-          <Dropdown show={isMenuOpen} onToggle={() => setIsMenuOpen((prev) => !prev)}>
-            <Dropdown.Toggle as={CustomToggle} id="dropdown-basic" />
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={handleEdit}>
-                <MdEdit style={{ marginRight: 5 }} />
-                Editar Card
-              </Dropdown.Item>
-              <Dropdown.Item onClick={handleDelete}>
-                <CiTrash style={{ marginRight: 5 }} />
-                Excluir Card
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        )}
-      </IconContainer>
-      <ContainerLike>
-        <LikeIconContainer>
-          <StyledAiTwotoneLike onClick={handleLikeClick} />
-          <Count>{card.likeCount}</Count>
-        </LikeIconContainer>
-      </ContainerLike>
-    </Container>
-  );
-}
-
-export default memo(CardItem);

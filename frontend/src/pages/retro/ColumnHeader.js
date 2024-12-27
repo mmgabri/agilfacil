@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import styled from "@emotion/styled";
 import { Dropdown } from 'react-bootstrap';
 import { v4 as uuidv4 } from 'uuid';
 import { MdMoreVert, MdEdit, MdCheck } from 'react-icons/md';
@@ -7,63 +8,21 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import './retro.css';
 import ModalAddCard from './ModalAddCard';
 
-const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard, index, onUpdateTitleColumn, onDeleteColumn }) => {
+const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDeleteColumn }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(columnTitle || 'Título da Coluna');
-  const [isEdited, setIsEdited] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    setTitle(columnTitle); 
+    setTitle(columnTitle);
   }, [columnTitle]);
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
   };
 
-  const handleMouseOver = (e) => {
-    e.currentTarget.style.color = '#3498db';
-  };
-
-  const handleMouseOut = (e) => {
-    e.currentTarget.style.color = '#10b981';
-  };
-
-  const columnHeaderStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: '10px',
-    borderRadius: '8px',
-    backgroundColor: '#2c3e50',
-    color: 'white',
-    border: '2px solid #34495e',
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
-    transition: 'all 0.3s ease-in-out',
-    width: '100%',
-    marginBottom: '7px'
-  };
-
-  const titleStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    width: '100%',
-    alignItems: 'center',
-  };
-
-  const iconStyle = {
-    color: '#C0C0C0',
-    cursor: 'pointer',
-    transition: 'color 0.2s ease',
-  };
-
-  const iconHoverStyle = {
-    color: '#3498db',
-  };
-
   const handleSaveTitle = () => {
     setIsEditing(false);
-    setIsEdited(true);
     onUpdateTitleColumn(title, index)
   };
 
@@ -72,7 +31,7 @@ const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard, index, onUpdateTi
   };
 
   const handleModalAddCardSubmit = (value) => {
-  
+
     const newCard = {
       id: uuidv4(),
       content: value,
@@ -83,13 +42,8 @@ const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard, index, onUpdateTi
   };
 
 
-  const handleAddCardModal = () => {
-    setModalOpen(true)
-  };
-
-
   return (
-    <div style={columnHeaderStyle}>
+    <ColumnHeaderContainer>
       <ModalAddCard
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
@@ -97,8 +51,8 @@ const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard, index, onUpdateTi
         title={title}
       />
 
-      <div style={titleStyle}>
-        <div style={{ fontSize: '17px', color: '#C0C0C0', marginTop: '5px', marginBottom: '3px' }}>
+      <TitleContainer>
+        <Title>
           {isEditing ? (
             <input
               type="text"
@@ -110,85 +64,161 @@ const ColumnHeader = ({ columnTitle, onUpdateTitle, onAddCard, index, onUpdateTi
           ) : (
             title
           )}
-        </div>
+        </Title>
 
-        {/* Ícone de 3 pontinhos */}
         <Dropdown align="end">
           <Dropdown.Toggle
             variant="link"
             id="dropdown-custom-components"
             as="div"
-            style={{
-              padding: 0,
-              display: 'flex',
-              alignItems: 'center',
-              border: 'none',
-              boxShadow: 'none',
-            }}
+            style={dropdownToggleStyle}
           >
-            <div style={iconStyle}>
+            <IconContainer>
               {isEditing ? (
-                <MdCheck
-                  size={19}
-                  onClick={handleSaveTitle}
-                  style={iconHoverStyle}
-                />
+                <StyledMdCheck />
               ) : (
-                <MdMoreVert size={19} style={iconHoverStyle} />
+                <StyledMdMoreVert />
               )}
-            </div>
+            </IconContainer>
           </Dropdown.Toggle>
 
-          <Dropdown.Menu
-            style={{
-              backgroundColor: '#2f2f2f',
-              borderRadius: '8px',
-              padding: '10px',
-            }}
-          >
+          <Dropdown.Menu style={dropdownMenuStyle}>
             <Dropdown.Item
               onClick={() => setIsEditing(true)}
-              style={{
-                fontSize: '12px',
-                color: '#c0c0c0',
-                backgroundColor: '#2f2f2f',
-                borderRadius: '5px',
-              }}
+              style={dropdownItemStyle}
             >
-              <MdEdit style={{ marginRight: 8 }} />
+              <MdEdit style={iconMarginStyle} />
               Editar Título
             </Dropdown.Item>
             <Dropdown.Item
               onClick={handleDeleteColumn}
-              style={{
-                fontSize: '12px',
-                color: '#c0c0c0',
-                backgroundColor: '#2f2f2f',
-                borderRadius: '5px',
-              }}
+              style={dropdownItemStyle}
             >
-              <FaRegTrashAlt style={{ marginRight: 8 }} />
+              <FaRegTrashAlt style={iconMarginStyle} />
               Excluir coluna
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
-      </div>
+      </TitleContainer>
 
-      {/* Ícone de Adicionar Card com efeito de hover */}
-      <div
-        className="add-icon-container"
-        style={{ cursor: 'pointer', transition: 'color 0.2s ease' }}
-      >
-        <IoIosAddCircleOutline
-          onClick={handleAddCardModal}
-          size={25}
-          style={{ color: '#10b981', transition: 'color 0.2s ease' }}
-          onMouseOver={handleMouseOver}
-          onMouseOut={handleMouseOut}
-        />
-      </div>
-    </div>
+      <AddIconContainer>
+        <StyledIoIosAddCircleOutline onClick={() => setModalOpen(true)}/>
+      </AddIconContainer>
+    </ColumnHeaderContainer>
   );
 };
 
 export default ColumnHeader;
+
+
+// Estilizações
+const ColumnHeaderContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #2c3e50;
+  color: white;
+  border: 2px solid #34495e;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+  width: 100%;
+  margin-bottom: 7px;
+`;
+
+const TitleContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+`;
+
+const Title = styled.div`
+  font-size: 17px;
+  color: #c0c0c0;
+  margin-top: 5px;
+  margin-bottom: 3px;
+`;
+
+const IconContainer = styled.div`
+  color: #c0c0c0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+`;
+
+const StyledIoIosAddCircleOutline = styled(IoIosAddCircleOutline)`
+  color: #10b981;  // Cor do ícone (um tom de cinza)
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;  
+  font-size: 25px;  
+  
+  &:hover {
+    color: #4169E1; 
+    transform: scale(1.4); 
+  }
+`;
+
+const StyledMdMoreVert = styled(MdMoreVert)`
+  color: #4169E1;  // Cor do ícone (um tom de cinza)
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;  
+  font-size: 17px;  
+  
+  &:hover {
+    color: #10b981; 
+    transform: scale(1.4); 
+  }
+`;
+
+const StyledMdCheck = styled(MdCheck)`
+  color: white;  // Cor do ícone
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;
+  font-size: 30px;
+
+  // Adicionando fundo verde e tornando o ícone circular
+  background-color: #10b981;  // Cor do fundo (verde)
+  border-radius: 50%;  // Tornar o fundo circular
+  padding: 8px;  // Espaçamento interno para o ícone
+  display: inline-flex;  // Manter o ícone alinhado
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    color: #ffffff;  // Cor do ícone ao passar o mouse
+    transform: scale(1.1);  // Aumentar o tamanho do ícone ao passar o mouse
+    background-color: #1c8e61;  // Cor de fundo ao passar o mouse (um tom mais escuro de verde)
+  }
+`;
+
+
+const dropdownToggleStyle = {
+  padding: 0,
+  display: 'flex',
+  alignItems: 'center',
+  border: 'none',
+  boxShadow: 'none',
+};
+
+const dropdownMenuStyle = {
+  backgroundColor: '#2f2f2f',
+  borderRadius: '8px',
+  padding: '10px',
+};
+
+const dropdownItemStyle = {
+  fontSize: '12px',
+  color: '#c0c0c0',
+  backgroundColor: '#2f2f2f',
+  borderRadius: '5px',
+};
+
+const iconMarginStyle = {
+  marginRight: 8,
+};
+
+const AddIconContainer = styled.div`
+  cursor: pointer;
+  transition: color 0.2s ease;
+`;

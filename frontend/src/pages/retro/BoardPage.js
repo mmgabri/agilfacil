@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from 'react-router-dom'
 import { createUseStyles } from "react-jss";
-import { colors } from "@atlaskit/theme";
 import { DragDropContext } from "react-beautiful-dnd";
 import Columns from "./Columns";
 import { reorderboardData, processCombine, saveCard, deleteCard, updateLike, updateTitleColumn, deleteColumn, addCard } from "./FunctionsRetro";
@@ -9,38 +8,6 @@ import Header from './HeaderBoard';
 import { useSocket } from "../../customHooks/useSocket";
 import 'react-toastify/dist/ReactToastify.css';
 import './retro.css';
-
-const useStyles = createUseStyles({
-  root: {
-    backgroundColor: "#1C1C1C",
-    boxSizing: "border-box",
-    padding: 10,
-    height: "auto", // Ajusta automaticamente a altura conforme o conteúdo
-    display: "grid",
-    gridAutoFlow: "column",
-    gridAutoColumns: "1fr",
-    gap: "10px",
-    width: "100%",
-    overflowX: "auto", // Pode ser necessário manter a rolagem horizontal, dependendo da largura
-  },
-
-  column: {
-    minWidth: "250px",
-    minHeight: "400px", // Altura mínima para evitar que a coluna encolha demais
-    height: "auto", // Permite que a coluna se ajuste conforme o conteúdo
-    backgroundColor: "#282c34",
-    border: "1px solid #444",
-    borderRadius: "8px",
-    boxSizing: "border-box",
-    padding: "0px",
-    transition: "width 0.3s ease, height 0.3s ease", // Animação também para a altura
-    display: "flex",
-    flexDirection: "column",
-    //   overflow: "auto", // Faz com que a altura da coluna se ajuste conforme o conteúdo
-  }
-
-});
-
 
 export const BoardPage = ({ }) => {
   let navigate = useNavigate();
@@ -54,12 +21,14 @@ export const BoardPage = ({ }) => {
 
   const { socketResponse, addCardSocket, reorderBoardSocket, combineCardSocket, updateTitleColumnSocket, updateLikeSocket, deleteCardSocket, saveCardSocket, deleteColumnSocket } = useSocket(location.state.userName, location.state.userId, location.state.boardData.boardId, 'retro')
 
+
   useEffect(() => {
     setBoardData(location.state.boardData);
   }, []);
 
+
   useEffect(() => {
-    console.log('useEffect - socketResponse ==>', socketResponse);
+//    console.log('useEffect - socketResponse ==>', socketResponse);
 
     if (socketResponse && socketResponse.boardId) {
       setBoardData(prevBoardData => ({
@@ -68,10 +37,10 @@ export const BoardPage = ({ }) => {
       }));
       console.log('Board atualizado com socketResponse:', socketResponse);
     } else {
-      console.error('socketResponse inválido');
+      console.error('socketResponse inválido', socketResponse);
     }
   }, [socketResponse]);
-  
+
 
   const onDragEnd = (result) => {
     console.log('--- onDragEnd ---')
@@ -80,7 +49,7 @@ export const BoardPage = ({ }) => {
     const { source, destination, combine } = result;
 
     if (destination) {
-      reorderBoardSocket({source, destination})
+      reorderBoardSocket({ source, destination })
       const updatedColumns = reorderboardData(boardData, source, destination);
       setBoardData({ ...boardData, columns: updatedColumns });
     } else if (combine) {
@@ -166,3 +135,38 @@ export const BoardPage = ({ }) => {
 };
 
 export default BoardPage;
+
+
+
+// Estilizações
+
+const useStyles = createUseStyles({
+  root: {
+    backgroundColor: "#1C1C1C",
+    boxSizing: "border-box",
+    padding: 10,
+    height: "auto", // Ajusta automaticamente a altura conforme o conteúdo
+    display: "grid",
+    gridAutoFlow: "column",
+    gridAutoColumns: "1fr",
+    gap: "10px",
+    width: "100%",
+    overflowX: "auto", // Pode ser necessário manter a rolagem horizontal, dependendo da largura
+  },
+
+  column: {
+    minWidth: "250px",
+    minHeight: "400px", // Altura mínima para evitar que a coluna encolha demais
+    height: "auto", // Permite que a coluna se ajuste conforme o conteúdo
+    backgroundColor: "#282c34",
+    border: "1px solid #444",
+    borderRadius: "8px",
+    boxSizing: "border-box",
+    padding: "0px",
+    transition: "width 0.3s ease, height 0.3s ease", // Animação também para a altura
+    display: "flex",
+    flexDirection: "column",
+    //   overflow: "auto", // Faz com que a altura da coluna se ajuste conforme o conteúdo
+  }
+
+});

@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 import { MdOutlineRemoveCircleOutline } from "react-icons/md";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import 'react-toastify/dist/ReactToastify.css';
-import BoardPage from "./BoardPage";
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import { Title } from '../../styles/GenericTitleStyles';
 import Header from './HeaderCreateBoard';

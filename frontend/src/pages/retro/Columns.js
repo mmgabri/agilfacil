@@ -1,12 +1,85 @@
 import React, { memo } from "react";
 import styled from "@emotion/styled";
-import { colors } from "@atlaskit/theme";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import CardsItem from "./CardsItem";
 import ColumnHeader from "./ColumnHeader";
 
 const grid = 8;
 const scrollContainerHeight = 250;
+
+// Componente para montar as Colunas
+const ColumnContent = ({ cards, title, dropProvided, indexColumn, onSaveCard, onDeleteCard, onUpdateLike, onUpdateTitleColumn, onDeleteColumn, onAddCard }) => (
+  <InnerContainer>
+    <ColumnHeader columnTitle={title} index={indexColumn} onUpdateTitleColumn={onUpdateTitleColumn} onDeleteColumn={onDeleteColumn} onAddCard={onAddCard}></ColumnHeader>
+    <DropZone ref={dropProvided.innerRef}>
+      <DraggableCardList cards={cards} indexColumn={indexColumn} onSaveCard={onSaveCard} onDeleteCard={onDeleteCard} onUpdateLike={onUpdateLike} />
+      {dropProvided.placeholder}
+    </DropZone>
+  </InnerContainer>
+);
+
+// Componente para montar os Cards
+const DraggableCardList = memo(({ cards, indexColumn, onSaveCard, onDeleteCard, onUpdateLike }) =>
+  cards.map((card, index) => {
+    return (
+      <Draggable key={card.id} draggableId={card.id} index={index} indexColumn={indexColumn}>
+        {(dragProvided, dragSnapshot) => (
+          <CardsItem
+            card={card}
+            isDragging={dragSnapshot.isDragging}
+            isGroupedOver={Boolean(dragSnapshot.combineTargetFor)}
+            provided={dragProvided}
+            onSaveCard={onSaveCard}
+            onDeleteCard={onDeleteCard}
+            onUpdateLike={onUpdateLike}
+            index={index}
+            indexColumn={indexColumn}
+          />
+        )}
+      </Draggable>
+    );
+  })
+);
+
+
+// Componente principal
+export default function Column(props) {
+  const {isCombineEnabled, listId = "LIST", listType, cards, title, onSaveCard, onDeleteCard, onUpdateLike, onUpdateTitleColumn, onDeleteColumn, onAddCard, indexColumn } = props;
+
+  return (
+    <Droppable
+      droppableId={listId}
+      type={listType}
+      isCombineEnabled={isCombineEnabled}
+    >
+      {(dropProvided, dropSnapshot) => (
+        <ColumnsContainer>
+          <ColumnWrapper
+            isDraggingOver={dropSnapshot.isDraggingOver}
+            isDraggingFrom={Boolean(dropSnapshot.draggingFromThisWith)}
+            {...dropProvided.droppableProps}
+          >
+            <ColumnContent
+              cards={cards}
+              title={title}
+              dropProvided={dropProvided}
+              indexColumn={indexColumn}
+              onSaveCard={onSaveCard}
+              onDeleteCard={onDeleteCard}
+              onUpdateLike={onUpdateLike}
+              onUpdateTitleColumn={onUpdateTitleColumn}
+              onDeleteColumn={onDeleteColumn}
+              onAddCard={onAddCard}
+            />
+          </ColumnWrapper>
+        </ColumnsContainer>
+      )}
+    </Droppable>
+  );
+}
+
+
+// Estilizações
 
 // Função utilitária para definir o background dinamicamente
 const getBackgroundColor = (isDraggingOver, isDraggingFrom) => {
@@ -60,129 +133,4 @@ const ScrollContainer = styled.div`
   max-height: ${scrollContainerHeight}px;
 `;
 
-
 const InnerContainer = styled.div``;
-
-const DraggableCardList = (({ cards, indexColumn, onSaveCard, onDeleteCard, onUpdateLike }) =>
-  cards.map((card, index) => {
-    return (
-      <Draggable key={card.id} draggableId={card.id} index={index} indexColumn={indexColumn}>
-        {(dragProvided, dragSnapshot) => (
-          <CardsItem
-            card={card}
-            isDragging={dragSnapshot.isDragging}
-            isGroupedOver={Boolean(dragSnapshot.combineTargetFor)}
-            provided={dragProvided}
-            onSaveCard={onSaveCard}
-            onDeleteCard={onDeleteCard}
-            onUpdateLike={onUpdateLike}
-            index={index}
-            indexColumn={indexColumn}
-          />
-        )}
-      </Draggable>
-    );
-  })
-);
-
-// Subcomponente para renderizar o título e os cards dentro da área droppable
-const ColumnContent = ({ cards, title, dropProvided, indexColumn, onSaveCard, onDeleteCard, onUpdateLike, onUpdateTitleColumn, onDeleteColumn, onAddCard }) => (
-  <InnerContainer>
-    <ColumnHeader columnTitle={title} index={indexColumn} onUpdateTitleColumn={onUpdateTitleColumn} onDeleteColumn={onDeleteColumn} onAddCard={onAddCard}></ColumnHeader>
-    <DropZone ref={dropProvided.innerRef}>
-      <DraggableCardList cards={cards} indexColumn={indexColumn} onSaveCard={onSaveCard} onDeleteCard={onDeleteCard} onUpdateLike={onUpdateLike} />
-      {dropProvided.placeholder}
-    </DropZone>
-  </InnerContainer>
-);
-
-// Componente principal
-export default function Column(props) {
-  const {
-    ignoreContainerClipping,
-    internalScroll,
-    scrollContainerStyle,
-    isDropDisabled,
-    isCombineEnabled,
-    listId = "LIST",
-    listType,
-    style,
-    cards,
-    title,
-    useClone,
-    onSaveCard,
-    onDeleteCard,
-    onUpdateLike,
-    onUpdateTitleColumn,
-    onDeleteColumn,
-    onAddCard,
-    indexColumn
-  } = props;
-
-  return (
-    <Droppable
-      droppableId={listId}
-      type={listType}
-      ignoreContainerClipping={ignoreContainerClipping}
-      isDropDisabled={isDropDisabled}
-      isCombineEnabled={isCombineEnabled}
-      renderClone={
-        useClone
-          ? (provided, snapshot, descriptor) => (
-            <CardsItem
-              card={cards[descriptor.source.index]}
-              provided={provided}
-              isClone
-              onSaveCard={onSaveCard}
-              onDeleteCard={onDeleteCard}
-              onUpdateLike={onUpdateLike}
-            //   indexColumn={indexColumn}
-            />
-          )
-          : null
-      }
-    >
-      {(dropProvided, dropSnapshot) => (
-        <ColumnsContainer>
-          <ColumnWrapper
-            style={style}
-            isDraggingOver={dropSnapshot.isDraggingOver}
-            isDropDisabled={isDropDisabled}
-            isDraggingFrom={Boolean(dropSnapshot.draggingFromThisWith)}
-            {...dropProvided.droppableProps}
-          >
-            {internalScroll ? (
-              <ScrollContainer style={scrollContainerStyle}>
-                <ColumnContent
-                  cards={cards}
-                  title={title}
-                  dropProvided={dropProvided}
-                  indexColumn={indexColumn}
-                  onSaveCard={onSaveCard}
-                  onDeleteCard={onDeleteCard}
-                  onUpdateLike={onUpdateLike}
-                  onUpdateTitleColumn={onUpdateTitleColumn}
-                  onDeleteColumn={onDeleteColumn}
-                  onAddCard={onAddCard}
-                />
-              </ScrollContainer>
-            ) : (
-              <ColumnContent
-                cards={cards}
-                title={title}
-                dropProvided={dropProvided}
-                indexColumn={indexColumn}
-                onSaveCard={onSaveCard}
-                onDeleteCard={onDeleteCard}
-                onUpdateLike={onUpdateLike}
-                onUpdateTitleColumn={onUpdateTitleColumn}
-                onDeleteColumn={onDeleteColumn}
-                onAddCard={onAddCard}
-              />
-            )}
-          </ColumnWrapper>
-        </ColumnsContainer>
-      )}
-    </Droppable>
-  );
-}

@@ -175,7 +175,8 @@ export const useSocket = (
     });
 
     socketio.on("retro_connection", (res) => {
-      console.log(res)
+      console.log('retro_connection -->', res)
+      setSocketResponse(res)
     });
 
     socketio.on("retro_disconnect", (res) => {

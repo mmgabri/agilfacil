@@ -2,6 +2,21 @@ const roomsDb = require('../../database');
 const config = require('../../config');
 const { putTable, getBoardDb } = require('./dynamoRetroService');
 
+
+const connectClientRetro = (boardId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+      if (!boardData) {
+        return reject(new Error('Board não encontrado.'));
+      }
+      resolve(boardData);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 const addCardBoard = (boardId, newCard, indexColumn) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -360,4 +375,4 @@ const saveCard = (boardId, content, indexCard, indexColumn) => {
 
 
 
-module.exports = { addCardBoard, reorderBoard, processCombine, deleteColumn, updateTitleColumn, updateLike, deleteCard, saveCard };
+module.exports = {connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, updateTitleColumn, updateLike, deleteCard, saveCard };
