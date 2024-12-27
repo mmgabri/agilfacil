@@ -82,7 +82,7 @@ export const RoomPage = ({ }) => {
       <Header userName={userName} roomName={roomName} handleShowInvite={handleShowInvite} handleCloseInvite={handleCloseInvite} sairSala={sairSala} handleOpen={handleOpen} />
       <StatusSection roomData={roomData} moderator={moderator} handlerupdateStatusRoom={handlerupdateStatusRoom} />
 
-      {showInvite && <Invite roomId={roomId} onClose={handleCloseInvite} />}
+      {showInvite && <Invite id={roomId} onClose={handleCloseInvite} service={'poker'} />}
 
       {roomData.status == "VOTACAO_FINALIZADA"
         ?

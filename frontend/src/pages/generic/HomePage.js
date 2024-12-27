@@ -33,8 +33,8 @@ const HomePage = () => {
     navigate("/planning")
   }
 
-  const handleHomeRetro = () => {
-    navigate("/retro")
+  const handleHomeBoard = () => {
+    navigate("/board/create")
   }
 
   const handleOpen = () => {
@@ -58,13 +58,13 @@ const HomePage = () => {
             <ServiceTitle>Planning Poker</ServiceTitle> {/* Título destacado */}
             <ServiceLink>Estime suas histórias de forma colaborativa e eficaz.</ServiceLink> {/* Descrição */}
           </ServiceItem>
-          <ServiceItem onClick={handleHomeRetro}>
+          <ServiceItem onClick={handleHomeBoard}>
             <IconContainer>
               <StyledAiFillDislike />
               <StyledAiFillLike />
             </IconContainer>
-            <ServiceTitle>Retro Agil</ServiceTitle> {/* Título destacado */}
-            <ServiceLink>Reflexão e melhoria com retrospectiva ágil.</ServiceLink> {/* Descrição */}
+            <ServiceTitle>Board Interativo</ServiceTitle> {/* Título destacado */}
+            <ServiceLink>Faça Retrospectivas, Inceptions, Brainstorms e muito mais</ServiceLink> {/* Descrição */}
           </ServiceItem>
 
         </ServiceList>

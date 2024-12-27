@@ -5,6 +5,8 @@ import { DragDropContext } from "react-beautiful-dnd";
 import Columns from "./Columns";
 import { reorderboardData, processCombine, saveCard, deleteCard, updateLike, updateTitleColumn, deleteColumn, addCard } from "./FunctionsRetro";
 import Header from './HeaderBoard';
+import Invite from '../components/Invite';
+import SuggestionForm from '../components/SuggestionForm'
 import { useSocket } from "../../customHooks/useSocket";
 import 'react-toastify/dist/ReactToastify.css';
 import './retro.css';
@@ -60,11 +62,11 @@ export const BoardPage = ({ }) => {
 
   };
 
-  const sairSala = e => {
+  const exitBoard = e => {
     navigate('/');
   }
 
-  const handleOpen = () => {
+  const handleOpenSugestion = () => {
     setModalOpen(true);
   }
 
@@ -107,7 +109,8 @@ export const BoardPage = ({ }) => {
 
   return (
     <div className="bg-black-custom">
-      <Header boardName={boardData.boardId} handleShowInvite={handleShowInvite} handleCloseInvite={handleCloseInvite} sairSala={sairSala} handleOpen={handleOpen} />
+      <Header boardName={boardData.boardName} handleShowInvite={handleShowInvite} handleCloseInvite={handleCloseInvite} sairSala={exitBoard} handleOpenSugestion={handleOpenSugestion} />
+      {showInvite && <Invite id={boardData.boardId} onClose={handleCloseInvite} service={'board'} />}
       <DragDropContext onDragEnd={onDragEnd}>
         <div className={cl.root}>
           {boardData.columns.map((column, index) => (
@@ -130,6 +133,7 @@ export const BoardPage = ({ }) => {
           ))}
         </div>
       </DragDropContext>
+      {isModalOpen && <SuggestionForm onClose={() => setModalOpen(false)} />}
     </div>
   );
 };

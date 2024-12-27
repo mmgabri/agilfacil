@@ -60,6 +60,10 @@ export const CreateBoardPage = ({ }) => {
     }));
   };
 
+  const exitBoard = e => {
+    navigate('/');
+  }
+
   const handleSubmit = e => {
     e.preventDefault()
 
@@ -109,17 +113,16 @@ export const CreateBoardPage = ({ }) => {
     navigate("/")
   }
 
-  const handleOpen = () => {
+  const handleOpenSugestion = () => {
     setModalOpen(true);
   }
 
 
-
   return (
     <div className="bg-black-custom">
-      <Header />
+      <Header sairSala={exitBoard} handleOpenSugestion={handleOpenSugestion} />
       <div className="form-container">
-        <Title>Preencha os campos abaixo para criar o board da Retrospectiva</Title>
+        <Title>Preencha os campos abaixo para criar o Board interativo</Title>
         <form onSubmit={handleSubmit} className="form">
           <div className="form-group">
             <label htmlFor="boardName">Nome *</label>

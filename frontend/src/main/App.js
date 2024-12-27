@@ -38,12 +38,12 @@ function App() {
           <Route exact path="createroom" element={<CreateRoomPage />} />
           <Route exact path="room" element={<RoomPage />} />
           <Route exact path="guest" element={<GuestPage />} />
-          <Route path="/guest/:id" element={<GuestUrlPage />} />
+          <Route path="/room/guest/:id" element={<GuestUrlPage />} />
           <Route path="/notification" element={<NotificationPage />} />
 
-          <Route path="/retro" element={<CreateBoardPage />} />
+          <Route path="/board/create" element={<CreateBoardPage />} />
           <Route path="/board" element={<BoardPage />} />
-          <Route path="/retro/guest/:id" element={<GuestUrlRetroPage />} />
+          <Route path="/board/guest/:id" element={<GuestUrlRetroPage />} />
         </Routes>
       </BrowserRouter>
     </>
