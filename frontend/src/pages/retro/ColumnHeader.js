@@ -12,10 +12,23 @@ const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDe
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(columnTitle || 'Título da Coluna');
   const [isModalOpen, setModalOpen] = useState(false);
+  const [hoverIndex, setHoverIndex] = useState(null);
 
   useEffect(() => {
     setTitle(columnTitle);
   }, [columnTitle]);
+
+  const getDropdownItemStyle = (index) => ({
+    fontSize: '12px',
+    color: hoverIndex === index ? '#ffffff' : '#c0c0c0',
+    backgroundColor: hoverIndex === index ? '#404040' : '#2f2f2f',
+    borderRadius: '5px',
+    padding: '5px',
+    display: 'flex',
+    alignItems: 'center',
+    transition: 'background-color 0.3s, color 0.3s',
+    cursor: 'pointer',
+  });
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -85,14 +98,18 @@ const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDe
           <Dropdown.Menu style={dropdownMenuStyle}>
             <Dropdown.Item
               onClick={() => setIsEditing(true)}
-              style={dropdownItemStyle}
+              style={getDropdownItemStyle(0)}
+              onMouseEnter={() => setHoverIndex(0)}
+              onMouseLeave={() => setHoverIndex(null)}
             >
               <MdEdit style={iconMarginStyle} />
               Editar Título
             </Dropdown.Item>
             <Dropdown.Item
               onClick={handleDeleteColumn}
-              style={dropdownItemStyle}
+              style={getDropdownItemStyle(1)}
+              onMouseEnter={() => setHoverIndex(1)}
+              onMouseLeave={() => setHoverIndex(null)}
             >
               <FaRegTrashAlt style={iconMarginStyle} />
               Excluir coluna
@@ -207,12 +224,6 @@ const dropdownMenuStyle = {
   padding: '10px',
 };
 
-const dropdownItemStyle = {
-  fontSize: '12px',
-  color: '#c0c0c0',
-  backgroundColor: '#2f2f2f',
-  borderRadius: '5px',
-};
 
 const iconMarginStyle = {
   marginRight: 8,

@@ -13,6 +13,7 @@ function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColum
   const [content, setContent] = useState(card.content);
   const [likeCount, setLikeCount] = useState(0);
   const menuRef = useRef(null);
+  const [hoverIndex, setHoverIndex] = useState(null);
 
   useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
@@ -24,6 +25,18 @@ function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColum
   useEffect(() => {
     setContent(card.content);
   }, [card.content]);
+
+  const getDropdownItemStyle = (index) => ({
+    fontSize: '12px',
+    color: hoverIndex === index ? '#ffffff' : '#c0c0c0',
+    backgroundColor: hoverIndex === index ? '#404040' : '#2f2f2f',
+    borderRadius: '5px',
+    padding: '5px',
+    display: 'flex',
+    alignItems: 'center',
+    transition: 'background-color 0.3s, color 0.3s',
+    cursor: 'pointer',
+  });
 
   const CustomToggle = forwardRef((props, ref) => (
     <div
@@ -87,7 +100,9 @@ function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColum
             autoFocus
           />
         ) : (
-          <div>{card.content}</div>
+          <div style={{ whiteSpace: 'pre-wrap' }}>
+            {card.content}
+            </div>
         )}
       </Content>
       <IconContainer ref={menuRef}>
@@ -96,12 +111,20 @@ function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColum
         ) : (
           <Dropdown show={isMenuOpen} onToggle={() => setIsMenuOpen((prev) => !prev)}>
             <Dropdown.Toggle as={CustomToggle} id="dropdown-basic" />
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={handleEdit}>
+            <Dropdown.Menu style={dropdownMenuStyle}>
+              <Dropdown.Item
+                style={getDropdownItemStyle(0)}
+                onMouseEnter={() => setHoverIndex(0)}
+                onMouseLeave={() => setHoverIndex(null)}
+                onClick={handleEdit}>
                 <MdEdit style={{ marginRight: 5 }} />
                 Editar Card
               </Dropdown.Item>
-              <Dropdown.Item onClick={handleDelete}>
+              <Dropdown.Item
+                style={getDropdownItemStyle(1)}
+                onMouseEnter={() => setHoverIndex(1)}
+                onMouseLeave={() => setHoverIndex(null)}
+                onClick={handleDelete}>
                 <CiTrash style={{ marginRight: 5 }} />
                 Excluir Card
               </Dropdown.Item>
@@ -165,24 +188,6 @@ const getBackgroundColor = (isDragging, isGroupedOver) => {
 const getBorderColor = (isDragging) => (isDragging ? "black" : "transparent");
 
 const imageSize = 40;
-
-const CloneBadge = styled.div`
-  background: ${colors.G100};
-  bottom: 4px;
-  border: 2px solid ${colors.G200};
-  border-radius: 50%;
-  box-sizing: border-box;
-  font-size: 10px;
-  position: absolute;
-  right: -${imageSize / 3}px;
-  top: -${imageSize / 3}px;
-  transform: rotate(40deg);
-  height: ${imageSize}px;
-  width: ${imageSize}px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
 
 const Container = styled.div`
   position: relative;
@@ -286,21 +291,6 @@ const StyledMdMoreVert = styled(MdMoreVert)`
   }
 `;
 
-const StyledMdCheck = styled(MdCheck)`
-  color: #10b981;
-  cursor: pointer; 
-  transition: color 0.2s ease;
-  margin-top: 2px;
-  margin-right: 0px;
-  margin-left: 2px;
-  font-size: 20px;  // Tamanho do ícone (ajustado para 18px, pode ser modificado)
-
-  &:hover {
-    color: #3498db; // Muda a cor ao passar o mouse
-    transform: scale(1.4);  
-  }
-`;
-
 const StyledTextarea = styled.textarea`
   flex-grow: 1;   // Faz o textarea crescer para ocupar o espaço restante
   width: 100%;    // Garante que ocupe toda a largura disponível
@@ -315,10 +305,55 @@ const StyledTextarea = styled.textarea`
   border: 1px solid #ccc;  // Borda leve
   border-radius: 4px;  // Bordas arredondadas
   transition: border-color 0.2s ease;  // Suaviza a mudança de cor da borda
-  margin-right: 28px;
+  margin-right: 40px;
 
   &:focus {
     border-color: #3498db;  // Muda a cor da borda quando o campo está em foco
     outline: none;  // Remove a borda padrão de foco
   }
 `;
+
+const dropdownMenuStyle = {
+  backgroundColor: '#2f2f2f',
+  borderRadius: '8px',
+  padding: '10px',
+};
+
+const StyledMdCheck = styled(MdCheck)`
+  color: white;  // Cor do ícone
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;
+  font-size: 30px;
+
+
+
+  // Adicionando fundo verde e tornando o ícone circular
+  background-color: #10b981;  // Cor do fundo (verde)
+  border-radius: 50%;  // Tornar o fundo circular
+  padding: 8px;  // Espaçamento interno para o ícone
+  display: inline-flex;  // Manter o ícone alinhado
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    color: #ffffff;  // Cor do ícone ao passar o mouse
+    transform: scale(1.1);  // Aumentar o tamanho do ícone ao passar o mouse
+    background-color: #1c8e61;  // Cor de fundo ao passar o mouse (um tom mais escuro de verde)
+  }
+`;
+
+const StyledMdCheck2 = styled(MdCheck)`
+  color: #10b981;
+  cursor: pointer; 
+  transition: color 0.2s ease;
+  margin-top: 2px;
+  margin-right: 0px;
+  margin-left: 500px;
+  font-size: 20px;  // Tamanho do ícone (ajustado para 18px, pode ser modificado)
+
+  &:hover {
+    color: #3498db; // Muda a cor ao passar o mouse
+    transform: scale(1.4);  
+  }
+`;
+

@@ -77,7 +77,7 @@ const processCombineDifferentColumn = (boardData, source, combine) => {
   const combineCard = combineCards[combineCardIndex];
   combineCards[combineCardIndex] = {
     ...combineCard,
-    content: `${combineCard.content} ${sourceCard.content}`
+    content: `${combineCard.content}\n+\n${sourceCard.content}`
   };
 
   const updatedColumns = boardData.columns.map(column => {
@@ -116,7 +116,7 @@ const processCombineSameColumn = (boardData, source, combine) => {
   // Atualiza o conteúdo do item combinado, concatenando os textos
   combineCards[combineCardIndex] = {
     ...combineCard,
-    content: `${combineCard.content} ${sourceCard.content}`
+     content: `${combineCard.content}\n+\n${sourceCard.content}`
   };
 
   //Atualiza estado
