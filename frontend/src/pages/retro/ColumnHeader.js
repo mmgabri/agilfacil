@@ -4,19 +4,33 @@ import { Dropdown } from 'react-bootstrap';
 import { v4 as uuidv4 } from 'uuid';
 import { MdMoreVert, MdEdit, MdCheck } from 'react-icons/md';
 import { IoIosAddCircleOutline } from 'react-icons/io';
-import { FaRegTrashAlt } from "react-icons/fa";
+import { FaRegTrashAlt, FaPalette } from "react-icons/fa";
+import { FaTrashAlt } from "react-icons/fa";
 import './retro.css';
 import ModalAddCard from './ModalAddCard';
 
-const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDeleteColumn }) => {
+const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDeleteColumn, onDeleteAllCard, onUpdatecolorCards }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(columnTitle || 'Título da Coluna');
   const [isModalOpen, setModalOpen] = useState(false);
   const [hoverIndex, setHoverIndex] = useState(null);
+  const [selectedColor, setSelectedColor] = useState('#F0E68C');
+  const [showColorOptions, setShowColorOptions] = useState(false);
+  const [hoveredColor, setHoveredColor] = useState(null); // Para armazenar a cor sendo destacada
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
 
   useEffect(() => {
     setTitle(columnTitle);
   }, [columnTitle]);
+
+  const colorList = [
+    { name: 'Yellow1', color: '#F0E68C' },
+    { name: 'Pink', color: '#D8968C' },
+    { name: 'Green', color: '#98FB98' },
+    { name: 'Blue', color: '#BFEFFF' },
+    { name: 'Yellow2', color: '#DDBB66' }
+  ];
 
   const getDropdownItemStyle = (index) => ({
     fontSize: '12px',
@@ -43,6 +57,10 @@ const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDe
     onDeleteColumn(index)
   };
 
+  const handleDeleteAllCards = () => {
+    onDeleteAllCard(index)
+  };
+
   const handleModalAddCardSubmit = (value) => {
 
     const newCard = {
@@ -52,6 +70,14 @@ const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDe
       likeCount: 0
     }
     onAddCard(newCard, index)
+  };
+
+
+  const handleColorSelect = (color) => {
+    setSelectedColor(color);
+    setShowColorOptions(false);
+    setIsDropdownOpen(false);
+    onUpdatecolorCards(color, index)
   };
 
 
@@ -79,7 +105,11 @@ const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDe
           )}
         </Title>
 
-        <Dropdown align="end">
+        <Dropdown
+          align="end"
+          show={isDropdownOpen} // Controle explícito do estado de abertura do menu
+          onToggle={(isOpen) => setIsDropdownOpen(isOpen)} // Atualiza o estado ao abrir/fechar o menu
+        >
           <Dropdown.Toggle
             variant="link"
             id="dropdown-custom-components"
@@ -87,11 +117,7 @@ const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDe
             style={dropdownToggleStyle}
           >
             <IconContainer>
-              {isEditing ? (
-                <StyledMdCheck />
-              ) : (
-                <StyledMdMoreVert />
-              )}
+              {isEditing ? <StyledMdCheck /> : <StyledMdMoreVert />}
             </IconContainer>
           </Dropdown.Toggle>
 
@@ -114,12 +140,75 @@ const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDe
               <FaRegTrashAlt style={iconMarginStyle} />
               Excluir coluna
             </Dropdown.Item>
+            <Dropdown.Item
+              onClick={handleDeleteAllCards}
+              style={getDropdownItemStyle(2)}
+              onMouseEnter={() => setHoverIndex(2)}
+              onMouseLeave={() => setHoverIndex(null)}
+            >
+              <FaTrashAlt style={iconMarginStyle} />
+              Excluir todos os Cards
+            </Dropdown.Item>
+            <Dropdown.Item
+              onClick={(e) => {
+                e.stopPropagation(); // Impede o fechamento do menu ao clicar nesse item
+                setShowColorOptions(!showColorOptions); // Alterna a visibilidade da lista de cores
+              }}
+              style={getDropdownItemStyle(3)}
+              onMouseEnter={() => setHoverIndex(3)}
+              onMouseLeave={() => setHoverIndex(null)}
+            >
+              <FaPalette style={iconMarginStyle} />
+              Cor dos Cards
+            </Dropdown.Item>
+
+            {showColorOptions && (
+              <>
+                <Dropdown.Divider />
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '10px',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  {colorList.map((colorItem, index) => (
+                    <div
+                      key={index}
+                      onClick={(e) => {
+                        handleColorSelect(colorItem.color);
+                        setShowColorOptions(false); // Fecha a lista de cores
+                        setIsDropdownOpen(false); // Fecha o menu principal
+                      }}
+                      onMouseEnter={() => setHoveredColor(colorItem.color)}
+                      onMouseLeave={() => setHoveredColor(null)}
+                      style={{
+                        width: colorItem.color === selectedColor ? '50px' : '40px', // Tamanho maior para a cor selecionada
+                        height: colorItem.color === selectedColor ? '50px' : '40px',
+                        backgroundColor: colorItem.color,
+                        borderRadius: '50%', // Transformar em uma bola
+                        border:
+                          colorItem.color === selectedColor
+                            ? '3px solid #000'
+                            : '2px solid #ccc', // Destaque para a cor selecionada
+                        transform:
+                          hoveredColor === colorItem.color ? 'scale(1.2)' : 'scale(1)', // Efeito de zoom no hover
+                        transition: 'transform 0.2s ease-in-out, border 0.2s ease-in-out', // Transições suaves
+                        cursor: 'pointer',
+                      }}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </Dropdown.Menu>
         </Dropdown>
+
       </TitleContainer>
 
       <AddIconContainer>
-        <StyledIoIosAddCircleOutline onClick={() => setModalOpen(true)}/>
+        <StyledIoIosAddCircleOutline onClick={() => setModalOpen(true)} />
       </AddIconContainer>
     </ColumnHeaderContainer>
   );
@@ -168,7 +257,7 @@ const StyledIoIosAddCircleOutline = styled(IoIosAddCircleOutline)`
   color: #10b981;  // Cor do ícone (um tom de cinza)
   cursor: pointer;
   transition: color 0.3s ease, transform 0.2s ease;  
-  font-size: 25px;  
+  font-size: 30px;  
   
   &:hover {
     color: #4169E1; 
@@ -206,6 +295,29 @@ const StyledMdCheck = styled(MdCheck)`
     color: #ffffff;  // Cor do ícone ao passar o mouse
     transform: scale(1.1);  // Aumentar o tamanho do ícone ao passar o mouse
     background-color: #1c8e61;  // Cor de fundo ao passar o mouse (um tom mais escuro de verde)
+  }
+`;
+
+// Paleta de cores estilizada como botões
+const ColorGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+`;
+
+const ColorButton = styled.button`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid ${(props) => (props.selected ? '#000' : 'transparent')};
+  background-color: ${(props) => props.color};
+  cursor: pointer;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+
+  &:hover {
+    transform: scale(1.2);
+    border-color: #000;
   }
 `;
 

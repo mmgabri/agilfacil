@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import styled from "@emotion/styled";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import CardsItem from "./CardsItem";
@@ -8,18 +8,18 @@ const grid = 8;
 const scrollContainerHeight = 250;
 
 // Componente para montar as Colunas
-const ColumnContent = ({ cards, title, dropProvided, indexColumn, onSaveCard, onDeleteCard, onUpdateLike, onUpdateTitleColumn, onDeleteColumn, onAddCard }) => (
+const ColumnContent = ({ cards, title, colorCards, dropProvided, indexColumn, onSaveCard, onDeleteCard, onDeleteAllCard, onUpdateLike, onUpdateTitleColumn, onDeleteColumn, onAddCard, onUpdatecolorCards }) => (
   <InnerContainer>
-    <ColumnHeader columnTitle={title} index={indexColumn} onUpdateTitleColumn={onUpdateTitleColumn} onDeleteColumn={onDeleteColumn} onAddCard={onAddCard}></ColumnHeader>
+    <ColumnHeader columnTitle={title} index={indexColumn} onUpdateTitleColumn={onUpdateTitleColumn} onDeleteColumn={onDeleteColumn} onDeleteAllCard={onDeleteAllCard} onAddCard={onAddCard} onUpdatecolorCards={onUpdatecolorCards} ></ColumnHeader>
     <DropZone ref={dropProvided.innerRef}>
-      <DraggableCardList cards={cards} indexColumn={indexColumn} onSaveCard={onSaveCard} onDeleteCard={onDeleteCard} onUpdateLike={onUpdateLike} />
+      <DraggableCardList cards={cards} indexColumn={indexColumn} onSaveCard={onSaveCard} onDeleteCard={onDeleteCard}  onUpdateLike={onUpdateLike} colorCards={colorCards} />
       {dropProvided.placeholder}
     </DropZone>
   </InnerContainer>
 );
 
 // Componente para montar os Cards
-const DraggableCardList = memo(({ cards, indexColumn, onSaveCard, onDeleteCard, onUpdateLike }) =>
+const DraggableCardList = memo(({ cards, indexColumn, onSaveCard, onDeleteCard, onUpdateLike , colorCards}) =>
   cards.map((card, index) => {
     return (
       <Draggable key={card.id} draggableId={card.id} index={index} indexColumn={indexColumn}>
@@ -34,6 +34,7 @@ const DraggableCardList = memo(({ cards, indexColumn, onSaveCard, onDeleteCard, 
             onUpdateLike={onUpdateLike}
             index={index}
             indexColumn={indexColumn}
+            colorCards={colorCards}
           />
         )}
       </Draggable>
@@ -44,7 +45,7 @@ const DraggableCardList = memo(({ cards, indexColumn, onSaveCard, onDeleteCard, 
 
 // Componente principal
 export default function Column(props) {
-  const {isCombineEnabled, listId = "LIST", listType, cards, title, onSaveCard, onDeleteCard, onUpdateLike, onUpdateTitleColumn, onDeleteColumn, onAddCard, indexColumn } = props;
+  const {isCombineEnabled, listId = "LIST", listType, cards, title, colorCards, onSaveCard, onDeleteCard, onDeleteAllCard,  onUpdateLike, onUpdateTitleColumn, onDeleteColumn, onAddCard, onUpdatecolorCards, indexColumn } = props;
 
   return (
     <Droppable
@@ -66,10 +67,13 @@ export default function Column(props) {
               indexColumn={indexColumn}
               onSaveCard={onSaveCard}
               onDeleteCard={onDeleteCard}
+              onDeleteAllCard={onDeleteAllCard}
               onUpdateLike={onUpdateLike}
               onUpdateTitleColumn={onUpdateTitleColumn}
+              onUpdatecolorCards={onUpdatecolorCards}
               onDeleteColumn={onDeleteColumn}
               onAddCard={onAddCard}
+              colorCards={colorCards}
             />
           </ColumnWrapper>
         </ColumnsContainer>

@@ -97,7 +97,6 @@ const processCombineDifferentColumn = (boardData, source, combine) => {
 }
 
 const processCombineSameColumn = (boardData, source, combine) => {
-  const sourceCards = [...boardData.columns.find(col => col.id === source.droppableId).cards];
   const combineCards = [...boardData.columns.find(col => col.id === combine.droppableId).cards];
 
   //Obtem card movido
@@ -142,6 +141,13 @@ export const deleteCard = (boardData, indexCard, indexColumn) => {
   return updatedBoardData;
 }
 
+export const deleteAllCards = (boardData, indexColumn) => {
+  const updatedBoardData = { ...boardData };
+  const columnToUpdate = updatedBoardData.columns[indexColumn];
+  columnToUpdate.cards = [];
+  return updatedBoardData;
+};
+
 
 export const updateLike = (boardData, isIncrement, indexCard, indexColumn) => {
   const updatedBoardData = { ...boardData };
@@ -156,6 +162,14 @@ export const updateTitleColumn = (boardData, content, index) => {
   const updatedBoardData = { ...boardData };
   const columnToUpdate = updatedBoardData.columns[index];
   columnToUpdate.title = content;
+  return updatedBoardData;
+}
+
+export const updatecolorCards = (boardData, colorCards, index) => {
+  console.log('updatecolorCards',index , colorCards, boardData )
+  const updatedBoardData = { ...boardData };
+  const columnToUpdate = updatedBoardData.columns[index];
+  columnToUpdate.colorCards = colorCards;  
   return updatedBoardData;
 }
 

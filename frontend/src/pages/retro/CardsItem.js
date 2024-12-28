@@ -7,7 +7,7 @@ import { AiTwotoneLike } from 'react-icons/ai';
 
 import { colors } from "@atlaskit/theme";
 
-function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColumn, onSaveCard, onDeleteCard, onUpdateLike }) {
+function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColumn, onSaveCard, onDeleteCard, onUpdateLike, colorCards }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [content, setContent] = useState(card.content);
@@ -86,6 +86,7 @@ function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColum
       {...provided.dragHandleProps}
       $isDragging={isDragging}
       $isGroupedOver={isGroupedOver}
+      $colorCards={colorCards}
       data-is-dragging={isDragging}
       data-testid={card.id}
       data-index={index}
@@ -102,7 +103,7 @@ function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColum
         ) : (
           <div style={{ whiteSpace: 'pre-wrap' }}>
             {card.content}
-            </div>
+          </div>
         )}
       </Content>
       <IconContainer ref={menuRef}>
@@ -148,41 +149,12 @@ export default memo(CardItem);
 
 // Estilizações
 
-const getBackgroundColor = (isDragging, isGroupedOver) => {
+const getBackgroundColor = (isDragging, isGroupedOver, colorCards) => {
   if (isDragging) return "#D8968C";
   if (isGroupedOver) return "#77DD77";
-  return "#F0E68C";
+  if (colorCards) return colorCards
+  //return  "#F0E68C"
 
-  //Amarelo Claro: #FFFF00
-  //Amarelo Esverdeado: #9ACD32
-  //Amarelo Biscoito: #F0E68C - bom
-  //Amarelo Limão: #FFF700
-  //Amarelo Creme: #FFF5B7
-  //Amarelo Manteiga: #F6E3B4
-  //Amarelo Charme: #F9D423
-  //Amarelo Daffodil: #FFFF31
-  //Amarelo Banana: #FFE135
-  //Amarelo Marfim: #F4F1C1
-  //Amarelo Envelhecido: #DDBB66 - bom
-  //Amarelo Charme: #F9D423
-  //Amarelo Daffodil: #FFFF31
-  //Amarelo Banana: #FFE135
-  //Amarelo Marfim: #F4F1C1
-  //Amarelo Envelhecido: #DDBB66 - bom
-
-  //Verde Pastel: #77DD77
-  //Verde Floresta Claro: #6DBE45
-
-  //Verde Pastel: #77DD77
-  //Verde Floresta Claro: #6DBE45
-  //Rosa Pastel: #F7A7C1
-  //Rosa Quartzo: #F1C6D1
-  //Rosa Flamingo: #F6A5B2
-  //Rosa Envelhecido: #D8968C
-  //Rosa Pastel: #F7A7C1
-  //Rosa Quartzo: #F1C6D1
-  //Rosa Flamingo: #F6A5B2
-  //Rosa Envelhecido: #D8968C
 };
 
 const getBorderColor = (isDragging) => (isDragging ? "black" : "transparent");
@@ -194,7 +166,7 @@ const Container = styled.div`
   border-radius: 6px;
   border: 2px solid ${(props) => getBorderColor(props.$isDragging)};
   background-color: ${(props) =>
-    getBackgroundColor(props.$isDragging, props.$isGroupedOver)};
+    getBackgroundColor(props.$isDragging, props.$isGroupedOver, props.$colorCards)};
   box-shadow: ${(props) =>
     props.$isDragging
       ? `2px 2px 2px ${colors.N70}, -2px -2px 2px ${colors.N70}, 1px 1px 4px ${colors.N70}`

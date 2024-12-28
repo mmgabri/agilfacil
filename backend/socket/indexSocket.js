@@ -1,5 +1,5 @@
 const { connectClient, desconnectClient, updateStatusRoom, updateVote } = require('../services/poker/socketService');
-const { connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, updateTitleColumn, updateLike, deleteCard, saveCard } = require('../services/retro/socketRetroService');
+const { connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, updateTitleColumn, updateLike, deleteCard, saveCard, updatecolorCards, deleteAllCard } = require('../services/retro/socketRetroService');
 const logger = require('../services/generic/cloudWatchLoggerService');
 
 const setupSocketIo = (io) => {
@@ -176,6 +176,21 @@ const setupSocketIo = (io) => {
       }
     });
 
+    socket.on('update_color_cards', async (data) => {
+      const start = performance.now()
+      console.info('update_color_cards');
+
+      try {
+        let board = await updatecolorCards(data.boardId, data.colorCards, data.index);
+        io.to(data.boardId).emit('data_board', board);
+        //   const elapsedTime = (performance.now() - start).toFixed(3);
+        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
+      } catch (erro) {
+        console.error('Erro ao atualizar cor dos cards', erro);
+        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+      }
+    });
+
 
 
     socket.on('update_like', async (data) => {
@@ -206,6 +221,22 @@ const setupSocketIo = (io) => {
         //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
       } catch (erro) {
         console.error('Erro ao combinar card', erro);
+        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+      }
+    });
+
+
+    socket.on('delete_all_card', async (data) => {
+      const start = performance.now()
+      console.info('delete_all_card');
+
+      try {
+        let board = await deleteAllCard(data.boardId, data.indexColumn);
+        io.to(data.boardId).emit('data_board', board);
+        //   const elapsedTime = (performance.now() - start).toFixed(3);
+        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
+      } catch (erro) {
+        console.error('Erro ao deletar os cards da coluna', erro);
         //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
       }
     });

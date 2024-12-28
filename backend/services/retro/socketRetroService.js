@@ -261,6 +261,37 @@ const updateTitleColumn = (boardId, content, index) => {
   });
 };
 
+const updatecolorCards = (boardId, colorCards, index) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Obtém os dados do board no banco de dados
+      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+
+      if (!boardData) {
+        return reject(new Error('Board não encontrado.'));
+      }
+
+      // Verifica se o índice é válido
+      if (index < 0 || index >= boardData.columns.length) {
+        return reject(new Error('Índice inválido para atualizar o título da coluna.'));
+      }
+
+      // Atualiza o título da coluna
+      const updatedBoardData = { ...boardData };
+      updatedBoardData.columns[index].colorCards = colorCards;
+
+      // Salva o board atualizado no banco de dados
+      await putTable(config.TABLE_BOARD, updatedBoardData);
+
+      // Retorna o board atualizado
+      resolve(updatedBoardData);
+    } catch (error) {
+      // Rejeita a promise em caso de erro
+      reject(error);
+    }
+  });
+};
+
 const updateLike = (boardId, isIncrement, indexCard, indexColumn) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -337,6 +368,38 @@ const deleteCard = (boardId, indexCard, indexColumn) => {
   });
 };
 
+const deleteAllCard = (boardId, indexColumn) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Obtém os dados do board no banco de dados
+      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+
+      if (!boardData) {
+        return reject(new Error('Board não encontrado.'));
+      }
+
+      // Verifica se os índices fornecidos são válidos
+      if (indexColumn < 0 || indexColumn >= boardData.columns.length) {
+        return reject(new Error('Índice de coluna inválido.'));
+      }
+
+      // Atualiza a estrutura de dados para remover o card
+      const updatedBoardData = { ...boardData };
+      const columnToUpdate = updatedBoardData.columns[indexColumn];
+      columnToUpdate.cards = [];
+
+      // Salva os dados atualizados no banco de dados
+      await putTable(config.TABLE_BOARD, updatedBoardData);
+
+      // Retorna o board atualizado
+      resolve(updatedBoardData);
+    } catch (error) {
+      // Rejeita a promise em caso de erro
+      reject(error);
+    }
+  });
+};
+
 const saveCard = (boardId, content, indexCard, indexColumn) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -375,4 +438,4 @@ const saveCard = (boardId, content, indexCard, indexColumn) => {
 
 
 
-module.exports = {connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, updateTitleColumn, updateLike, deleteCard, saveCard };
+module.exports = {connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, updateTitleColumn, updateLike, deleteCard, deleteAllCard, saveCard, updatecolorCards };

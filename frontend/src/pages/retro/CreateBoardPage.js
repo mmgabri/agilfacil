@@ -19,7 +19,7 @@ export const CreateBoardPage = ({ }) => {
     boardName: "",
     areaName: "",
     squadName: "",
-    columns: [{ id: uuidv4(), title: "", cards: [] }]
+    columns: [{ id: uuidv4(), title: "", colorCards: "#F0E68C" , cards: [] }]
   });
   const [isModalOpen, setModalOpen] = useState(false);
 
@@ -45,6 +45,7 @@ export const CreateBoardPage = ({ }) => {
     const newColumn = {
       id: uuidv4(),
       title: "",
+      colorCards: "#F0E68C",
       cards: []
     };
     setFormData((prevData) => ({

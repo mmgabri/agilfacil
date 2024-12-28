@@ -106,6 +106,17 @@ export const useSocket = (
     [socket, idSession]
   );
 
+  const updatecolorCardsSocket = useCallback(
+    (payload) => {
+      socket.emit("update_color_cards", {
+        boardId: idSession,
+        colorCards: payload.colorCards,
+        index: payload.index
+      });
+    },
+    [socket, idSession]
+  );
+
   const updateLikeSocket = useCallback(
     (payload) => {
       socket.emit("update_like", {
@@ -123,6 +134,16 @@ export const useSocket = (
       socket.emit("delete_card", {
         boardId: idSession,
         indexCard: payload.indexCard,
+        indexColumn: payload.indexColumn
+      });
+    },
+    [socket, idSession]
+  );
+
+  const deleteAllCardSocket = useCallback(
+    (payload) => {
+      socket.emit("delete_all_card", {
+        boardId: idSession,
         indexColumn: payload.indexColumn
       });
     },
@@ -189,5 +210,5 @@ export const useSocket = (
     };
   }, [idSession]);
 
-  return { socketResponse, isConnected, updateStatusRoom, votar, addCardSocket, reorderBoardSocket, combineCardSocket, deleteColumnSocket, updateTitleColumnSocket, updateLikeSocket, deleteCardSocket, saveCardSocket };
+  return { socketResponse, isConnected, updateStatusRoom, votar, addCardSocket, reorderBoardSocket, combineCardSocket, deleteColumnSocket, updateTitleColumnSocket, updateLikeSocket, deleteCardSocket, saveCardSocket, updatecolorCardsSocket, deleteAllCardSocket };
 };
