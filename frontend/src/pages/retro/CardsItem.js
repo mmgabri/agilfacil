@@ -7,7 +7,7 @@ import { AiTwotoneLike } from 'react-icons/ai';
 
 import { colors } from "@atlaskit/theme";
 
-function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColumn, onSaveCard, onDeleteCard, onUpdateLike, colorCards }) {
+function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColumn, onSaveCard, onDeleteCard, onUpdateLike, colorCards, userLoggedData }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [content, setContent] = useState(card.content);
@@ -106,33 +106,34 @@ function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColum
           </div>
         )}
       </Content>
-      <IconContainer ref={menuRef}>
-        {isEditing ? (
-          <StyledMdCheck onClick={handleSave} style={{ cursor: "pointer" }} />
-        ) : (
-          <Dropdown show={isMenuOpen} onToggle={() => setIsMenuOpen((prev) => !prev)}>
-            <Dropdown.Toggle as={CustomToggle} id="dropdown-basic" />
-            <Dropdown.Menu style={dropdownMenuStyle}>
-              <Dropdown.Item
-                style={getDropdownItemStyle(0)}
-                onMouseEnter={() => setHoverIndex(0)}
-                onMouseLeave={() => setHoverIndex(null)}
-                onClick={handleEdit}>
-                <MdEdit style={{ marginRight: 5 }} />
-                Editar Card
-              </Dropdown.Item>
-              <Dropdown.Item
-                style={getDropdownItemStyle(1)}
-                onMouseEnter={() => setHoverIndex(1)}
-                onMouseLeave={() => setHoverIndex(null)}
-                onClick={handleDelete}>
-                <CiTrash style={{ marginRight: 5 }} />
-                Excluir Card
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        )}
-      </IconContainer>
+      {card.userId === userLoggedData.userId &&
+        <IconContainer ref={menuRef}>
+          {isEditing ? (
+            <StyledMdCheck onClick={handleSave} style={{ cursor: "pointer" }} />
+          ) : (
+            <Dropdown show={isMenuOpen} onToggle={() => setIsMenuOpen((prev) => !prev)}>
+              <Dropdown.Toggle as={CustomToggle} id="dropdown-basic" />
+              <Dropdown.Menu style={dropdownMenuStyle}>
+                <Dropdown.Item
+                  style={getDropdownItemStyle(0)}
+                  onMouseEnter={() => setHoverIndex(0)}
+                  onMouseLeave={() => setHoverIndex(null)}
+                  onClick={handleEdit}>
+                  <MdEdit style={{ marginRight: 5 }} />
+                  Editar Card
+                </Dropdown.Item>
+                <Dropdown.Item
+                  style={getDropdownItemStyle(1)}
+                  onMouseEnter={() => setHoverIndex(1)}
+                  onMouseLeave={() => setHoverIndex(null)}
+                  onClick={handleDelete}>
+                  <CiTrash style={{ marginRight: 5 }} />
+                  Excluir Card
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          )}
+        </IconContainer>}
       <ContainerLike>
         <LikeIconContainer>
           <StyledAiTwotoneLike onClick={handleLikeClick} />

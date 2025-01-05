@@ -175,7 +175,7 @@ export const useSocket = (
     setSocket(socketio);
 
     socketio.on("connect", () => {
-      //console.info('useSocket - Connected to the server');
+     // console.info('useSocket - Connected to the server');
       setConnected(true);
     })
 
@@ -192,16 +192,17 @@ export const useSocket = (
     });
 
     socketio.on("data_board", (res) => {
+   //   console.log('socket -->', res)
       setSocketResponse(res)
     });
 
     socketio.on("retro_connection", (res) => {
       console.log('retro_connection -->', res)
-      setSocketResponse(res)
+  //    setSocketResponse(res)
     });
 
     socketio.on("retro_disconnect", (res) => {
-      console.log(res)
+      console.log('socket-retro_disconnect -->', res)
     });
 
     return () => {

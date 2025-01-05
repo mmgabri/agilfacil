@@ -9,7 +9,7 @@ import { FaTrashAlt } from "react-icons/fa";
 import './retro.css';
 import ModalAddCard from './ModalAddCard';
 
-const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDeleteColumn, onDeleteAllCard, onUpdatecolorCards }) => {
+const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDeleteColumn, onDeleteAllCard, onUpdatecolorCards, userLoggedData }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(columnTitle || 'Título da Coluna');
   const [isModalOpen, setModalOpen] = useState(false);
@@ -18,7 +18,6 @@ const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDe
   const [showColorOptions, setShowColorOptions] = useState(false);
   const [hoveredColor, setHoveredColor] = useState(null); // Para armazenar a cor sendo destacada
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
 
   useEffect(() => {
     setTitle(columnTitle);
@@ -67,6 +66,8 @@ const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDe
       id: uuidv4(),
       content: value,
       createdBy: "",
+      userIp: userLoggedData.userIp,
+      userId: userLoggedData.userId,
       likeCount: 0
     }
     onAddCard(newCard, index)

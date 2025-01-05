@@ -25,7 +25,7 @@ const saveBoard = async (req, res) => {
 
   let boardDb = {
     boardId: boardId,
-    userId: req.body.userId,
+    creatorId: req.body.creatorId,
     dateTime: dateTime,
     userName: req.body.userName,
     boardName: req.body.boardName,

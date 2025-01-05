@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from 'react-router-dom'
 import { createUseStyles } from "react-jss";
 import { DragDropContext } from "react-beautiful-dnd";
+import { v4 as uuidv4 } from 'uuid';
 import Columns from "./Columns";
 import { reorderboardData, processCombine, saveCard, deleteCard, updateLike, updateTitleColumn, deleteColumn, addCard, updatecolorCards, deleteAllCards } from "./FunctionsRetro";
 import Header from './HeaderBoard';
@@ -20,27 +21,26 @@ export const BoardPage = ({ }) => {
   const cl = useStyles();
   const handleShowInvite = () => setShowInvite(true);
   const handleCloseInvite = () => setShowInvite(false);
+  const [userLoggedData, setuserLoggedData] = useState({});
 
   const { socketResponse, addCardSocket, reorderBoardSocket, combineCardSocket, updateTitleColumnSocket, updateLikeSocket, deleteCardSocket, saveCardSocket, deleteColumnSocket, updatecolorCardsSocket, deleteAllCardSocket } = useSocket(location.state.userName, location.state.userId, location.state.boardData.boardId, 'retro')
 
 
   useEffect(() => {
+    console.log('useEffect-principal', location.state.boardData, location.state.userLoggedData)
     setBoardData(location.state.boardData);
-  }, []);
-
+    setuserLoggedData(location.state.userLoggedData);
+  }, [location.state.boardData, location.state.userLoggedData]);
 
   useEffect(() => {
-    console.log('useEffect - socketResponse ==>', socketResponse);
+    // console.log('useEffect - socketResponse ==>', socketResponse);
 
     if (socketResponse && socketResponse.boardId) {
       setBoardData(prevBoardData => ({
         ...prevBoardData,
         ...socketResponse, // Garante que as novas referências sejam criadas
       }));
-      console.log('Board atualizado com socketResponse:', socketResponse);
-    } else {
-      console.error('socketResponse inválido', socketResponse);
-    }
+    } 
   }, [socketResponse]);
 
   const onDragEnd = (result) => {
@@ -54,7 +54,7 @@ export const BoardPage = ({ }) => {
       const updatedColumns = reorderboardData(boardData, source, destination);
       setBoardData({ ...boardData, columns: updatedColumns });
     } else if (combine) {
-      combineCardSocket({source, combine})
+      combineCardSocket({ source, combine })
       const updatedColumns = processCombine(boardData, source, combine);
       setBoardData({ ...boardData, columns: updatedColumns });
     }
@@ -72,44 +72,44 @@ export const BoardPage = ({ }) => {
   const onSaveCard = (content, indexCard, indexColumn) => {
     const updatedColumns = saveCard(boardData, content, indexCard, indexColumn);
     setBoardData({ ...boardData, updatedColumns });
-    saveCardSocket({content:content, indexCard:indexCard, indexColumn:indexColumn})
+    saveCardSocket({ content: content, indexCard: indexCard, indexColumn: indexColumn })
   };
 
   const onDeleteCard = (indexCard, indexColumn) => {
     const updatedColumns = deleteCard(boardData, indexCard, indexColumn);
     setBoardData({ ...boardData, updatedColumns });
-    deleteCardSocket({indexCard:indexCard, indexColumn:indexColumn})
+    deleteCardSocket({ indexCard: indexCard, indexColumn: indexColumn })
   };
 
   const onDeleteAllCard = (indexColumn) => {
     const updatedColumns = deleteAllCards(boardData, indexColumn);
     setBoardData({ ...boardData, updatedColumns });
-    deleteAllCardSocket({indexColumn:indexColumn})
+    deleteAllCardSocket({ indexColumn: indexColumn })
   };
 
   const onUpdateLike = (isIncrement, indexCard, indexColumn) => {
     const updatedColumns = updateLike(boardData, isIncrement, indexCard, indexColumn);
     setBoardData({ ...boardData, updatedColumns });
-    updateLikeSocket({isIncrement:isIncrement, indexCard:indexCard, indexColumn:indexColumn})
+    updateLikeSocket({ isIncrement: isIncrement, indexCard: indexCard, indexColumn: indexColumn })
   };
 
   const onUpdateTitleColumn = (content, index) => {
     const updatedColumns = updateTitleColumn(boardData, content, index);
     setBoardData({ ...boardData, updatedColumns });
-    updateTitleColumnSocket({content:content, index:index})
+    updateTitleColumnSocket({ content: content, index: index })
   };
 
   const onUpdatecolorCards = (colorCards, index) => {
     const updatedColumns = updatecolorCards(boardData, colorCards, index);
     setBoardData({ ...boardData, updatedColumns });
-    updatecolorCardsSocket({colorCards:colorCards, index:index})
+    updatecolorCardsSocket({ colorCards: colorCards, index: index })
   };
 
   const onDeleteColumn = (index) => {
     console.log('onDeleteColumn', index)
     const updatedColumns = deleteColumn(boardData, index);
     setBoardData({ ...boardData, updatedColumns });
-    deleteColumnSocket({index:index})
+    deleteColumnSocket({ index: index })
   };
 
   const onAddCard = (newCard, indexColumn) => {
@@ -142,6 +142,7 @@ export const BoardPage = ({ }) => {
                 onAddCard={onAddCard}
                 onUpdatecolorCards={onUpdatecolorCards}
                 indexColumn={index}
+                userLoggedData={userLoggedData}
               />
             </div>
           ))}

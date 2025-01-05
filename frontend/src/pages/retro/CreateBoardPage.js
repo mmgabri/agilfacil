@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom'
@@ -11,6 +11,8 @@ import { Title } from '../../styles/GenericTitleStyles';
 import Header from './HeaderCreateBoard';
 import SuggestionForm from '../components/SuggestionForm'
 import { retrospectiveData } from './data'
+import localStorageService from "../../services/localStorageService";
+import getIP from "../../services/getIP"
 
 export const CreateBoardPage = ({ }) => {
   let navigate = useNavigate();
@@ -19,9 +21,35 @@ export const CreateBoardPage = ({ }) => {
     boardName: "",
     areaName: "",
     squadName: "",
-    columns: [{ id: uuidv4(), title: "", colorCards: "#F0E68C" , cards: [] }]
+    columns: [{ id: uuidv4(), title: "", colorCards: "#F0E68C", cards: [] }]
   });
   const [isModalOpen, setModalOpen] = useState(false);
+  const [userId, setUserId] = useState("123");
+  const [userLoggedData, setUserLoggedData] = useState({});
+
+  useEffect(() => {
+    const initializeUserData = async () => {
+      try {
+        let storedUserlogged = localStorageService.getItem("AGILFACIL_USER_LOGGED");
+
+        if (!storedUserlogged) {
+          const ip = await getIP();
+          const storedUserData = {
+            userId: userId,
+            userIp: ip,
+          };
+          localStorageService.setItem("AGILFACIL_USER_LOGGED", storedUserData);
+          setUserLoggedData(storedUserData);
+        } else {
+          setUserLoggedData(storedUserlogged);
+        }
+      } catch (error) {
+        console.error("Erro ao inicializar os dados do usuário:", error);
+      }
+    };
+
+    initializeUserData();
+  }, []);
 
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
@@ -72,16 +100,16 @@ export const CreateBoardPage = ({ }) => {
 
     axios
       .post(SERVER_BASE_URL + '/retro/createBoard', {
-        userId: "123",
+        creatorId: userId,
         boardName: formData.boardName,
         squadName: formData.squadName,
         areaName: formData.areaName,
         columns: formData.columns
       })
       .then(response => {
-        console.log('response ==> ', response)
-        //navigate('/board', { state: { boardData: retrospectiveData } });
-        navigate('/board', { state: { boardData: response.data } });
+        // console.log('response ==> ', response)
+        //  console.log('userLoggedData', userLoggedData)
+        navigate('/board', { state: { boardData: response.data, userLoggedData: userLoggedData } });
       })
       .catch((error) => {
         console.log("Resposta da api com erro:", error, error.response?.status)
