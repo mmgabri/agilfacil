@@ -98,165 +98,158 @@ const setupSocketIo = (io) => {
       }
     });
 
-    // retro
-    socket.on('add_card_board', async (data) => {
-      const start = performance.now()
-      console.info('add_card_board');
 
+    // retro
+    socket.on('comand_socket_retro', async (data) => {
+      switch (data.comand) {
+        case 'add_card_board':
+          onAddCardBoard(data)
+          break;
+        case 'reorder_board':
+          onReorderBoard(data)
+          break;
+        case 'combine_card':
+          onCombineCard(data)
+          break;
+        case 'delete_column':
+          onDeleteColumn(data)
+          break;
+        case 'update_title_column':
+          onUpdateTitleColumn(data)
+          break;
+        case 'update_color_cards':
+          onUpdateColorCards(data)
+          break;
+        case 'update_like':
+          onUpdateLike(data)
+          break;
+        case 'delete_card':
+          onDeleteCard(data)
+          break;
+        case 'delete_all_card':
+          onDeleteAllCard(data)
+          break;
+        case 'save_card':
+          onSaveCard(data)
+          break;
+        default:
+          console.error('Comando não previsto - ', data.comand);
+      }
+    });
+
+    async function onAddCardBoard(data) {
+      const start = performance.now()
       try {
         let board = await addCardBoard(data.boardId, data.newCard, data.indexColumn);
         io.to(data.boardId).emit('data_board', board);
-        //   const elapsedTime = (performance.now() - start).toFixed(3);
-        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
       } catch (erro) {
-        console.error('Erro ao criar card', erro);
-        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+        console.error('Erro socket - onAddCardBoard', erro);
       }
-    });
+    }
 
-    socket.on('reorder_board', async (data) => {
+    async function onReorderBoard(data) {
       const start = performance.now()
-      console.info('reorder_board');
-
       try {
         let board = await reorderBoard(data.boardId, data.source, data.destination);
         io.to(data.boardId).emit('data_board', board);
-        //   const elapsedTime = (performance.now() - start).toFixed(3);
-        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
       } catch (erro) {
-        console.error('Erro ao criar card', erro);
-        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+        console.error('Erro socket - onReorderBoard', erro);
       }
-    });
+    }
 
-    socket.on('combine_card', async (data) => {
+    async function onCombineCard(data) {
       const start = performance.now()
-      console.info('combine_card');
-
       try {
         let board = await processCombine(data.boardId, data.source, data.combine);
         io.to(data.boardId).emit('data_board', board);
-        //   const elapsedTime = (performance.now() - start).toFixed(3);
-        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
       } catch (erro) {
-        console.error('Erro ao combinar card', erro);
-        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+        console.error('Erro socket - onCombineBoard', erro);
       }
-    });
+    }
 
-
-    socket.on('delete_column', async (data) => {
+    async function onDeleteColumn(data) {
       const start = performance.now()
-      console.info('delete_column');
-
       try {
         let board = await deleteColumn(data.boardId, data.index);
         io.to(data.boardId).emit('data_board', board);
-        //   const elapsedTime = (performance.now() - start).toFixed(3);
-        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
       } catch (erro) {
-        console.error('Erro ao combinar card', erro);
-        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+        console.error('Erro socket - onDeleteColumn', erro);
       }
-    });
+    }
 
-
-    socket.on('update_title_column', async (data) => {
+    async function onUpdateTitleColumn(data) {
       const start = performance.now()
-      console.info('update_title_column');
-
       try {
         let board = await updateTitleColumn(data.boardId, data.content, data.index);
         io.to(data.boardId).emit('data_board', board);
-        //   const elapsedTime = (performance.now() - start).toFixed(3);
-        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
       } catch (erro) {
-        console.error('Erro ao combinar card', erro);
-        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+        console.error('Erro socket - onUpdateTitleColumn', erro);
       }
-    });
+    }
 
-    socket.on('update_color_cards', async (data) => {
+    async function onUpdateColorCards(data) {
       const start = performance.now()
-      console.info('update_color_cards');
-
       try {
         let board = await updatecolorCards(data.boardId, data.colorCards, data.index);
         io.to(data.boardId).emit('data_board', board);
-        //   const elapsedTime = (performance.now() - start).toFixed(3);
-        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
       } catch (erro) {
-        console.error('Erro ao atualizar cor dos cards', erro);
-        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+        console.error('Erro socket - onUpdateColorCards', erro);
       }
-    });
+    }
 
-
-
-    socket.on('update_like', async (data) => {
+    async function onUpdateLike(data) {
       const start = performance.now()
-      console.info('update_like');
-
       try {
         let board = await updateLike(data.boardId, data.isIncrement, data.indexCard, data.indexColumn);
         io.to(data.boardId).emit('data_board', board);
-        //   const elapsedTime = (performance.now() - start).toFixed(3);
-        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
       } catch (erro) {
-        console.error('Erro ao combinar card', erro);
-        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+        console.error('Erro socket - onUpdateLike', erro);
       }
-    });
+    }
 
-
-
-    socket.on('delete_card', async (data) => {
+    async function onUpdateLike(data) {
       const start = performance.now()
-      console.info('delete_card');
+      try {
+        let board = await updateLike(data.boardId, data.isIncrement, data.indexCard, data.indexColumn);
+        io.to(data.boardId).emit('data_board', board);
+      } catch (erro) {
+        console.error('Erro socket - onUpdateLike', erro);
+      }
+    }
 
+
+    async function onDeleteCard(data) {
+      const start = performance.now()
       try {
         let board = await deleteCard(data.boardId, data.indexCard, data.indexColumn);
         io.to(data.boardId).emit('data_board', board);
-        //   const elapsedTime = (performance.now() - start).toFixed(3);
-        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
       } catch (erro) {
-        console.error('Erro ao combinar card', erro);
-        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+        console.error('Erro socket - onDeleteCard', erro);
       }
-    });
+    }
 
 
-    socket.on('delete_all_card', async (data) => {
+    async function onDeleteAllCard(data) {
       const start = performance.now()
-      console.info('delete_all_card');
-
       try {
         let board = await deleteAllCard(data.boardId, data.indexColumn);
         io.to(data.boardId).emit('data_board', board);
-        //   const elapsedTime = (performance.now() - start).toFixed(3);
-        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
       } catch (erro) {
-        console.error('Erro ao deletar os cards da coluna', erro);
-        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+        console.error('Erro socket - onDeleteAllCard', erro);
       }
-    });
+    }
 
 
-
-    socket.on('save_card', async (data) => {
+    async function onSaveCard(data) {
       const start = performance.now()
-      console.info('save_card');
-
       try {
         let board = await saveCard(data.boardId, data.content, data.indexCard, data.indexColumn);
         io.to(data.boardId).emit('data_board', board);
-        //   const elapsedTime = (performance.now() - start).toFixed(3);
-        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
       } catch (erro) {
         console.error('Erro ao combinar card', erro);
-        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
+        console.error('Erro socket - onSaveCard', erro);
       }
-    });
+    }
 
   });
 };

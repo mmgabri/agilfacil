@@ -6,7 +6,6 @@ import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import "../../styles/CreateRoomAndGuest.css"
 import LoaderPage from "../generic/LoaderPage"
 import localStorageService from "../../services/localStorageService";
-import getIP from "../../services/getIP"
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -22,13 +21,12 @@ export const GuestUrlRetroPage = ({ }) => {
         console.log('useEffect', storedUserlogged)
 
         if (!storedUserlogged) {
-          const ip = await getIP();
           const storedUserData = {
             userId: uuidv4(),
-            userIp: ip,
+            userName: '',
           };
-          console.log('storedUserlogged -->', storedUserlogged)
           localStorageService.setItem("AGILFACIL_USER_LOGGED", storedUserData);
+          console.log('storedUserlogged -->', storedUserlogged)
           directsBoard(storedUserData)
         } else {
           directsBoard(storedUserlogged)

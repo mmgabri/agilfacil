@@ -43,10 +43,13 @@ export const useSocket = (
     [socket, idSession]
   );
 
+
   //retro
   const addCardSocket = useCallback(
     (payload) => {
-      socket.emit("add_card_board", {
+      console.log('addCardSocket')
+      socket.emit("comand_socket_retro", {
+        comand: 'add_card_board',
         boardId: idSession,
         newCard: payload.newCard,
         indexColumn: payload.indexColumn
@@ -58,13 +61,8 @@ export const useSocket = (
 
   const reorderBoardSocket = useCallback(
     (payload) => {
-      //     console.log("Emitindo reorder_board com os dados:", {
-      //       boardId: idSession,
-      //       source: payload.source,
-      //       destination: payload.destination
-      //     });
-
-      socket.emit("reorder_board", {
+      socket.emit("comand_socket_retro", {
+        comand: 'reorder_board',
         boardId: idSession,
         source: payload.source,
         destination: payload.destination
@@ -75,7 +73,8 @@ export const useSocket = (
 
   const combineCardSocket = useCallback(
     (payload) => {
-      socket.emit("combine_card", {
+      socket.emit("comand_socket_retro", {
+        comand: 'combine_card',
         boardId: idSession,
         source: payload.source,
         combine: payload.combine
@@ -86,8 +85,8 @@ export const useSocket = (
 
   const deleteColumnSocket = useCallback(
     (payload) => {
-      console.log('deleteColumnSocket -->', deleteColumnSocket)
-      socket.emit("delete_column", {
+      socket.emit("comand_socket_retro", {
+        comand: 'delete_column',
         boardId: idSession,
         index: payload.index,
       });
@@ -97,7 +96,8 @@ export const useSocket = (
 
   const updateTitleColumnSocket = useCallback(
     (payload) => {
-      socket.emit("update_title_column", {
+      socket.emit("comand_socket_retro", {
+        comand: 'update_title_column',
         boardId: idSession,
         content: payload.content,
         index: payload.index
@@ -108,7 +108,8 @@ export const useSocket = (
 
   const updatecolorCardsSocket = useCallback(
     (payload) => {
-      socket.emit("update_color_cards", {
+      socket.emit("comand_socket_retro", {
+        comand: 'update_color_cards',
         boardId: idSession,
         colorCards: payload.colorCards,
         index: payload.index
@@ -119,7 +120,8 @@ export const useSocket = (
 
   const updateLikeSocket = useCallback(
     (payload) => {
-      socket.emit("update_like", {
+      socket.emit("comand_socket_retro", {
+        comand: 'update_like',
         boardId: idSession,
         isIncrement: payload.isIncrement,
         indexCard: payload.indexCard,
@@ -131,7 +133,8 @@ export const useSocket = (
 
   const deleteCardSocket = useCallback(
     (payload) => {
-      socket.emit("delete_card", {
+      socket.emit("comand_socket_retro", {
+        comand: 'delete_card',
         boardId: idSession,
         indexCard: payload.indexCard,
         indexColumn: payload.indexColumn
@@ -142,7 +145,8 @@ export const useSocket = (
 
   const deleteAllCardSocket = useCallback(
     (payload) => {
-      socket.emit("delete_all_card", {
+      socket.emit("comand_socket_retro", {
+        comand: 'delete_all_card',
         boardId: idSession,
         indexColumn: payload.indexColumn
       });
@@ -152,7 +156,8 @@ export const useSocket = (
 
   const saveCardSocket = useCallback(
     (payload) => {
-      socket.emit("save_card", {
+      socket.emit("comand_socket_retro", {
+        comand: 'save_card',
         boardId: idSession,
         content: payload.content,
         indexCard: payload.indexCard,

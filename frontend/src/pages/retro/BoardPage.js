@@ -113,6 +113,7 @@ export const BoardPage = ({ }) => {
   };
 
   const onAddCard = (newCard, indexColumn) => {
+    console.log('onAddCard')
     const updatedColumns = addCard(boardData, newCard, indexColumn);
     setBoardData({ ...boardData, updatedColumns });
     addCardSocket({ newCard: newCard, indexColumn: indexColumn })

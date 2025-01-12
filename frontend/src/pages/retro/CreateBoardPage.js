@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { signOut} from '@aws-amplify/auth';
+import { signOut, fetchAuthSession } from '@aws-amplify/auth';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify';
@@ -35,6 +35,17 @@ export const CreateBoardPage = ({ }) => {
     }
 
   }, []);
+
+  async function getToken() {
+    try {
+      const session = await fetchAuthSession();
+      const token = session.tokens.idToken.toString();
+      return token;
+    } catch (error) {
+      console.error("Erro ao obter o token:", error.message);
+      throw error;
+    }
+  }
 
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
@@ -86,11 +97,10 @@ export const CreateBoardPage = ({ }) => {
     }
   };
 
-  const handleSubmit = e => {
-    console.log('userLoggedData', userLoggedData)
+  const handleSubmit = async e => {
     e.preventDefault()
 
-    console.log('formData ==>', formData)
+    const token = await getToken()
 
     axios
       .post(SERVER_BASE_URL + '/retro/createBoard', {
@@ -99,6 +109,11 @@ export const CreateBoardPage = ({ }) => {
         squadName: formData.squadName,
         areaName: formData.areaName,
         columns: formData.columns
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
       })
       .then(response => {
         // console.log('response ==> ', response)
@@ -107,7 +122,7 @@ export const CreateBoardPage = ({ }) => {
       })
       .catch((error) => {
         console.log("Resposta da api com erro:", error, error.response?.status)
-        triggerError()
+        triggerError(error.response?.status)
       });
   }
 
@@ -116,6 +131,10 @@ export const CreateBoardPage = ({ }) => {
 
     if (statusCode == 404) {
       message = 'Sala inexistente. Por favor, peça um novo ID e tente novamente.'
+    }
+
+    if (statusCode == 401) {
+      message = 'Acesso negado. Faça um novo login e tente novamente.'
     }
 
     toast.error(message, {

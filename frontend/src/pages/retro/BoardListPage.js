@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import { toast } from 'react-toastify';
-import { signOut, getCurrentUser, fetchUserAttributes, currentAuthenticatedUser } from '@aws-amplify/auth';
+import { signOut, getCurrentUser, fetchUserAttributes, fetchAuthSession } from '@aws-amplify/auth';
 import { useNavigate } from 'react-router-dom'
 import { FaTrash, FaEye } from 'react-icons/fa';
 import { FaRegFolderOpen } from "react-icons/fa";
@@ -25,16 +25,26 @@ const BoardListPage = () => {
         const attributes = await fetchUserAttributes(user);
 
         // Salva dados do usuário no contexto
-          const userData = {
-            userId: attributes.sub,
-          };
-          setuserLoggedData(userData)
+        const userData = {
+          userId: attributes.sub,
+          userName: attributes.name,
+        };
+        setuserLoggedData(userData)
+
 
         // Obtem Board do Usuário Logado     
+        const token = await getToken()
+
         axios
-          .get(`${SERVER_BASE_URL}/retro/getBoardByUser/${attributes.sub}`)
+          .get(`${SERVER_BASE_URL}/retro/getBoardByUser/${attributes.sub}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            })
           .then(response => {
-            console.log('response ==> ', response)
+            //console.log('response ==> ', response)
             setBoards(response.data);
             setIsLoading(false);
 
@@ -56,25 +66,42 @@ const BoardListPage = () => {
     fetchBoards();
   }, []);
 
+  async function getToken() {
+    try {
+      const session = await fetchAuthSession();
+      const token = session.tokens.idToken.toString();
+      return token;
+    } catch (error) {
+      console.error("Erro ao obter o token:", error.message);
+      throw error;
+    }
+  }
 
 
   const handleDelete = (id) => {
     setBoards(boards.filter(board => board.id !== id));
   };
 
-  const handleOpen = (boardId) => {
-    console.log('handleOpen', boardId)
+  const handleOpen = async (boardId) => {
+    const token = await getToken()
+
     axios
-          .get(`${SERVER_BASE_URL}/retro/${boardId}`)
-          .then(response => {
-            console.log('response ==> ', response)
-            navigate('/board', { state: { boardData: response.data, userLoggedData: userLoggedData } });
-          })
-          .catch((error) => {
-            console.log("Resposta da api com erro:", error, error.response?.status)
-            triggerError()
-          });
-    
+      .get(`${SERVER_BASE_URL}/retro/${boardId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        })
+      .then(response => {
+        console.log('response ==> ', response)
+        navigate('/board', { state: { boardData: response.data, userLoggedData: userLoggedData } });
+      })
+      .catch((error) => {
+        console.log("Resposta da api com erro:", error, error.response?.status)
+        triggerError(error.response?.status)
+      });
+
   };
 
   const handleAddBoard = () => {
@@ -100,6 +127,10 @@ const BoardListPage = () => {
 
     if (statusCode == 404) {
       message = 'Sala inexistente. Por favor, peça um novo ID e tente novamente.'
+    }
+
+    if (statusCode == 401) {
+      message = 'Acesso negado. Faça um novo login e tente novamente.'
     }
 
     toast.error(message, {
