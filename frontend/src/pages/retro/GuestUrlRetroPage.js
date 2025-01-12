@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useParams } from 'react-router-dom'
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
@@ -24,9 +25,9 @@ export const GuestUrlRetroPage = ({ }) => {
           const storedUserData = {
             userId: uuidv4(),
             userName: '',
+            isBoardCreator: false
           };
           localStorageService.setItem("AGILFACIL_USER_LOGGED", storedUserData);
-          console.log('storedUserlogged -->', storedUserlogged)
           directsBoard(storedUserData)
         } else {
           directsBoard(storedUserlogged)
@@ -34,6 +35,7 @@ export const GuestUrlRetroPage = ({ }) => {
 
       } catch (error) {
         console.error("Erro ao inicializar os dados do usuário:", error);
+        triggerError()
       }
     };
 
@@ -57,8 +59,30 @@ export const GuestUrlRetroPage = ({ }) => {
 
     } catch (error) {
       console.error("Erro ao obter dados do Board:", error);
+      triggerError()
     }
   };
+
+  const triggerError = (statusCode) => {
+    let message = 'Ocorreu um erro inesperado. Por favor, tente novamente.'
+
+    if (statusCode == 404) {
+      message = 'Sala inexistente. Por favor, peça um novo ID e tente novamente.'
+    }
+
+    if (statusCode == 401) {
+      message = 'Acesso negado. Faça um novo login e tente novamente.'
+    }
+
+    toast.error(message, {
+      position: 'top-center', // Usando string para a posição
+      autoClose: 8000, // Fecha automaticamente após 8 segundos
+      hideProgressBar: false,
+      closeButton: true, // Mostra o botão de fechar
+      draggable: true, // Permite arrastar a notificação
+      pauseOnHover: true, // Pausa o fechamento automático ao passar o mouse
+    });
+  }
 
 
   return (

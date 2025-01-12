@@ -28,9 +28,9 @@ const BoardListPage = () => {
         const userData = {
           userId: attributes.sub,
           userName: attributes.name,
+          isBoardCreator: true
         };
         setuserLoggedData(userData)
-
 
         // Obtem Board do Usuário Logado     
         const token = await getToken()
