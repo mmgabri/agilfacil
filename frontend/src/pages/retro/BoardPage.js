@@ -23,7 +23,7 @@ export const BoardPage = ({ }) => {
   const handleCloseInvite = () => setShowInvite(false);
   const [userLoggedData, setuserLoggedData] = useState({});
 
-  const { socketResponse, addCardSocket, reorderBoardSocket, combineCardSocket, updateTitleColumnSocket, updateLikeSocket, deleteCardSocket, saveCardSocket, deleteColumnSocket, updatecolorCardsSocket, deleteAllCardSocket } = useSocket(location.state.userName, location.state.userId, location.state.boardData.boardId, 'retro')
+  const { socketResponse, addCardSocket, reorderBoardSocket, combineCardSocket, updateTitleColumnSocket, updateLikeSocket, deleteCardSocket, saveCardSocket, deleteColumnSocket, updatecolorCardsSocket, deleteAllCardSocket } = useSocket(location.state.userName, location.state.userId, location.state.boardData.boardId, 'board')
 
 
   useEffect(() => {

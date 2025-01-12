@@ -34,11 +34,7 @@ export const RoomPage = ({ }) => {
   const handleShowInvite = () => setShowInvite(true);
   const handleCloseInvite = () => setShowInvite(false);
 
-  const { isConnected, socketResponse, updateStatusRoom, votar } = useSocket(
-    location.state.userName,
-    location.state.userId,
-    location.state.roomId)
-
+  const { isConnected, socketResponse, updateStatusRoom, votar } = useSocket(location.state.userName, location.state.userId, location.state.roomId, 'poker')
 
   useEffect(() => {
     // console.log("useEffect-principal==>", location.state.userId, location.state.userName, location.state.roomId, location.state.roomName)

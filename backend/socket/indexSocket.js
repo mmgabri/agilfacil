@@ -5,102 +5,48 @@ const logger = require('../services/generic/cloudWatchLoggerService');
 const setupSocketIo = (io) => {
 
   io.on('connection', async (socket) => {
-    const start = performance.now()
-    console.log('A user connected:');
     const { userName, userId, idSession, service } = socket.handshake.query;
 
-    console.log('service ==>', service, idSession)
-
-    if (service === 'retro') {
-      console.log('trata retrospectiva')
-      socket.join(idSession);
-
-      try {
-        let board = await connectClientRetro(idSession);
-        io.to(idSession).emit('data_board', board);
-        //   const elapsedTime = (performance.now() - start).toFixed(3);
-        //   logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
-      } catch (erro) {
-        console.error('Erro ao combinar card', erro);
-        //    logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed',  erro.message)
-      }
-    } else {
-      try {
-        let room = await connectClient(userName, userId, idSession);
-        //throw new Error('Simulando erro');
-        socket.join(idSession);
-        io.to(idSession).emit('data_room', room);
-        const elapsedTime = (performance.now() - start).toFixed(3);
-        logger.log('SOCKET', 'connect', idSession, room.roomName, userId, userName, '', '', room.status, elapsedTime, 'success', 'Connect client successfully.')
-      } catch (erro) {
-        const elapsedTime = (performance.now() - start).toFixed(3);
-        logger.log('SOCKET', 'connect', idSession, '', userId, userName, '', '', '', elapsedTime, 'failed', erro.message)
-        console.error('Erro ao conectar client:', erro);
-      }
+    switch (service) {
+      case 'board':
+        onConnectBoard(idSession)
+        break;
+      case 'poker':
+        onConnectPoker(userName, userId, idSession)
+        break;
+      default:
+        console.error('Connect - Service não previsto - ', service);
     }
 
     socket.on('disconnect', async () => {
-      const start = performance.now()
-      console.log('A user disconnected:');
       const { userName, userId, idSession, service } = socket.handshake.query;
 
-      console.log('service ==>', service, idSession)
-
-
-      if (service === 'retro') {
-        //TO DO
-        console.log('trata retrospectiva')
-        socket.join(idSession);
-        io.to(idSession).emit('retro_disconnect', 'A user disconnected in retro');
-      } else {
-        try {
-          let room = await desconnectClient(userId, idSession);
-          io.to(idSession).emit('data_room', room);
-          const elapsedTime = (performance.now() - start).toFixed(3);
-          logger.log('SOCKET', 'disconnect', idSession, room.roomName, userId, userName, '', '', room.status, elapsedTime, 'success', 'Connect disconnect successfully.')
-        } catch (erro) {
-          const elapsedTime = (performance.now() - start).toFixed(3);
-          logger.log('SOCKET', 'disconnect', idSession, '', userId, userName, '', '', '', elapsedTime, 'failed', erro.message)
-          console.error('Erro ao desconectar client:', erro);
-        }
+      switch (service) {
+        case 'board':
+          onDisconnectBoard(idSession)
+          break;
+        case 'poker':
+          onDisconnectPoker(userName, userId, idSession)
+          break;
+        default:
+          console.error('Disconnect - Service não previsto - ', service);
       }
     });
 
-    socket.on('update_status_room', async (data) => {
-      const start = performance.now()
-      console.info('update_status_room');
-
-      try {
-        let room = await updateStatusRoom(roomId, data.status);
-        io.to(roomId).emit('data_room', room);
-        const elapsedTime = (performance.now() - start).toFixed(3);
-        logger.log('SOCKET', 'update_status_room', room._id, room.roomName, '', '', '', '', room.status, elapsedTime, 'success', 'Update status room successfully.')
-      } catch (erro) {
-        const elapsedTime = (performance.now() - start).toFixed(3);
-        logger.log('SOCKET', 'update_status_room', roomId, '', '', '', '', '', data.status, elapsedTime, 'failed', erro.message)
-        console.error('Erro ao processar update_status_room', erro);
+    socket.on('comand_socket_poker', async (data) => {
+      switch (data.comand) {
+        case 'update_status_room':
+          onUpdateStatusRoom(data)
+          break;
+        case 'votar':
+          onVotar(data)
+          break;
+        default:
+          console.error('Comando Poker não previsto - ', data.comand);
       }
     });
 
-    socket.on('votar', async (data) => {
-      const start = performance.now()
-      console.info('votar');
-
-      try {
-        //throw new Error('Simulando erro');
-        let room = await updateVote(data.roomId, data.userId, data.vote);
-        io.to(roomId).emit('data_room', room);
-        const elapsedTime = (performance.now() - start).toFixed(3);
-        logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
-      } catch (erro) {
-        console.error('Erro ao processar votar', erro);
-        logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed', erro.message)
-      }
-    });
-
-
-    // retro
-    socket.on('comand_socket_retro', async (data) => {
+    socket.on('comand_socket_board', async (data) => {
       switch (data.comand) {
         case 'add_card_board':
           onAddCardBoard(data)
@@ -133,9 +79,59 @@ const setupSocketIo = (io) => {
           onSaveCard(data)
           break;
         default:
-          console.error('Comando não previsto - ', data.comand);
+          console.error('Comando Board não previsto - ', data.comand);
       }
     });
+
+    //functions Board
+    async function onConnectBoard(idSession) {
+      const start = performance.now()
+      try {
+        let board = await connectClientRetro(idSession);
+        socket.join(idSession);
+        io.to(idSession).emit('data_board', board);
+      } catch (erro) {
+        console.error('Erro socket - onConnectBoard: ', erro);
+      }
+    }
+
+    async function onConnectPoker(userName, userId, idSession) {
+      const start = performance.now()
+      try {
+        let room = await connectClient(userName, userId, idSession);
+        socket.join(idSession);
+        io.to(idSession).emit('data_room', room);
+        const elapsedTime = (performance.now() - start).toFixed(3);
+        logger.log('SOCKET', 'connect', idSession, room.roomName, userId, userName, '', '', room.status, elapsedTime, 'success', 'Connect client successfully.')
+      } catch (erro) {
+        const elapsedTime = (performance.now() - start).toFixed(3);
+        logger.log('SOCKET', 'connect', idSession, '', userId, userName, '', '', '', elapsedTime, 'failed', erro.message)
+        console.error('Erro socket - onConnectPoker: ', erro);
+      }
+    }
+
+    async function onDisconnectBoard(idSession) {
+      const start = performance.now()
+      //TO DO
+      console.log('trata retrospectiva')
+      socket.join(idSession);
+      io.to(idSession).emit('retro_disconnect', 'A user disconnected in retro');
+    }
+
+    async function onDisconnectPoker(userName, userId, idSession) {
+      const start = performance.now()
+      try {
+        let room = await desconnectClient(userId, idSession);
+        io.to(idSession).emit('data_room', room);
+        const elapsedTime = (performance.now() - start).toFixed(3);
+        logger.log('SOCKET', 'disconnect', idSession, room.roomName, userId, userName, '', '', room.status, elapsedTime, 'success', 'Connect disconnect successfully.')
+      } catch (erro) {
+        const elapsedTime = (performance.now() - start).toFixed(3);
+        logger.log('SOCKET', 'disconnect', idSession, '', userId, userName, '', '', '', elapsedTime, 'failed', erro.message)
+        console.error('Erro ao desconectar client:', erro);
+      }
+
+    }
 
     async function onAddCardBoard(data) {
       const start = performance.now()
@@ -246,8 +242,35 @@ const setupSocketIo = (io) => {
         let board = await saveCard(data.boardId, data.content, data.indexCard, data.indexColumn);
         io.to(data.boardId).emit('data_board', board);
       } catch (erro) {
-        console.error('Erro ao combinar card', erro);
         console.error('Erro socket - onSaveCard', erro);
+      }
+    }
+
+    //functions Poker 
+    async function onUpdateStatusRoom(data) {
+      const start = performance.now()
+      try {
+        let room = await updateStatusRoom(data.roomId, data.status);
+        io.to(data.roomId).emit('data_room', room);
+        const elapsedTime = (performance.now() - start).toFixed(3);
+        logger.log('SOCKET', 'update_status_room', room._id, room.roomName, '', '', '', '', room.status, elapsedTime, 'success', 'Update status room successfully.')
+      } catch (erro) {
+        const elapsedTime = (performance.now() - start).toFixed(3);
+        logger.log('SOCKET', 'update_status_room', data.roomId, '', '', '', '', '', data.status, elapsedTime, 'failed', erro.message)
+        console.error('Erro ao processar update_status_room', erro);
+      }
+    }
+
+    async function onVotar(data) {
+      const start = performance.now()
+      try {
+        let room = await updateVote(data.roomId, data.userId, data.vote);
+        io.to(data.roomId).emit('data_room', room);
+        const elapsedTime = (performance.now() - start).toFixed(3);
+        logger.log('SOCKET', 'votar', data.roomId, room.roomName, data.userId, data.userName, '', data.vote, room.status, elapsedTime, 'success', 'Vote successfully.')
+      } catch (erro) {
+        console.error('Erro ao processar votar', erro);
+        logger.log('SOCKET', 'votar', data.roomId, '', data.userId, data.userName, '', data.vote, '', '', 'failed', erro.message)
       }
     }
 
