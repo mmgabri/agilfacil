@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { signOut} from '@aws-amplify/auth';
 import { v4 as uuidv4 } from 'uuid';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import { MdOutlineRemoveCircleOutline } from "react-icons/md";
 import { IoIosAddCircleOutline } from "react-icons/io";
@@ -10,12 +11,11 @@ import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import { Title } from '../../styles/GenericTitleStyles';
 import Header from './HeaderCreateBoard';
 import SuggestionForm from '../components/SuggestionForm'
-import { retrospectiveData } from './data'
-import localStorageService from "../../services/localStorageService";
-import getIP from "../../services/getIP"
+import '../../styles/NotificationPage.css';
 
 export const CreateBoardPage = ({ }) => {
   let navigate = useNavigate();
+  const location = useLocation();
 
   const [formData, setFormData] = useState({
     boardName: "",
@@ -24,31 +24,16 @@ export const CreateBoardPage = ({ }) => {
     columns: [{ id: uuidv4(), title: "", colorCards: "#F0E68C", cards: [] }]
   });
   const [isModalOpen, setModalOpen] = useState(false);
-  const [userId, setUserId] = useState("123");
   const [userLoggedData, setUserLoggedData] = useState({});
 
   useEffect(() => {
-    const initializeUserData = async () => {
-      try {
-        let storedUserlogged = localStorageService.getItem("AGILFACIL_USER_LOGGED");
 
-        if (!storedUserlogged) {
-          const ip = await getIP();
-          const storedUserData = {
-            userId: userId,
-            userIp: ip,
-          };
-          localStorageService.setItem("AGILFACIL_USER_LOGGED", storedUserData);
-          setUserLoggedData(storedUserData);
-        } else {
-          setUserLoggedData(storedUserlogged);
-        }
-      } catch (error) {
-        console.error("Erro ao inicializar os dados do usuário:", error);
-      }
-    };
+    console.log('useEffect - location.state.userLoggedData', location.state.userLoggedData)
 
-    initializeUserData();
+    if (location.state.userLoggedData) {
+      setUserLoggedData(location.state.userLoggedData);
+    }
+
   }, []);
 
   const handleFieldChange = (e) => {
@@ -89,18 +74,27 @@ export const CreateBoardPage = ({ }) => {
     }));
   };
 
-  const exitBoard = e => {
-    navigate('/');
-  }
+
+  const exitBoard = async () => {
+    try {
+      await signOut(); // Chamando o signOut diretamente
+      window.location.href = 'https://accounts.google.com/Logout';
+      console.log('Usuário desconectado com sucesso!');
+      window.location.href = '/'; // Ou use o useNavigate se preferir navegação sem recarregar a página
+    } catch (error) {
+      console.error('Erro ao deslogar', error);
+    }
+  };
 
   const handleSubmit = e => {
+    console.log('userLoggedData', userLoggedData)
     e.preventDefault()
 
     console.log('formData ==>', formData)
 
     axios
       .post(SERVER_BASE_URL + '/retro/createBoard', {
-        creatorId: userId,
+        creatorId: userLoggedData.userId,
         boardName: formData.boardName,
         squadName: formData.squadName,
         areaName: formData.areaName,
@@ -154,7 +148,7 @@ export const CreateBoardPage = ({ }) => {
         <Title>Preencha os campos abaixo para criar o Board interativo</Title>
         <form onSubmit={handleSubmit} className="form">
           <div className="form-group">
-            <label htmlFor="boardName">Nome *</label>
+            <label htmlFor="boardName">Nome do Borad*</label>
             <input
               type="text"
               id="boardName"

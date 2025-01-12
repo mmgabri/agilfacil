@@ -34,7 +34,7 @@ const HomePage = () => {
   }
 
   const handleHomeBoard = () => {
-    navigate("/board/create")
+    navigate("/boards")
   }
 
   const handleOpen = () => {

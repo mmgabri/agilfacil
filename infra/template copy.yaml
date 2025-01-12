@@ -1,0 +1,142 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  AgilFacil
+
+#------------  Parameters ------------#
+Parameters:
+  ClientIDGoogle:
+    Type: String
+  ClientSecretGoogle:
+    Type: String
+  EmailVerificationSubject:     
+    Type: String
+    Default: "Confirmação de email - AgilFacil"
+  EmailVerificationMessage:     
+    Type: String
+    Default: "Clique no link abaixo para verificar seu email: {####}"
+
+
+Resources:
+
+  TableBoard: 
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      AttributeDefinitions: 
+        - AttributeName: "userId"
+          AttributeType: "S"
+        - AttributeName: "dateTime"
+          AttributeType: "S"
+        - AttributeName: "boardId"
+          AttributeType: "S"
+      KeySchema: 
+        - AttributeName: "boardId"
+          KeyType: "HASH"
+        - AttributeName: "dateTime"
+          KeyType: "RANGE"
+      BillingMode: PAY_PER_REQUEST
+      TableName: 'board'
+
+      GlobalSecondaryIndexes: 
+        - IndexName: "gsi_board_user"
+          KeySchema: 
+            - AttributeName: "userId"
+              KeyType: "HASH"
+            - AttributeName: "dateTime"
+              KeyType: "RANGE"
+          Projection: 
+            ProjectionType: INCLUDE
+            NonKeyAttributes: 
+              - boardId
+              - boardName
+              - userName
+              - squadName
+              - areaName
+
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: AgilfacilUserPool
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: true
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: false
+      AutoVerifiedAttributes:
+        - email
+      UsernameAttributes:
+        - email
+      EmailVerificationSubject: !Ref EmailVerificationSubject
+      EmailVerificationMessage: !Ref EmailVerificationMessage
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Required: true
+          Mutable: true
+        - Name: name
+          AttributeDataType: String
+          Required: true
+          Mutable: true
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
+
+  CognitoIdentityProviderGoogle:
+    Type: AWS::Cognito::UserPoolIdentityProvider
+    Properties:
+      UserPoolId: !Ref CognitoUserPool
+      ProviderName: Google
+      ProviderType: Google
+      ProviderDetails:
+        client_id: !Ref ClientIDGoogle
+        client_secret: !Ref ClientSecretGoogle
+        authorize_scopes: "profile email openid"
+
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: AgilfacilUserPoolClient
+      UserPoolId: !Ref CognitoUserPool
+      GenerateSecret: false
+      SupportedIdentityProviders:
+        - COGNITO
+        - Google
+      CallbackURLs:
+        - https://agilfacil.com.br/myboards
+        - http://localhost:3000/myboards
+      LogoutURLs:
+        - https://agilfacil.com.br
+        - http://localhost:3000
+      AllowedOAuthFlows:
+        - code
+        - implicit
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - profile
+    DependsOn: CognitoIdentityProviderGoogle  # Garante que o provedor Google seja criado antes
+
+  CognitoUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: agilfacil-domain
+      UserPoolId: !Ref CognitoUserPool
+
+#Outputs:
+#  UserPoolId:
+#    Value: !Ref CognitoUserPool
+#    Export:
+#      Name: UserPoolId
+
+#  UserPoolClientId:
+#    Value: !Ref CognitoUserPoolClient
+#    Export:
+#      Name: UserPoolClientId
+
+#  UserPoolDomainName:
+#    Value: !GetAtt CognitoUserPoolDomain.Domain
+#    Export:
+#      Name: UserPoolDomainName

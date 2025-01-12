@@ -76,10 +76,10 @@ const getBoardByUser = async (req, res) => {
 
   console.log("getBoardByUser");
 
-  const { userId } = req.params
+  const { creatorId } = req.params
 
   try {
-    const dataItems = await getBoardByUserDb(config.TABLE_BOARD, config.INDEX_NAME_USER, userId);
+    const dataItems = await getBoardByUserDb(config.TABLE_BOARD, config.INDEX_NAME_USER, creatorId);
     res.status(200).json(dataItems);
     const elapsedTime = (performance.now() - start).toFixed(3);
     //  logger.log('API-RETRO', 'getBoardByUser', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName,  '', elapsedTime, 'success', 'Get board successfully.' )

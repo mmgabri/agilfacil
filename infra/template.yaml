@@ -5,9 +5,17 @@ Description: >
 
 #------------  Parameters ------------#
 Parameters:
-  NameParameter:
+  ClientIDGoogle:
     Type: String
-    Default: " "
+  ClientSecretGoogle:
+    Type: String
+  EmailVerificationSubject:     
+    Type: String
+    Default: "Confirmação de email - AgilFacil"
+  EmailVerificationMessage:     
+    Type: String
+    Default: "Clique no link abaixo para verificar seu email: {####}"
+
 
 Resources:
 
@@ -15,7 +23,7 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties: 
       AttributeDefinitions: 
-        - AttributeName: "userId"
+        - AttributeName: "creatorId"
           AttributeType: "S"
         - AttributeName: "dateTime"
           AttributeType: "S"
@@ -32,7 +40,7 @@ Resources:
       GlobalSecondaryIndexes: 
         - IndexName: "gsi_board_user"
           KeySchema: 
-            - AttributeName: "userId"
+            - AttributeName: "creatorId"
               KeyType: "HASH"
             - AttributeName: "dateTime"
               KeyType: "RANGE"

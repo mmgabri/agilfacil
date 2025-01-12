@@ -21,14 +21,14 @@ const putTable = (tableName, item) => {
   });
 };
 
-const getBoardByUserDb = (tableName, indexNameUser, userId) => {
+const getBoardByUserDb = (tableName, indexNameUser, creatorId) => {
   return new Promise((resolve, reject) => {
     const params = {
       TableName: tableName,
       IndexName: indexNameUser,
-      KeyConditionExpression: 'userId = :userId',
+      KeyConditionExpression: 'creatorId = :creatorId',
       ExpressionAttributeValues: {
-        ':userId': { S: userId },
+        ':creatorId': { S: creatorId },
       },
     };
 
