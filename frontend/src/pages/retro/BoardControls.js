@@ -239,7 +239,7 @@ const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInpu
             <InfoIcon>
               <FaUsers />
             </InfoIcon>
-            Pessoas que Logaram
+            Pessoas logadas
           </InfoTitle>
           <InfoCount>{countUserLogged}</InfoCount>
         </InfoColumn>
@@ -248,7 +248,7 @@ const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInpu
             <InfoIcon>
               <FaUserPen />
             </InfoIcon>
-            Pessoas com Cards
+            Pessoas com cards
           </InfoTitle>
           <InfoCount>{countUserWithCard}</InfoCount>
         </InfoColumn>

@@ -66,7 +66,6 @@ const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDe
       id: uuidv4(),
       content: value,
       createdBy: "",
-      userIp: userLoggedData.userIp,
       userId: userLoggedData.userId,
       likeCount: 0
     }

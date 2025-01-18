@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useLocation } from 'react-router-dom'
 import { createUseStyles } from "react-jss";
@@ -13,6 +14,7 @@ import BoardControls from "./BoardControls";
 import { useSocket } from "../../customHooks/useSocket";
 import 'react-toastify/dist/ReactToastify.css';
 import './retro.css';
+import { SERVER_BASE_URL } from "../../constants/apiConstants";
 
 export const BoardPage = ({ }) => {
   let navigate = useNavigate();
@@ -50,6 +52,18 @@ export const BoardPage = ({ }) => {
     console.log('useEffect-principal', location.state.boardData, location.state.userLoggedData)
     setBoardData(location.state.boardData);
     setuserLoggedData(location.state.userLoggedData);
+
+    axios
+      .post(SERVER_BASE_URL + '/retro/userOnBoard', {
+        boardId: location.state.boardData.boardId,
+        userId: location.state.userLoggedData.userId,
+      })
+      .then(response => {
+        console.log('response userOnBoard ==> ', response)
+      })
+      .catch((error) => {
+        console.error("Chamada da api retro/userOnBoard com erro:", error, error.response?.status)
+      });
   }, [location.state.boardData, location.state.userLoggedData]);
 
   useEffect(() => {
@@ -211,7 +225,7 @@ export const BoardPage = ({ }) => {
   const handleSetIsObfuscated = (value) => {
     const updatedBoardData = setIsObfuscated(boardData, value);
     setBoardData(updatedBoardData); // Atualiza o estado corretamente com o novo boardData
-    setIsObfuscatedSocket({ isObfuscated: value})
+    setIsObfuscatedSocket({ isObfuscated: value })
   };
 
   const handleStartTimer = () => {
@@ -236,6 +250,21 @@ export const BoardPage = ({ }) => {
     setIsRunningTimer(false)
   };
 
+  const onCountCards = () => {
+    const totalCards = boardData.columns.reduce((acc, column) => acc + column.cards.length, 0);
+    return totalCards;
+  };
+
+  const onCountUserLogged = () => {
+    const count = boardData.usersOnBoard?.length || 0;
+    return count;
+  };
+
+  const onCountUserWithCard = () => {
+    const count = boardData.cardCreators?.length || 0;
+    return count;
+  };
+
 
   return (
     <div className="bg-black-custom">
@@ -247,9 +276,9 @@ export const BoardPage = ({ }) => {
         handleOpenSugestion={handleOpenSugestion} />
 
       <BoardControls
-        countCard={9}
-        countUserLogged={5}
-        countUserWithCard={3}
+        countCard={onCountCards()}
+        countUserLogged={onCountUserLogged()}
+        countUserWithCard={onCountUserWithCard()}
         timeInput={timeInput}
         isRunningTimer={isRunningTimer}
         isInvalidFormat={isInvalidFormat}

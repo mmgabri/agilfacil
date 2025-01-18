@@ -28,6 +28,11 @@ const addCardBoard = (boardId, newCard, indexColumn) => {
       const column = updatedBoard.columns[indexColumn];
       column.cards.push(newCard);
 
+      //Adiciona usuario a lista de usuários que criacaram card
+      const userData = { userId: newCard.userId }
+      const userExists = updatedBoard.cardCreators.some(user => user.userId === userData.userId);
+      if (!userExists) updatedBoard.cardCreators.push(userData);
+
       //salva dados
       await putTable(config.TABLE_BOARD, updatedBoard);
 
@@ -286,7 +291,7 @@ const updateTitleColumn = (boardId, content, index) => {
   });
 };
 
-const setIsObfuscated = (boardId, isObfuscated ) => {
+const setIsObfuscated = (boardId, isObfuscated) => {
   return new Promise(async (resolve, reject) => {
     try {
       // Obtém os dados do board no banco de dados
@@ -489,4 +494,4 @@ const saveCard = (boardId, content, indexCard, indexColumn) => {
 
 
 
-module.exports = {connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, deleteAllCard, saveCard, updatecolorCards, setIsObfuscated };
+module.exports = { connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, deleteAllCard, saveCard, updatecolorCards, setIsObfuscated };

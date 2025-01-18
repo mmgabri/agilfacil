@@ -6,7 +6,6 @@ const logger = require('../generic/cloudWatchLoggerService');
 
 const saveBoard = async (req, res) => {
   const start = performance.now()
-  console.log("createBoard");
 
   let boardId = null
   let dateTime = null
@@ -33,19 +32,51 @@ const saveBoard = async (req, res) => {
     areaName: req.body.areaName,
     columns: req.body.columns,
     isObfuscated: false,
-    dateTimeLastUpdate: new Date().toISOString()
+    dateTimeLastUpdate: new Date().toISOString(),
+    usersOnBoard: [],
+    cardCreators: []
   };
 
   try {
     const data = await putTable(config.TABLE_BOARD, boardDb);
     res.status(201).json(data);
     const elapsedTime = (performance.now() - start).toFixed(3);
-   // logger.log('API-RETRO', 'createBoard', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName, '', elapsedTime, 'success', 'Board created successfully.')
+    // logger.log('API-RETRO', 'createBoard', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName, '', elapsedTime, 'success', 'Board created successfully.')
   } catch (error) {
     const elapsedTime = (performance.now() - start).toFixed(3);
-  //  logger.log('API-RETRO', 'createBoard', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName, '', elapsedTime, 'failed', error.message)
+    //  logger.log('API-RETRO', 'createBoard', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName, '', elapsedTime, 'failed', error.message)
     return res.status(500).json({ error: 'Error creating board' });
   }
+};
+
+
+const userOnBoard = async (req, res) => {
+  const start = performance.now()
+  console.log("userOnBoard");
+
+  try {
+    // Obtém os dados do board no banco de dados
+    const boardData = await getBoardDb(config.TABLE_BOARD, req.body.boardId);
+
+    const userData = { userId: req.body.userId }
+
+    // Adiciona usuário na lista de usuários
+    const updatedBoardData = { ...boardData };
+    const userExists = updatedBoardData.usersOnBoard.some(user => user.userId === userData.userId);
+    if (userExists) return res.status(201).json({ message: 'sucess!' });
+
+    updatedBoardData.usersOnBoard.push(userData);
+    await putTable(config.TABLE_BOARD, updatedBoardData);
+    return res.status(201).json({ message: 'sucess!' });
+
+  } catch (error) {
+    if (error == 'NOT_FOUND') {
+      return res.status(404).json({ error: 'Board não encontrado' });
+    } else {
+      return res.status(500).json({ error: 'Error in userOnBoard' });
+    }
+  }
+
 };
 
 const getBoard = async (req, res) => {
@@ -58,9 +89,7 @@ const getBoard = async (req, res) => {
   try {
     const dataItems = await getBoardDb(config.TABLE_BOARD, boardId);
     res.status(200).json(dataItems);
-    //res.status(200).json(dataItems);
     const elapsedTime = (performance.now() - start).toFixed(3);
-    //  logger.log('API-RETRO', 'getBoardByUser', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName,  '', elapsedTime, 'success', 'Get board successfully.' )
   } catch (error) {
     const elapsedTime = (performance.now() - start).toFixed(3);
     if (error === 'NOT_FOUND') {
@@ -91,4 +120,4 @@ const getBoardByUser = async (req, res) => {
   }
 };
 
-module.exports = { saveBoard, getBoardByUser, getBoard };
+module.exports = { saveBoard, getBoardByUser, getBoard, userOnBoard };
