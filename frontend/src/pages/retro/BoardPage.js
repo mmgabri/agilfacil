@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from 'react-router-dom'
-import { FaClock } from 'react-icons/fa';
-import { createUseStyles } from "react-jss";
-import styled from 'styled-components';
-import { FaRegStickyNote, FaUsers, FaUserAlt } from 'react-icons/fa';
-import { DragDropContext } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from 'uuid';
+import { useNavigate, useLocation } from 'react-router-dom'
+import { createUseStyles } from "react-jss";
+import { DragDropContext } from "react-beautiful-dnd";
+import { toast } from 'react-toastify';
 import Columns from "./Columns";
-import { reorderboardData, processCombine, saveCard, deleteCard, updateLike, updateTitleColumn, deleteColumn, addCard, updatecolorCards, deleteAllCards } from "./FunctionsRetro";
+import { reorderboardData, processCombine, saveCard, deleteCard, updateLike, updateTitleColumn, deleteColumn, addCard, updatecolorCards, deleteAllCards, addCollumn, setIsObfuscated } from "./FunctionsBoard";
 import Header from './HeaderBoard';
 import Invite from '../components/Invite';
 import SuggestionForm from '../components/SuggestionForm'
+import BoardControls from "./BoardControls";
 import { useSocket } from "../../customHooks/useSocket";
 import 'react-toastify/dist/ReactToastify.css';
 import './retro.css';
@@ -19,8 +18,8 @@ export const BoardPage = ({ }) => {
   let navigate = useNavigate();
   const [timeInput, setTimeInput] = useState("00:00"); // Tempo digitado pelo usuário
   const [timer, setTimer] = useState(0); // Tempo em segundos
-  const [isRunning, setIsRunning] = useState(false); // Status do cronômetro
-
+  const [isRunningTimer, setIsRunningTimer] = useState(false); // Status do cronômetro
+  const [isInvalidFormat, setIsInvalidFormat] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
   const location = useLocation();
@@ -30,7 +29,21 @@ export const BoardPage = ({ }) => {
   const handleCloseInvite = () => setShowInvite(false);
   const [userLoggedData, setuserLoggedData] = useState({});
 
-  const { socketResponse, addCardSocket, reorderBoardSocket, combineCardSocket, updateTitleColumnSocket, updateLikeSocket, deleteCardSocket, saveCardSocket, deleteColumnSocket, updatecolorCardsSocket, deleteAllCardSocket } = useSocket(location.state.userName, location.state.userId, location.state.boardData.boardId, 'board')
+  const {
+    socketResponse,
+    addCardSocket,
+    reorderBoardSocket,
+    combineCardSocket,
+    updateTitleColumnSocket,
+    updateLikeSocket,
+    deleteCardSocket,
+    saveCardSocket,
+    deleteColumnSocket,
+    addCollumnSocket,
+    updatecolorCardsSocket,
+    deleteAllCardSocket,
+    timerControlSocket,
+    setIsObfuscatedSocket } = useSocket(location.state.userName, location.state.userId, location.state.boardData.boardId, 'board')
 
 
   useEffect(() => {
@@ -40,35 +53,71 @@ export const BoardPage = ({ }) => {
   }, [location.state.boardData, location.state.userLoggedData]);
 
   useEffect(() => {
-    // console.log('useEffect - socketResponse ==>', socketResponse);
+    console.log('useEffect - socketResponse ==>', socketResponse);
+
+    if (socketResponse.isTimerControl) {
+      if (socketResponse.userId == userLoggedData.userId) return;
+
+      setIsRunningTimer(socketResponse.isRunningTimer)
+      setTimeInput(socketResponse.timeInput)
+      setTimer(socketResponse.timer)
+    }
 
     if (socketResponse && socketResponse.boardId) {
       setBoardData(prevBoardData => ({
         ...prevBoardData,
-        ...socketResponse, // Garante que as novas referências sejam criadas
+        ...socketResponse,
       }));
     }
   }, [socketResponse]);
 
   useEffect(() => {
-    if (!isRunning) return;
+    if (!isRunningTimer) return;
 
     const interval = setInterval(() => {
       setTimer((prev) => {
         if (prev > 0) {
           const minutes = String(Math.floor((prev - 1) / 60)).padStart(2, "0");
           const seconds = String((prev - 1) % 60).padStart(2, "0");
-          setTimeInput(`${minutes}:${seconds}`); // Atualiza o input ao diminuir o tempo
+          setTimeInput(`${minutes}:${seconds}`);
           return prev - 1;
         } else {
-          setIsRunning(false); // Para o cronômetro quando chega a 0
+          setIsRunningTimer(false);
           return 0;
         }
       });
     }, 1000);
 
-    return () => clearInterval(interval); // Limpa o intervalo ao desmontar
-  }, [isRunning]);
+    return () => clearInterval(interval);
+  }, [isRunningTimer]);
+
+  const handleInputTimerChange = (e) => {
+    if (isRunningTimer) return;
+
+    if (!validateTimeFormat) {
+      setIsInvalidFormat(false);
+    }
+
+    const value = e.target.value;
+    console.log(value, validateTimeFormat)
+    if (!validateTimeFormat(value)) {
+      setIsInvalidFormat(true);
+      setTimeInput(value);
+      return;
+    }
+
+    setIsInvalidFormat(false);
+    setTimeInput(value);
+    const [minutes, seconds] = value.split(":").map(Number);
+    setTimer((minutes || 0) * 60 + (seconds || 0));
+
+  };
+
+  // Função para validar o formato MM:SS
+  const validateTimeFormat = (value) => {
+    const regex = /^([0-5]?[0-9]):([0-5]?[0-9])$/; // Formato MM:SS
+    return regex.test(value);
+  };
 
   const onDragEnd = (result) => {
     console.log('--- onDragEnd ---')
@@ -147,90 +196,70 @@ export const BoardPage = ({ }) => {
   };
 
 
-  const handleAddColumn = () => {
-
+  const handleAddColumn = (collunName) => {
+    const newCollumn = {
+      id: uuidv4(),
+      title: collunName,
+      colorCards: "#F0E68C",
+      cards: []
+    };
+    const updatedColumns = addCollumn(boardData, newCollumn);
+    setBoardData({ ...boardData, updatedColumns });
+    addCollumnSocket({ newCollumn: newCollumn })
   };
 
-  const handleBlurBoard = () => {
-
+  const handleSetIsObfuscated = (value) => {
+    const updatedBoardData = setIsObfuscated(boardData, value);
+    setBoardData(updatedBoardData); // Atualiza o estado corretamente com o novo boardData
+    setIsObfuscatedSocket({ isObfuscated: value})
   };
 
-  // Atualiza o tempo com base na entrada do usuário
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    setTimeInput(value);
-    const [minutes, seconds] = value.split(":").map(Number);
-    setTimer((minutes || 0) * 60 + (seconds || 0));
+  const handleStartTimer = () => {
+    if (isInvalidFormat) {
+      toast.error("Informe o tempo no formato MM:SS", {
+        position: 'top-center',
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeButton: false,
+        draggable: true,
+        pauseOnHover: true,
+      });
+      return
+    };
+
+    timerControlSocket({ timeInput: timeInput, timer: timer, isRunningTimer: true, userId: userLoggedData.userId })
+    setIsRunningTimer(true)
   };
 
-  const formatTime = (totalSeconds) => {
-    const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
-    const seconds = String(totalSeconds % 60).padStart(2, "0");
-    return `${minutes}:${seconds}`;
+  const handlePauseTimer = () => {
+    timerControlSocket({ timeInput: timeInput, timer: timer, isRunningTimer: false, userId: userLoggedData.userId })
+    setIsRunningTimer(false)
   };
+
 
   return (
     <div className="bg-black-custom">
-      <Header boardName={boardData.boardName} handleShowInvite={handleShowInvite} handleCloseInvite={handleCloseInvite} sairSala={exitBoard} handleOpenSugestion={handleOpenSugestion} />
-      {showInvite && <Invite id={boardData.boardId} onClose={handleCloseInvite} service={'board'} />}
+      <Header
+        boardName={boardData.boardName}
+        handleShowInvite={handleShowInvite}
+        handleCloseInvite={handleCloseInvite}
+        sairSala={exitBoard}
+        handleOpenSugestion={handleOpenSugestion} />
 
-      <BoardControls>
-        <InfoBox>
-          <InfoColumn>
-            <InfoTitle>
-              <InfoIcon>
-                <FaRegStickyNote />
-              </InfoIcon>
-              Cards
-            </InfoTitle>
-            <InfoCount>{9}</InfoCount>
-          </InfoColumn>
-          <InfoColumn>
-            <InfoTitle>
-              <InfoIcon>
-                <FaUsers />
-              </InfoIcon>
-              Usuários que Logaram
-            </InfoTitle>
-            <InfoCount>{5}</InfoCount>
-          </InfoColumn>
-          <InfoColumn>
-            <InfoTitle>
-              <InfoIcon>
-                <FaUserAlt />
-              </InfoIcon>
-              Usuários com Cards
-            </InfoTitle>
-            <InfoCount>{3}</InfoCount>
-          </InfoColumn>
-        </InfoBox>
-        <BoardActions>
-          <TimerBox>
-            <TimerIcon />
-            <TimerInput
-              type="text"
-              value={timeInput}
-              onChange={handleInputChange}
-              disabled={isRunning}
-              placeholder="MM:SS"
-            />
-            <TimerControls>
-              {!isRunning && (
-                <TimerButton onClick={() => setIsRunning(true)}>Iniciar</TimerButton>
-              )}
-              {isRunning && (
-                <TimerButton className="pause" onClick={() => setIsRunning(false)}>Pausar</TimerButton>
-              )}
-            </TimerControls>
-          </TimerBox>
-          <ActionButton onClick={handleAddColumn}>
-            <span role="img" aria-label="Add Column">➕</span> Incluir Coluna
-          </ActionButton>
-          <ActionButton onClick={handleBlurBoard}>
-            <span role="img" aria-label="Blur Board">💨</span> Embaçar Board
-          </ActionButton>
-        </BoardActions>
-      </BoardControls>
+      <BoardControls
+        countCard={9}
+        countUserLogged={5}
+        countUserWithCard={3}
+        timeInput={timeInput}
+        isRunningTimer={isRunningTimer}
+        isInvalidFormat={isInvalidFormat}
+        handleInputTimerChange={handleInputTimerChange}
+        handleStartTimer={handleStartTimer}
+        handlePauseTimer={handlePauseTimer}
+        handleAddColumn={handleAddColumn}
+        isObfuscated={boardData.isObfuscated}
+        handleSetIsObfuscated={handleSetIsObfuscated}
+        isBoardCreator={userLoggedData.isBoardCreator} />
 
       <DragDropContext onDragEnd={onDragEnd}>
         <div className={cl.root}>
@@ -253,188 +282,18 @@ export const BoardPage = ({ }) => {
                 onUpdatecolorCards={onUpdatecolorCards}
                 indexColumn={index}
                 userLoggedData={userLoggedData}
+                isObfuscated={boardData.isObfuscated}
               />
             </div>
           ))}
         </div>
       </DragDropContext>
+
       {isModalOpen && <SuggestionForm onClose={() => setModalOpen(false)} />}
+      {showInvite && <Invite id={boardData.boardId} onClose={handleCloseInvite} service={'board'} />}
     </div>
   );
 }
-
-
-// Estilização principal do controle do board
-const BoardControls = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  background-color: #2c2c2c;
-  color: #fff;
-  flex-wrap: wrap; /* Adiciona flexibilidade ao layout */
-
-  /* Responsividade para telas menores */
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-`;
-
-const InfoBox = styled.div`
-  display: inline-flex; /* Ajusta a largura de acordo com o conteúdo das colunas */
-  padding: 8px 16px;
-  background-color: #2f2f2f;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin: 3px;
-  gap: 20px;
-  flex-wrap: wrap; /* Permite que as colunas se ajustem quando necessário */
-
-  /* Responsividade para telas menores */
-  @media (max-width: 768px) {
-    width: 100%;
-    gap: 10px; /* Ajusta o espaçamento entre as colunas */
-  }
-`;
-
-
-const InfoColumn = styled.div`
-  text-align: center;
-  flex-shrink: 0; /* Evita que a coluna encolha */
-  min-width: 120px; /* Define uma largura mínima para as colunas */
-
-  /* Responsividade para telas menores */
-  @media (max-width: 768px) {
-    width: 33%; /* Em telas pequenas, as colunas ocupam 1/3 do espaço */
-  }
-`;
-
-
-const InfoTitle = styled.h3`
-  font-size: 12px;
-  color: #fff;
-  margin-bottom: 3px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-`;
-
-const InfoIcon = styled.div`
-  font-size: 12px;
-  background-color: #444;
-  border-radius: 50%;
-  padding: 4px;
-  color: #fff;
-`;
-
-const InfoCount = styled.p`
-  font-size: 14px;
-  color: #4caf50;
-  font-weight: bold;
-  margin: 0px;
-`;
-
-
-// Estilização para ações do board
-const BoardActions = styled.div`
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap; /* Adiciona flexibilidade ao layout */
-
-  /* Responsividade para telas menores */
-  @media (max-width: 768px) {
-    justify-content: center; /* Centraliza os botões em telas menores */
-    width: 100%; /* Ocupa toda a largura disponível */
-  }
-`;
-
-// Estilização dos botões de ação
-const ActionButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  background-color: #3c3c3c;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #4c4c4c;
-  }
-
-  span {
-    font-size: 16px;
-  }
-
-  /* Responsividade para telas menores */
-  @media (max-width: 768px) {
-    width: 100%; /* Os botões ocupam toda a largura */
-    justify-content: center; /* Centraliza o conteúdo */
-    margin-bottom: 10px; /* Espaçamento entre os botões */
-  }
-`;
-
-//---------Timer
-const TimerBox = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px;
-  background-color: #3c3c3c;
-  border-radius: 8px;
-  color: #fff;
-  gap: 10px;
-`;
-
-const TimerInput = styled.input`
-  width: 60px;
-  padding: 5px;
-  text-align: center;
-  font-size: 14px;
-  border: 1px solid #555;
-  border-radius: 4px;
-  background-color: #222;
-  color: #fff;
-`;
-
-const TimerControls = styled.div`
-  display: flex;
-  gap: 8px;
-`;
-
-const TimerButton = styled.button`
-  padding: 5px 8px;
-  font-size: 12px;
-  border: none;
-  border-radius: 4px;
-  background-color: #4caf50;
-  color: #fff;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #45a049;
-  }
-
-  &.pause {
-    background-color: #f44336;
-
-    &:hover {
-      background-color: #d32f2f;
-    }
-  }
-`;
-
-const TimerIcon = styled(FaClock)`
-  font-size: 20px;
-  color: #fff;
-  margin-right: 10px;
-`;
-
 
 export default BoardPage;
 

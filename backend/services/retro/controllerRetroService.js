@@ -32,6 +32,7 @@ const saveBoard = async (req, res) => {
     squadName: req.body.squadName,
     areaName: req.body.areaName,
     columns: req.body.columns,
+    isObfuscated: false,
     dateTimeLastUpdate: new Date().toISOString()
   };
 

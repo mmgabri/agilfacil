@@ -97,6 +97,30 @@ export const useSocket = (
     [socket, idSession]
   );
 
+
+
+  const setIsObfuscatedSocket = useCallback(
+    (payload) => {
+      socket.emit("comand_socket_board", {
+        comand: 'set_is_obfuscated',
+        boardId: idSession,
+        isObfuscated: payload.isObfuscated,
+      });
+    },
+    [socket, idSession]
+  );
+
+  const addCollumnSocket = useCallback(
+    (payload) => {
+      socket.emit("comand_socket_board", {
+        comand: 'add_collumn',
+        boardId: idSession,
+        newCollumn: payload.newCollumn,
+      });
+    },
+    [socket, idSession]
+  );
+
   const updateTitleColumnSocket = useCallback(
     (payload) => {
       socket.emit("comand_socket_board", {
@@ -170,6 +194,20 @@ export const useSocket = (
     [socket, idSession]
   );
 
+  const timerControlSocket = useCallback(
+    (payload) => {
+      socket.emit("comand_socket_board", {
+        comand: 'timer_control_board',
+        boardId: idSession,
+        timeInput: payload.timeInput,
+        timer: payload.timer,
+        isRunningTimer: payload.isRunningTimer,
+        userId: payload.userId,
+      });
+    },
+    [socket, idSession]
+  );
+
 
   useEffect(() => {
 
@@ -183,16 +221,16 @@ export const useSocket = (
     setSocket(socketio);
 
     socketio.on("connect", () => {
-     // console.info('useSocket - Connected to the server');
+      // console.info('useSocket - Connected to the server');
       setConnected(true);
     })
 
     socketio.on('error', (error) => {
-      //console.error('useSocket - Error: ', error);
+      console.error('useSocket - Error: ', error);
     });
 
     socketio.on('connect_error', (error) => {
-      //console.error('useSocket - Connection error:', error);
+      console.error('useSocket - Connection error:', error);
     });
 
     socketio.on("data_room", (res) => {
@@ -200,13 +238,13 @@ export const useSocket = (
     });
 
     socketio.on("data_board", (res) => {
-   //   console.log('socket -->', res)
+      //   console.log('socket -->', res)
       setSocketResponse(res)
     });
 
     socketio.on("retro_connection", (res) => {
       console.log('retro_connection -->', res)
-  //    setSocketResponse(res)
+      //    setSocketResponse(res)
     });
 
     socketio.on("retro_disconnect", (res) => {
@@ -219,5 +257,23 @@ export const useSocket = (
     };
   }, [idSession]);
 
-  return { socketResponse, isConnected, updateStatusRoom, votar, addCardSocket, reorderBoardSocket, combineCardSocket, deleteColumnSocket, updateTitleColumnSocket, updateLikeSocket, deleteCardSocket, saveCardSocket, updatecolorCardsSocket, deleteAllCardSocket };
+  return {
+    socketResponse,
+    isConnected,
+    updateStatusRoom,
+    votar,
+    addCardSocket,
+    reorderBoardSocket,
+    combineCardSocket,
+    deleteColumnSocket,
+    updateTitleColumnSocket,
+    updateLikeSocket,
+    deleteCardSocket,
+    addCollumnSocket,
+    saveCardSocket,
+    updatecolorCardsSocket,
+    deleteAllCardSocket,
+    timerControlSocket,
+    setIsObfuscatedSocket
+  };
 };

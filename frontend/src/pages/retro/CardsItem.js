@@ -7,7 +7,7 @@ import { AiTwotoneLike } from 'react-icons/ai';
 
 import { colors } from "@atlaskit/theme";
 
-function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColumn, onSaveCard, onDeleteCard, onUpdateLike, colorCards, userLoggedData }) {
+function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColumn, onSaveCard, onDeleteCard, onUpdateLike, colorCards, userLoggedData, isObfuscated }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [content, setContent] = useState(card.content);
@@ -91,7 +91,7 @@ function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColum
       data-testid={card.id}
       data-index={index}
     >
-      <Content>
+      <Content  $isObfuscated={isObfuscated}>
         {isEditing ? (
           <StyledTextarea
             value={content}
@@ -197,13 +197,20 @@ const Container = styled.div`
     box-shadow: none;
   }
 `;
-
 const Content = styled.div`
   display: flex;
-  align-items: center;  // Alinha os itens verticalmente no centro
-  justify-content: space-between;  // Cria um espaço entre os itens (texto e ícone)
+  align-items: center; /* Alinha os itens verticalmente no centro */
+  justify-content: space-between; /* Cria um espaço entre os itens (texto e ícone) */
   width: 100%;
+   ${({ $isObfuscated }) =>
+    $isObfuscated &&
+    `
+    filter: blur(5px);
+    pointer-events: none;
+  `}
+  transition: filter 0.3s ease-in-out; /* Animação suave */
 `;
+
 
 // Like
 const ContainerLike = styled.div`
@@ -315,18 +322,4 @@ const StyledMdCheck = styled(MdCheck)`
   }
 `;
 
-const StyledMdCheck2 = styled(MdCheck)`
-  color: #10b981;
-  cursor: pointer; 
-  transition: color 0.2s ease;
-  margin-top: 2px;
-  margin-right: 0px;
-  margin-left: 500px;
-  font-size: 20px;  // Tamanho do ícone (ajustado para 18px, pode ser modificado)
-
-  &:hover {
-    color: #3498db; // Muda a cor ao passar o mouse
-    transform: scale(1.4);  
-  }
-`;
 

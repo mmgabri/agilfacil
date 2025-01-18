@@ -255,7 +255,7 @@ const IconContainer = styled.div`
 `;
 
 const StyledIoIosAddCircleOutline = styled(IoIosAddCircleOutline)`
-  color: #10b981;  // Cor do ícone (um tom de cinza)
+  color: #10b981;  // Cor do ícone 
   cursor: pointer;
   transition: color 0.3s ease, transform 0.2s ease;  
   font-size: 30px;  
@@ -267,7 +267,7 @@ const StyledIoIosAddCircleOutline = styled(IoIosAddCircleOutline)`
 `;
 
 const StyledMdMoreVert = styled(MdMoreVert)`
-  color: #4169E1;  // Cor do ícone (um tom de cinza)
+  color: #4169E1;  // Cor do ícone 
   cursor: pointer;
   transition: color 0.3s ease, transform 0.2s ease;  
   font-size: 17px;  

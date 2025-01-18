@@ -1,5 +1,5 @@
 const { connectClient, desconnectClient, updateStatusRoom, updateVote } = require('../services/poker/socketService');
-const { connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, updateTitleColumn, updateLike, deleteCard, saveCard, updatecolorCards, deleteAllCard } = require('../services/retro/socketRetroService');
+const { connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, saveCard, updatecolorCards, deleteAllCard, setIsObfuscated } = require('../services/retro/socketRetroService');
 const logger = require('../services/generic/cloudWatchLoggerService');
 
 const setupSocketIo = (io) => {
@@ -77,6 +77,15 @@ const setupSocketIo = (io) => {
           break;
         case 'save_card':
           onSaveCard(data)
+          break;
+        case 'add_collumn':
+          onAddCollumn(data)
+          break;
+        case 'timer_control_board':
+          onTimerControlBoard(data)
+          break;
+        case 'set_is_obfuscated':
+          onSetIsObfuscated(data)
           break;
         default:
           console.error('Comando Board não previsto - ', data.comand);
@@ -173,6 +182,16 @@ const setupSocketIo = (io) => {
       }
     }
 
+    async function onAddCollumn(data) {
+      const start = performance.now()
+      try {
+        let board = await addColumn(data.boardId, data.newCollumn);
+        io.to(data.boardId).emit('data_board', board);
+      } catch (erro) {
+        console.error('Erro socket - onAddColumn', erro);
+      }
+    }
+
     async function onUpdateTitleColumn(data) {
       const start = performance.now()
       try {
@@ -213,7 +232,7 @@ const setupSocketIo = (io) => {
       }
     }
 
-
+    
     async function onDeleteCard(data) {
       const start = performance.now()
       try {
@@ -221,6 +240,16 @@ const setupSocketIo = (io) => {
         io.to(data.boardId).emit('data_board', board);
       } catch (erro) {
         console.error('Erro socket - onDeleteCard', erro);
+      }
+    }
+
+    async function onSetIsObfuscated(data) {
+      const start = performance.now()
+      try {
+        let board = await setIsObfuscated(data.boardId, data.isObfuscated);
+        io.to(data.boardId).emit('data_board', board);
+      } catch (erro) {
+        console.error('Erro socket - onSetIsObfuscated', erro);
       }
     }
 
@@ -235,7 +264,6 @@ const setupSocketIo = (io) => {
       }
     }
 
-
     async function onSaveCard(data) {
       const start = performance.now()
       try {
@@ -243,6 +271,23 @@ const setupSocketIo = (io) => {
         io.to(data.boardId).emit('data_board', board);
       } catch (erro) {
         console.error('Erro socket - onSaveCard', erro);
+      }
+    }
+
+    async function onTimerControlBoard(data) {
+      const start = performance.now()
+      try {
+        let board = {
+          isTimerControl: true,
+          timer: data.timer,
+          timeInput: data.timeInput,
+          isRunningTimer: data.isRunningTimer,
+          userId: data.userId
+        }
+        console.log('onTimerControlBoard: ', board)
+        io.to(data.boardId).emit('data_board', board);
+      } catch (erro) {
+        console.error('Erro socket - onTimerControlBoard', erro);
       }
     }
 

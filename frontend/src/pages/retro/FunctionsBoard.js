@@ -1,4 +1,3 @@
-// a little function to help us with reordering the result
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
@@ -115,7 +114,7 @@ const processCombineSameColumn = (boardData, source, combine) => {
   // Atualiza o conteúdo do item combinado, concatenando os textos
   combineCards[combineCardIndex] = {
     ...combineCard,
-     content: `${combineCard.content}\n+\n${sourceCard.content}`
+    content: `${combineCard.content}\n+\n${sourceCard.content}`
   };
 
   //Atualiza estado
@@ -165,11 +164,19 @@ export const updateTitleColumn = (boardData, content, index) => {
   return updatedBoardData;
 }
 
+export const setIsObfuscated = (boardData, isObfuscated) => {
+  const updatedBoardData = { ...boardData };
+  console.log('antes:', boardData);
+  updatedBoardData.isObfuscated = isObfuscated; // Atualiza isObfuscated
+  console.log('depois:', updatedBoardData);
+  return updatedBoardData;
+}
+
 export const updatecolorCards = (boardData, colorCards, index) => {
-  console.log('updatecolorCards',index , colorCards, boardData )
+  console.log('updatecolorCards', index, colorCards, boardData)
   const updatedBoardData = { ...boardData };
   const columnToUpdate = updatedBoardData.columns[index];
-  columnToUpdate.colorCards = colorCards;  
+  columnToUpdate.colorCards = colorCards;
   return updatedBoardData;
 }
 
@@ -183,5 +190,11 @@ export const addCard = (boardData, newCard, indexColumn) => {
   const updatedBoardData = { ...boardData };
   const columnToUpdate = updatedBoardData.columns[indexColumn];
   columnToUpdate.cards.push(newCard);
+  return updatedBoardData;
+}
+
+export const addCollumn = (boardData, newCollumn) => {
+  const updatedBoardData = { ...boardData };
+  updatedBoardData.columns.push(newCollumn);
   return updatedBoardData;
 }

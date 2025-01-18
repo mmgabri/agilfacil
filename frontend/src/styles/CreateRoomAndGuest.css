@@ -62,8 +62,8 @@ h1 {
 .submit-button {
   display: inline-block;
   width: 100%;
-  padding: 15px;
-  font-size: 16px;
+  padding: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: #fff;
   background: linear-gradient(135deg, #4a4a4a, #5a5a5a); /* Novo gradiente para o botão */
@@ -71,7 +71,8 @@ h1 {
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.3s ease;
-  height: 50px;
+  margin-top: 7px;
+  height: 45px;
 }
 
 .submit-button:hover {

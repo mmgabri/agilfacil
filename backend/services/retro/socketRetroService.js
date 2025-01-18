@@ -229,6 +229,31 @@ const deleteColumn = (boardId, index) => {
   });
 };
 
+const addColumn = (boardId, newCollumn) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Obtém os dados do board no banco de dados
+      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+
+      if (!boardData) {
+        return reject(new Error('Board não encontrado.'));
+      }
+
+      // Adiciona a coluna pelo índice
+      const updatedBoardData = { ...boardData };
+      updatedBoardData.columns.push(newCollumn);
+
+      // Atualiza o board no banco de dados
+      await putTable(config.TABLE_BOARD, updatedBoardData);
+
+      // Retorna o board atualizado
+      resolve(updatedBoardData);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 
 const updateTitleColumn = (boardId, content, index) => {
   return new Promise(async (resolve, reject) => {
@@ -248,6 +273,32 @@ const updateTitleColumn = (boardId, content, index) => {
       // Atualiza o título da coluna
       const updatedBoardData = { ...boardData };
       updatedBoardData.columns[index].title = content;
+
+      // Salva o board atualizado no banco de dados
+      await putTable(config.TABLE_BOARD, updatedBoardData);
+
+      // Retorna o board atualizado
+      resolve(updatedBoardData);
+    } catch (error) {
+      // Rejeita a promise em caso de erro
+      reject(error);
+    }
+  });
+};
+
+const setIsObfuscated = (boardId, isObfuscated ) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Obtém os dados do board no banco de dados
+      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+
+      if (!boardData) {
+        return reject(new Error('Board não encontrado.'));
+      }
+
+      // Atualiza isObfuscated
+      const updatedBoardData = { ...boardData };
+      updatedBoardData.isObfuscated = isObfuscated
 
       // Salva o board atualizado no banco de dados
       await putTable(config.TABLE_BOARD, updatedBoardData);
@@ -438,4 +489,4 @@ const saveCard = (boardId, content, indexCard, indexColumn) => {
 
 
 
-module.exports = {connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, updateTitleColumn, updateLike, deleteCard, deleteAllCard, saveCard, updatecolorCards };
+module.exports = {connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, deleteAllCard, saveCard, updatecolorCards, setIsObfuscated };
