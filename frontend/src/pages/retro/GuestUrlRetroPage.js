@@ -44,19 +44,10 @@ export const GuestUrlRetroPage = ({ }) => {
   }, []);
 
 
-  const directsBoard = (userLoggedData) => {
+  const directsBoard = async (userLoggedData) => {
     try {
-      axios
-        .get(`${SERVER_BASE_URL}/retro/${id}`)
-        .then((response) => {
-          console.log('Retorno da API getBoard:', response.data);
-          navigate('/board', { state: { boardData: response.data, userLoggedData: userLoggedData } });
-        })
-        .catch((error) => {
-          console.log("Resposta da api getRoom com erro:", error.response?.status)
-          navigate('/notification', { state: { statusCode: error.response?.status } });
-        });
-
+      const response = await axios.post(SERVER_BASE_URL + '/retro/userOnBoard', {boardId: id, userId: userLoggedData.userId})
+      navigate('/board', { state: { boardData: response.data, userLoggedData: userLoggedData } });
     } catch (error) {
       console.error("Erro ao obter dados do Board:", error);
       triggerError()

@@ -2,7 +2,7 @@ const express = require('express');
 const { validateToken } = require('../services/generic/validateToken'); 
 
 const { createRoom, joinRoom, suggestion, getRoom, healthcheck } = require('../services/poker/controllerService');
-const { saveBoard, getBoardByUser, getBoard, userOnBoard} = require('../services/retro/controllerRetroService');
+const { createBoard, getBoardByUser, getBoard, userOnBoard} = require('../services/retro/controllerRetroService');
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ router.post('/retro/userOnBoard', userOnBoard);
 
 // Retro - Rotas com autenticação
 router.get('/retro/getBoardByUser/:creatorId', validateToken, getBoardByUser);
-router.post('/retro/createBoard', validateToken, saveBoard);
-router.put('/retro/updateBoard', validateToken, saveBoard);
+router.post('/retro/createBoard', validateToken, createBoard);
+//router.put('/retro/updateBoard', validateToken, UpdateBoard);
 
 module.exports = router;

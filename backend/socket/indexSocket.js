@@ -1,5 +1,5 @@
 const { connectClient, desconnectClient, updateStatusRoom, updateVote } = require('../services/poker/socketService');
-const { connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, saveCard, updatecolorCards, deleteAllCard, setIsObfuscated } = require('../services/retro/socketRetroService');
+const { connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, saveCard, updatecolorCards, deleteAllCard, setIsObfuscated, disconnectClientRetro } = require('../services/retro/socketRetroService');
 const logger = require('../services/generic/cloudWatchLoggerService');
 
 const setupSocketIo = (io) => {
@@ -23,7 +23,7 @@ const setupSocketIo = (io) => {
 
       switch (service) {
         case 'board':
-          onDisconnectBoard(idSession)
+          onDisconnectBoard(userId, idSession)
           break;
         case 'poker':
           onDisconnectPoker(userName, userId, idSession)
@@ -119,12 +119,14 @@ const setupSocketIo = (io) => {
       }
     }
 
-    async function onDisconnectBoard(idSession) {
+    async function onDisconnectBoard(userId, idSession) {
       const start = performance.now()
-      //TO DO
-      console.log('trata retrospectiva')
-      socket.join(idSession);
-      io.to(idSession).emit('retro_disconnect', 'A user disconnected in retro');
+      try {
+        let board = await disconnectClientRetro(userId, idSession);
+        io.to(idSession).emit('data_board', board);
+      } catch (erro) {
+        console.error('Erro socket - onAddCardBoard', erro);
+      }
     }
 
     async function onDisconnectPoker(userName, userId, idSession) {
@@ -232,7 +234,7 @@ const setupSocketIo = (io) => {
       }
     }
 
-    
+
     async function onDeleteCard(data) {
       const start = performance.now()
       try {

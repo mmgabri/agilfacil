@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useLocation } from 'react-router-dom'
 import { createUseStyles } from "react-jss";
@@ -14,7 +13,6 @@ import BoardControls from "./BoardControls";
 import { useSocket } from "../../customHooks/useSocket";
 import 'react-toastify/dist/ReactToastify.css';
 import './retro.css';
-import { SERVER_BASE_URL } from "../../constants/apiConstants";
 
 export const BoardPage = ({ }) => {
   let navigate = useNavigate();
@@ -45,25 +43,13 @@ export const BoardPage = ({ }) => {
     updatecolorCardsSocket,
     deleteAllCardSocket,
     timerControlSocket,
-    setIsObfuscatedSocket } = useSocket(location.state.userName, location.state.userId, location.state.boardData.boardId, 'board')
+    setIsObfuscatedSocket } = useSocket(location.state.userLoggedData.userName, location.state.userLoggedData.userId, location.state.boardData.boardId, 'board')
 
 
   useEffect(() => {
     console.log('useEffect-principal', location.state.boardData, location.state.userLoggedData)
     setBoardData(location.state.boardData);
     setuserLoggedData(location.state.userLoggedData);
-
-    axios
-      .post(SERVER_BASE_URL + '/retro/userOnBoard', {
-        boardId: location.state.boardData.boardId,
-        userId: location.state.userLoggedData.userId,
-      })
-      .then(response => {
-        console.log('response userOnBoard ==> ', response)
-      })
-      .catch((error) => {
-        console.error("Chamada da api retro/userOnBoard com erro:", error, error.response?.status)
-      });
   }, [location.state.boardData, location.state.userLoggedData]);
 
   useEffect(() => {

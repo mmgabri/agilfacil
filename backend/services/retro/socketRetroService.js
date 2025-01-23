@@ -17,6 +17,35 @@ const connectClientRetro = (boardId) => {
   });
 };
 
+const disconnectClientRetro = (userIdToRemove, boardId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Obtém os dados do board no banco de dados
+      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+
+      if (!boardData) {
+        return reject(new Error('Board não encontrado.'));
+      }
+
+      // Remove usuário da lista de logado
+      const updatedBoardData = { ...boardData };
+      updatedBoardData.usersOnBoard = updatedBoardData.usersOnBoard.filter(user => user.userId !== userIdToRemove);
+
+
+      // Atualiza o board no banco de dados
+      await putTable(config.TABLE_BOARD, updatedBoardData);
+
+      // Retorna o board atualizado
+      resolve(updatedBoardData);
+    } catch (error) {
+      // Rejeita a promise em caso de erro
+      reject(error);
+    }
+  });
+};
+
+
+
 const addCardBoard = (boardId, newCard, indexColumn) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -494,4 +523,4 @@ const saveCard = (boardId, content, indexCard, indexColumn) => {
 
 
 
-module.exports = { connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, deleteAllCard, saveCard, updatecolorCards, setIsObfuscated };
+module.exports = { connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, deleteAllCard, saveCard, updatecolorCards, setIsObfuscated, disconnectClientRetro };

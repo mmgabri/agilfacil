@@ -83,26 +83,18 @@ const BoardListPage = () => {
   };
 
   const handleOpen = async (boardId) => {
-    const token = await getToken()
 
-    axios
-      .get(`${SERVER_BASE_URL}/retro/${boardId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        })
-      .then(response => {
-        console.log('response ==> ', response)
-        navigate('/board', { state: { boardData: response.data, userLoggedData: userLoggedData } });
-      })
-      .catch((error) => {
-        console.log("Resposta da api com erro:", error, error.response?.status)
-        triggerError(error.response?.status)
-      });
-
-  };
+    try {
+ //     const responseBoard = await axios.get(`${SERVER_BASE_URL}/retro/${boardId}`)
+ //     console.log('responseBoard ==> ', responseBoard)
+      const response = await axios.post(SERVER_BASE_URL + '/retro/userOnBoard', {boardId: boardId, userId: userLoggedData.userId})
+      console.log('response ==> ', response)
+      navigate('/board', { state: { boardData: response.data, userLoggedData: userLoggedData } });
+    } catch (error) {
+      console.log("Resposta da api com erro:", error)
+      triggerError()
+    }
+  }
 
   const handleAddBoard = () => {
     navigate('/board/create', { state: { userLoggedData: userLoggedData } });

@@ -1,39 +1,28 @@
 require('dotenv').config();
+const { DateTime } = require('luxon');
 const config = require('../../config');
 const { v4: uuidv4 } = require('uuid');
 const { putTable, getBoardDb, getBoardByUserDb } = require('./dynamoRetroService');
 const logger = require('../generic/cloudWatchLoggerService');
+const timeZone = 'America/Sao_Paulo';
 
-const saveBoard = async (req, res) => {
+const createBoard = async (req, res) => {
   const start = performance.now()
+  const brasiliaTime = DateTime.now().setZone(timeZone);
+  const formattedTime = brasiliaTime.toFormat("dd/MM/yyyy HH:mm:ss");
 
-  let boardId = null
-  let dateTime = null
-
-  if (!req.body.boardId) {
-    boardId = uuidv4()
-  } else {
-    boardId = req.body.boardId
-  }
-
-  if (!req.body.dateTime) {
-    dateTime = new Date().toISOString()
-  } else {
-    dateTime = req.body.dateTime
-  }
-
-  let boardDb = {
-    boardId: boardId,
+  const boardDb = {
+    boardId: uuidv4(),
     creatorId: req.body.creatorId,
-    dateTime: dateTime,
+    dateTime: formattedTime,
     userName: req.body.userName,
     boardName: req.body.boardName,
     squadName: req.body.squadName,
     areaName: req.body.areaName,
     columns: req.body.columns,
     isObfuscated: false,
-    dateTimeLastUpdate: new Date().toISOString(),
-    usersOnBoard: [],
+    dateTimeLastUpdate: formattedTime,
+    usersOnBoard: [{ userId: req.body.creatorId }],
     cardCreators: []
   };
 
@@ -63,11 +52,11 @@ const userOnBoard = async (req, res) => {
     // Adiciona usuário na lista de usuários
     const updatedBoardData = { ...boardData };
     const userExists = updatedBoardData.usersOnBoard.some(user => user.userId === userData.userId);
-    if (userExists) return res.status(201).json({ message: 'sucess!' });
+    if (userExists) return res.status(201).json(updatedBoardData);
 
     updatedBoardData.usersOnBoard.push(userData);
     await putTable(config.TABLE_BOARD, updatedBoardData);
-    return res.status(201).json({ message: 'sucess!' });
+    return res.status(201).json(updatedBoardData);
 
   } catch (error) {
     if (error == 'NOT_FOUND') {
@@ -120,4 +109,4 @@ const getBoardByUser = async (req, res) => {
   }
 };
 
-module.exports = { saveBoard, getBoardByUser, getBoard, userOnBoard };
+module.exports = { createBoard, getBoardByUser, getBoard, userOnBoard };
