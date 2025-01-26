@@ -9,7 +9,7 @@ const setupSocketIo = (io) => {
 
     switch (service) {
       case 'board':
-        onConnectBoard(idSession)
+        onConnectBoard(idSession, userId)
         break;
       case 'poker':
         onConnectPoker(userName, userId, idSession)
@@ -93,10 +93,10 @@ const setupSocketIo = (io) => {
     });
 
     //functions Board
-    async function onConnectBoard(idSession) {
+    async function onConnectBoard(idSession, userId) {
       const start = performance.now()
       try {
-        let board = await connectClientRetro(idSession);
+        let board = await connectClientRetro(idSession, userId);
         socket.join(idSession);
         io.to(idSession).emit('data_board', board);
       } catch (erro) {

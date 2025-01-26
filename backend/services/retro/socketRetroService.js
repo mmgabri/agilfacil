@@ -3,14 +3,22 @@ const config = require('../../config');
 const { putTable, getBoardDb } = require('./dynamoRetroService');
 
 
-const connectClientRetro = (boardId) => {
+const connectClientRetro = (boardId, userId) => {
   return new Promise(async (resolve, reject) => {
     try {
       const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
       if (!boardData) {
         return reject(new Error('Board não encontrado.'));
       }
-      resolve(boardData);
+      const updatedBoardData = { ...boardData };
+      const userData = { userId: userId }
+      const userExists = updatedBoardData.usersOnBoard.some(user => user.userId === userData.userId);
+      if (userExists) resolve (boardData);
+
+      updatedBoardData.usersOnBoard.push(userData);
+      await putTable(config.TABLE_BOARD, updatedBoardData);
+
+      resolve(updatedBoardData);
     } catch (error) {
       reject(error);
     }

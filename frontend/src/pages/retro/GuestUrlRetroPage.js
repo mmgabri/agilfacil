@@ -46,7 +46,7 @@ export const GuestUrlRetroPage = ({ }) => {
 
   const directsBoard = async (userLoggedData) => {
     try {
-      const response = await axios.post(SERVER_BASE_URL + '/retro/userOnBoard', {boardId: id, userId: userLoggedData.userId})
+      const response = await axios.get(`${SERVER_BASE_URL}/retro/${id}`)
       navigate('/board', { state: { boardData: response.data, userLoggedData: userLoggedData } });
     } catch (error) {
       console.error("Erro ao obter dados do Board:", error);

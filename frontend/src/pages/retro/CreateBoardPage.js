@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import styled from "styled-components";
 import { signOut, fetchAuthSession } from '@aws-amplify/auth';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -13,9 +14,55 @@ import Header from './HeaderCreateBoard';
 import SuggestionForm from '../components/SuggestionForm'
 import '../../styles/NotificationPage.css';
 
+const FormContainer = styled.div`
+  padding: 20px;
+`;
+
+const ColumnWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+const Input = styled.input`
+  margin-right: 8px;
+  padding: 5px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+`;
+
+const RemoveIcon = styled(MdOutlineRemoveCircleOutline)`
+  cursor: pointer;
+  color: #c0c0c0;
+  font-size: 35px;
+  margin-left: 8px;
+`;
+
+const CheckboxWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+`;
+
+const CheckboxInput = styled.input`
+  width: 140px; /* Ajuste do tamanho do checkbox */
+  height: 14px;
+`;
+
+const CheckboxLabel = styled.label`
+  margin: 4px;
+  font-size: 800px; /* Tamanho da fonte do label */
+  white-space: nowrap; /* Impede a quebra de linha */
+  line-height: 1; /* Ajuste para alinhamento vertical */
+  font-size: 12px !important; /* Força o tamanho da fonte no label */
+  font-weight: normal !important;; /* Impede o texto de ficar em negrito */
+`;
+
 export const CreateBoardPage = ({ }) => {
   let navigate = useNavigate();
   const location = useLocation();
+  const [board, setBoard] = useState(null);
 
   const [formData, setFormData] = useState({
     boardName: "",
@@ -28,10 +75,23 @@ export const CreateBoardPage = ({ }) => {
 
   useEffect(() => {
 
-    console.log('useEffect - location.state.userLoggedData', location.state.userLoggedData)
+    console.log('useEffect - location.state', location.state)
 
     if (location.state.userLoggedData) {
       setUserLoggedData(location.state.userLoggedData);
+    }
+
+    if (location.state.board) {
+      setBoard(location.state.board);
+      setFormData({
+        boardName: location.state.board.boardName,
+        areaName: location.state.board.areaName,
+        squadName: location.state.board.squadName,
+        columns: location.state.board.columns.map(column => ({
+          ...column,
+          cards: []
+        })),
+      });
     }
 
   }, []);
@@ -89,9 +149,9 @@ export const CreateBoardPage = ({ }) => {
   const exitBoard = async () => {
     try {
       await signOut(); // Chamando o signOut diretamente
-      window.location.href = 'https://accounts.google.com/Logout';
+      //window.location.href = 'https://accounts.google.com/Logout';
       console.log('Usuário desconectado com sucesso!');
-      window.location.href = '/'; // Ou use o useNavigate se preferir navegação sem recarregar a página
+      //window.location.href = '/'; // Ou use o useNavigate se preferir navegação sem recarregar a página
     } catch (error) {
       console.error('Erro ao deslogar', error);
     }
@@ -102,28 +162,19 @@ export const CreateBoardPage = ({ }) => {
 
     const token = await getToken()
 
-    axios
-      .post(SERVER_BASE_URL + '/retro/createBoard', {
-        creatorId: userLoggedData.userId,
-        boardName: formData.boardName,
-        squadName: formData.squadName,
-        areaName: formData.areaName,
-        columns: formData.columns
-      }, {
+    try {
+      const response = await axios.post(SERVER_BASE_URL + '/retro/createBoard', { creatorId: userLoggedData.userId, boardName: formData.boardName, squadName: formData.squadName, areaName: formData.areaName, columns: formData.columns }, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
       })
-      .then(response => {
-        // console.log('response ==> ', response)
-        //  console.log('userLoggedData', userLoggedData)
-        navigate('/board', { state: { boardData: response.data, userLoggedData: userLoggedData } });
-      })
-      .catch((error) => {
-        console.log("Resposta da api com erro:", error, error.response?.status)
-        triggerError(error.response?.status)
-      });
+      console.log('response --> ', response.data)
+      navigate('/board', { state: { boardData: response.data, userLoggedData: userLoggedData } });
+    } catch (error) {
+      console.log("Resposta da api com erro:", error, error.response?.status)
+      triggerError(error.response?.status)
+    }
   }
 
   const triggerError = (statusCode) => {
@@ -147,17 +198,30 @@ export const CreateBoardPage = ({ }) => {
     });
   }
 
-  const handleAbout = () => {
-    navigate("/about")
-  }
-
-  const handleHome = () => {
-    navigate("/")
-  }
 
   const handleOpenSugestion = () => {
     setModalOpen(true);
   }
+
+  const handleKeepCardsChange = (columnId, isChecked) => {
+    console.log('handleKeepCardsChange', columnId, isChecked);
+    console.log('antes: ', formData)
+
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      columns: prevFormData.columns.map((column) => {
+        if (column.id === columnId) {
+          return {
+            ...column,
+            cards: isChecked
+              ? board.columns.find(c => c.id === columnId)?.cards || []
+              : []
+          };
+        }
+        return column;
+      })
+    }));
+  };
 
 
   return (
@@ -215,15 +279,15 @@ export const CreateBoardPage = ({ }) => {
                   required
                   style={{ marginRight: 8 }}
                 />
-                <MdOutlineRemoveCircleOutline
-                  onClick={() => handleRemoveColumn(column.id)}
-                  style={{
-                    cursor: "pointer",
-                    color: "#C0C0C0",
-                    fontSize: "35px",
-                    marginLeft: "8px"
-                  }}
-                />
+                <RemoveIcon onClick={() => handleRemoveColumn(column.id)} />
+                {board &&
+                  <CheckboxWrapper>
+                    <input
+                      type="checkbox"
+                      onChange={(e) => handleKeepCardsChange(column.id, e.target.checked)}
+                    />
+                    <CheckboxLabel>Manter cards</CheckboxLabel>
+                  </CheckboxWrapper>}
               </div>
             ))}
             <IoIosAddCircleOutline

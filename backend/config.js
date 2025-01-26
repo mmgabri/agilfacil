@@ -2,7 +2,7 @@ const PORT = process.env.PORT || 9000;
 
 const CORS_OPTIONS = {
   origin: "*",
-  methods: ["GET", "POST"]
+  methods: ["GET", "POST", "DELETE"]
 };
 
 const REGION = 'ap-south-1'

@@ -2,7 +2,7 @@ require('dotenv').config();
 const { DateTime } = require('luxon');
 const config = require('../../config');
 const { v4: uuidv4 } = require('uuid');
-const { putTable, getBoardDb, getBoardByUserDb } = require('./dynamoRetroService');
+const { putTable, getBoardDb, getBoardByUserDb, deleteBoardDb } = require('./dynamoRetroService');
 const logger = require('../generic/cloudWatchLoggerService');
 const timeZone = 'America/Sao_Paulo';
 
@@ -22,7 +22,7 @@ const createBoard = async (req, res) => {
     columns: req.body.columns,
     isObfuscated: false,
     dateTimeLastUpdate: formattedTime,
-    usersOnBoard: [{ userId: req.body.creatorId }],
+    usersOnBoard: [],
     cardCreators: []
   };
 
@@ -39,39 +39,8 @@ const createBoard = async (req, res) => {
 };
 
 
-const userOnBoard = async (req, res) => {
-  const start = performance.now()
-  console.log("userOnBoard");
-
-  try {
-    // Obtém os dados do board no banco de dados
-    const boardData = await getBoardDb(config.TABLE_BOARD, req.body.boardId);
-
-    const userData = { userId: req.body.userId }
-
-    // Adiciona usuário na lista de usuários
-    const updatedBoardData = { ...boardData };
-    const userExists = updatedBoardData.usersOnBoard.some(user => user.userId === userData.userId);
-    if (userExists) return res.status(201).json(updatedBoardData);
-
-    updatedBoardData.usersOnBoard.push(userData);
-    await putTable(config.TABLE_BOARD, updatedBoardData);
-    return res.status(201).json(updatedBoardData);
-
-  } catch (error) {
-    if (error == 'NOT_FOUND') {
-      return res.status(404).json({ error: 'Board não encontrado' });
-    } else {
-      return res.status(500).json({ error: 'Error in userOnBoard' });
-    }
-  }
-
-};
-
 const getBoard = async (req, res) => {
   const start = performance.now()
-
-  console.log("getBoard");
 
   const { boardId } = req.params
 
@@ -93,9 +62,7 @@ const getBoard = async (req, res) => {
 const getBoardByUser = async (req, res) => {
   const start = performance.now()
 
-  console.log("getBoardByUser");
-
-  const { creatorId } = req.params
+    const { creatorId } = req.params
 
   try {
     const dataItems = await getBoardByUserDb(config.TABLE_BOARD, config.INDEX_NAME_USER, creatorId);
@@ -109,4 +76,24 @@ const getBoardByUser = async (req, res) => {
   }
 };
 
-module.exports = { createBoard, getBoardByUser, getBoard, userOnBoard };
+const deleteBoard = async (req, res) => {
+  const start = performance.now()
+
+  const { boardId } = req.params
+
+  try {
+    const board = await getBoardDb(config.TABLE_BOARD, boardId);
+    await deleteBoardDb(config.TABLE_BOARD, boardId, board.dateTime);
+    res.status(204).json("sucess!");
+    //const elapsedTime = (performance.now() - start).toFixed(3);
+  } catch (error) {
+    //const elapsedTime = (performance.now() - start).toFixed(3);
+    if (error === 'NOT_FOUND') {
+      return res.status(404).json({ error: 'Board não encontrado' });
+    } else {
+      return res.status(500).json({ error: 'Error ao deletar board' });
+    }
+  }
+};
+
+module.exports = { createBoard, getBoardByUser, getBoard, deleteBoard };

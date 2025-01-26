@@ -1,5 +1,5 @@
 const config = require('../../config');
-const { DynamoDBClient, QueryCommand } = require('@aws-sdk/client-dynamodb');
+const { DynamoDBClient, QueryCommand, DeleteItemCommand } = require('@aws-sdk/client-dynamodb');
 const { unmarshall } = require('@aws-sdk/util-dynamodb');
 const { PutCommand, DynamoDBDocumentClient } = require('@aws-sdk/lib-dynamodb');
 const client = new DynamoDBClient({ region: config.REGION });
@@ -11,7 +11,7 @@ const putTable = (tableName, item) => {
       .send(new PutCommand({ TableName: tableName, Item: item }))
       .then((data) => {
         console.log(`Item ${item._id} inserido com sucesso na tabela ${tableName}!`);
-     //   const formattedItem = unmarshall(data);
+        //   const formattedItem = unmarshall(data);
         resolve(item);
       })
       .catch((error) => {
@@ -73,4 +73,26 @@ const getBoardDb = (tableName, boardId) => {
   });
 };
 
-module.exports = { putTable, getBoardByUserDb, getBoardDb }
+const deleteBoardDb = (tableName, boardId, dateTime) => {
+  return new Promise(async (resolve, reject) => {
+
+    const params = {
+      TableName: tableName,
+      Key: {
+        boardId: { S: boardId },
+        dateTime: { S: dateTime }
+      }
+    };
+
+    docClient.send(new DeleteItemCommand(params)) // Altere para DeleteItemCommand
+      .then(() => {
+        resolve('DELETED');
+      })
+      .catch((err) => {
+        console.error('Erro ao deletar o board:', err);
+        reject('Erro ao deletar o board');
+      });
+  });
+};
+
+module.exports = { putTable, getBoardByUserDb, getBoardDb, deleteBoardDb }
