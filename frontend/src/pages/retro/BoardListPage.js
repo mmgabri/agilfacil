@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
+import { jsPDF } from "jspdf";
 import { toast } from 'react-toastify';
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 import { signOut, getCurrentUser, fetchUserAttributes, fetchAuthSession } from '@aws-amplify/auth';
 import { useNavigate } from 'react-router-dom'
 import { FaRegTrashAlt, FaRegFolderOpen, FaRegClone } from 'react-icons/fa';
+import { TiExportOutline } from "react-icons/ti";
+import { AiOutlineExport } from "react-icons/ai";
 import styled from 'styled-components';
 import Header from './HeaderCreateBoard';
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
@@ -133,6 +136,20 @@ const BoardListPage = () => {
     setModalOpen(true);
   }
 
+
+  const handleExportBoardToPDF = async (boardId) => {
+
+    try {
+      const response = await axios.get(`${SERVER_BASE_URL}/retro/${boardId}`)
+      console.log('response ==> ', response)
+      navigate('/export', { state: { userLoggedData: userLoggedData, board: response.data } });
+    } catch (error) {
+      console.log("Resposta da api com erro:", error)
+      triggerError(903)
+    }
+  }
+
+
   const triggerError = (statusCode) => {
     let message = 'Ocorreu um erro inesperado. Por favor, tente novamente.'
 
@@ -209,7 +226,7 @@ const BoardListPage = () => {
                       data-tooltip-id="tooltip-trash"
                       data-tooltip-content="Excluir"
                       onClick={(e) => {
-                        e.stopPropagation(); // Impede que o clique no ícone de exclusão acione o `onClick` do BoardBox
+                        e.stopPropagation();
                         handleDelete(board.boardId);
                       }} />
                     <Tooltip id="tooltip-trash" style={{ fontSize: "12px", padding: "4px 8px" }} />
@@ -217,16 +234,25 @@ const BoardListPage = () => {
                       data-tooltip-id="tooltip-clone"
                       data-tooltip-content="Clonar"
                       onClick={(e) => {
-                        e.stopPropagation(); // Evita que o clique no ícone de abrir acione o onClick geral
+                        e.stopPropagation();
                         handleClone(board.boardId);
                       }}
                     />
                     <Tooltip id="tooltip-clone" style={{ fontSize: "12px", padding: "4px 8px" }} />
+                    <AiOutlineExport
+                      data-tooltip-id="tooltip-export"
+                      data-tooltip-content="Exportar"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleExportBoardToPDF(board.boardId);
+                      }}
+                    />
+                    <Tooltip id="tooltip-export" style={{ fontSize: "12px", padding: "4px 8px" }} />
                     <FaRegFolderOpen
                       data-tooltip-id="tooltip-open"
                       data-tooltip-content="Abrir"
                       onClick={(e) => {
-                        e.stopPropagation(); // Evita que o clique no ícone de abrir acione o onClick geral
+                        e.stopPropagation();
                         handleOpen(board.boardId);
                       }}
                     />

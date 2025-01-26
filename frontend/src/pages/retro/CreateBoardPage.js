@@ -1,63 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import styled from "styled-components";
 import { signOut, fetchAuthSession } from '@aws-amplify/auth';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify';
-import { MdOutlineRemoveCircleOutline } from "react-icons/md";
-import { IoIosAddCircleOutline } from "react-icons/io";
 import 'react-toastify/dist/ReactToastify.css';
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
-import { Title } from '../../styles/GenericTitleStyles';
 import Header from './HeaderCreateBoard';
 import SuggestionForm from '../components/SuggestionForm'
 import '../../styles/NotificationPage.css';
-
-const FormContainer = styled.div`
-  padding: 20px;
-`;
-
-const ColumnWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-`;
-
-const Input = styled.input`
-  margin-right: 8px;
-  padding: 5px;
-  font-size: 14px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-`;
-
-const RemoveIcon = styled(MdOutlineRemoveCircleOutline)`
-  cursor: pointer;
-  color: #c0c0c0;
-  font-size: 35px;
-  margin-left: 8px;
-`;
-
-const CheckboxWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  margin-left: 8px;
-`;
-
-const CheckboxInput = styled.input`
-  width: 140px; /* Ajuste do tamanho do checkbox */
-  height: 14px;
-`;
-
-const CheckboxLabel = styled.label`
-  margin: 4px;
-  font-size: 800px; /* Tamanho da fonte do label */
-  white-space: nowrap; /* Impede a quebra de linha */
-  line-height: 1; /* Ajuste para alinhamento vertical */
-  font-size: 12px !important; /* Força o tamanho da fonte no label */
-  font-weight: normal !important;; /* Impede o texto de ficar em negrito */
-`;
+import { FormContainer, Title, FormGroup, CheckboxLabel, CheckboxWrapper, StyledForm, SubmitButton, RemoveIcon, AddColumnIcon } from '../../styles/FormStyle'
 
 export const CreateBoardPage = ({ }) => {
   let navigate = useNavigate();
@@ -227,11 +179,11 @@ export const CreateBoardPage = ({ }) => {
   return (
     <div className="bg-black-custom">
       <Header sairSala={exitBoard} handleOpenSugestion={handleOpenSugestion} />
-      <div className="form-container">
+      <FormContainer>
         <Title>Preencha os campos abaixo para criar o Board interativo</Title>
-        <form onSubmit={handleSubmit} className="form">
-          <div className="form-group">
-            <label htmlFor="boardName">Nome do Borad*</label>
+        <StyledForm onSubmit={handleSubmit}>
+          <FormGroup>
+            <label htmlFor="boardName">Nome do Board*</label>
             <input
               type="text"
               id="boardName"
@@ -242,8 +194,8 @@ export const CreateBoardPage = ({ }) => {
               required
               maxLength={30}
             />
-          </div>
-          <div className="form-group">
+          </FormGroup>
+          <FormGroup>
             <label htmlFor="squadName">Squad</label>
             <input
               type="text"
@@ -254,8 +206,8 @@ export const CreateBoardPage = ({ }) => {
               placeholder="Digite o nome da squad"
               maxLength={30}
             />
-          </div>
-          <div className="form-group">
+          </FormGroup>
+          <FormGroup>
             <label htmlFor="areaName">Área</label>
             <input
               type="text"
@@ -266,8 +218,8 @@ export const CreateBoardPage = ({ }) => {
               placeholder="Digite o nome da área (comunidade, gerência, etc)"
               maxLength={30}
             />
-          </div>
-          <div className="form-group">
+          </FormGroup>
+          <FormGroup>
             <label>Colunas do board *</label>
             {formData.columns.map((column, index) => (
               <div key={column.id} style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
@@ -280,33 +232,25 @@ export const CreateBoardPage = ({ }) => {
                   style={{ marginRight: 8 }}
                 />
                 <RemoveIcon onClick={() => handleRemoveColumn(column.id)} />
-                {board &&
+                {board && (
                   <CheckboxWrapper>
                     <input
                       type="checkbox"
                       onChange={(e) => handleKeepCardsChange(column.id, e.target.checked)}
                     />
                     <CheckboxLabel>Manter cards</CheckboxLabel>
-                  </CheckboxWrapper>}
+                  </CheckboxWrapper>
+                )}
               </div>
             ))}
-            <IoIosAddCircleOutline
-              onClick={handleAddColumn}
-              style={{
-                cursor: "pointer",
-                color: "#C0C0C0",
-                fontSize: "35px",
-                marginTop: 8
-              }}
-            />
-          </div>
-          <button type="submit" className="submit-button">
-            Criar Board
-          </button>
-        </form>
-      </div>
+            <AddColumnIcon onClick={handleAddColumn} />
+          </FormGroup>
+          <SubmitButton type="submit">Criar Board</SubmitButton>
+        </StyledForm>
+      </FormContainer>
       {isModalOpen && <SuggestionForm onClose={() => setModalOpen(false)} />}
     </div>
+
   );
 };
 export default CreateBoardPage 
