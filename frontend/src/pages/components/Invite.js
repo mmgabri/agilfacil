@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import '../../styles/Invite.css';
-import { GUEST_BASE_URL } from "../../constants/apiConstants";
+import { FRONT_BASE_URL } from "../../constants/apiConstants";
 
 const Invite = ({ id, onClose, service }) => {
   const [copied, setCopied] = useState(false);
 
   // Gerar URL com base no ID da sala
-  const inviteUrlPoker = `${GUEST_BASE_URL}/room/guest/${id}`;
-  const inviteUrlBoard = `${GUEST_BASE_URL}/board/guest/${id}`;
+  const inviteUrlPoker = `${FRONT_BASE_URL}/room/guest/${id}`;
+  const inviteUrlBoard = `${FRONT_BASE_URL}/board/guest/${id}`;
 
   // Função para lidar com o estado de cópia
   const handleCopy = () => {

@@ -3,7 +3,7 @@ import axios from "axios";
 import { signOut, fetchAuthSession } from '@aws-amplify/auth';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useLocation } from 'react-router-dom'
-import { toast } from 'react-toastify';
+import { emitMessage } from '../generic/Utils'
 import 'react-toastify/dist/ReactToastify.css';
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import Header from './HeaderCreateBoard';
@@ -125,30 +125,10 @@ export const CreateBoardPage = ({ }) => {
       navigate('/board', { state: { boardData: response.data, userLoggedData: userLoggedData } });
     } catch (error) {
       console.log("Resposta da api com erro:", error, error.response?.status)
-      triggerError(error.response?.status)
+      emitMessage('error', 906, 3000)
     }
   }
 
-  const triggerError = (statusCode) => {
-    let message = 'Ocorreu um erro inesperado. Por favor, tente novamente.'
-
-    if (statusCode == 404) {
-      message = 'Sala inexistente. Por favor, peça um novo ID e tente novamente.'
-    }
-
-    if (statusCode == 401) {
-      message = 'Acesso negado. Faça um novo login e tente novamente.'
-    }
-
-    toast.error(message, {
-      position: 'top-center', // Usando string para a posição
-      autoClose: 8000, // Fecha automaticamente após 8 segundos
-      hideProgressBar: false,
-      closeButton: true, // Mostra o botão de fechar
-      draggable: true, // Permite arrastar a notificação
-      pauseOnHover: true, // Pausa o fechamento automático ao passar o mouse
-    });
-  }
 
 
   const handleOpenSugestion = () => {

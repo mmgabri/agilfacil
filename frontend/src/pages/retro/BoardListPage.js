@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
-import { jsPDF } from "jspdf";
-import { toast } from 'react-toastify';
+import { emitMessage } from '../generic/Utils'
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 import { signOut, getCurrentUser, fetchUserAttributes, fetchAuthSession } from '@aws-amplify/auth';
 import { useNavigate } from 'react-router-dom'
 import { FaRegTrashAlt, FaRegFolderOpen, FaRegClone } from 'react-icons/fa';
-import { TiExportOutline } from "react-icons/ti";
 import { AiOutlineExport } from "react-icons/ai";
 import styled from 'styled-components';
 import Header from './HeaderCreateBoard';
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
+import { FRONT_BASE_URL } from "../../constants/apiConstants";
 import LoaderPage from '../generic/LoaderPage';
 import SuggestionForm from '../components/SuggestionForm'
 
 const BoardListPage = () => {
   let navigate = useNavigate();
-  const [boards, setBoards] = useState([]);
+  const [boards, setBoards] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setModalOpen] = useState(false);
   const [userLoggedData, setuserLoggedData] = useState({});
@@ -51,12 +50,11 @@ const BoardListPage = () => {
           .then(response => {
             setBoards(response.data);
             setIsLoading(false);
-
           })
           .catch((error) => {
             setIsLoading(false);
             console.log("Resposta da api com erro:", error, error.response?.status)
-            triggerError()
+            emitMessage('error', 999, 3000)
           });
       } catch (error) {
         console.error("Erro ao obter dados do usuário:", error);
@@ -89,11 +87,11 @@ const BoardListPage = () => {
           },
         })
       console.log('response -->', response)
-      emitMessage(1)
+      emitMessage('success', 1, 1500)
       setBoards((prevBoards) => prevBoards.filter(board => board.boardId !== id));
     } catch (error) {
       console.log("Resposta da api com erro:", error)
-      triggerError(901)
+      emitMessage('error', 901, 3000)
     }
   };
 
@@ -104,7 +102,7 @@ const BoardListPage = () => {
       navigate('/board/create', { state: { userLoggedData: userLoggedData, board: response.data } });
     } catch (error) {
       console.log("Resposta da api com erro:", error)
-      triggerError(903)
+      emitMessage('error', 903, 3000)
     }
   }
 
@@ -114,7 +112,7 @@ const BoardListPage = () => {
       navigate('/board', { state: { boardData: response.data, userLoggedData: userLoggedData } });
     } catch (error) {
       console.log("Resposta da api com erro:", error)
-      triggerError(902)
+      emitMessage('error', 902, 3000)
     }
   }
 
@@ -138,132 +136,82 @@ const BoardListPage = () => {
 
 
   const handleExportBoardToPDF = async (boardId) => {
+    const url = `${FRONT_BASE_URL}/board/export/${boardId}`;
+    window.open(url, "_blank");
 
-    try {
-      const response = await axios.get(`${SERVER_BASE_URL}/retro/${boardId}`)
-      console.log('response ==> ', response)
-      navigate('/export', { state: { userLoggedData: userLoggedData, board: response.data } });
-    } catch (error) {
-      console.log("Resposta da api com erro:", error)
-      triggerError(903)
-    }
-  }
-
-
-  const triggerError = (statusCode) => {
-    let message = 'Ocorreu um erro inesperado. Por favor, tente novamente.'
-
-    switch (statusCode) {
-      case 404:
-        message = 'Sala inexistente. Por favor, peça um novo ID e tente novamente.'
-        break;
-      case 401:
-        message = 'Acesso negado. Faça um novo login e tente novamente.'
-        break;
-      case 901:
-        message = 'Não foi possível deletar o Board. Por favor, tente novamente.'
-        break;
-      case 902:
-        message = 'Não foi possível abrir o Board. Por favor, tente novamente.'
-        break;
-      case 903:
-        message = 'Erro ao clonar Board. Por favor, tente novamente.'
-        break;
-      default:
-        break;
-    }
-
-    toast.error(message, {
-      position: 'top-center',
-      autoClose: 4000,
-      hideProgressBar: false,
-      closeButton: true,
-      draggable: true, // Permite arrastar a notificação
-      pauseOnHover: true, // Pausa o fechamento automático ao passar o mouse
-    });
-  }
-
-  const emitMessage = (statusCode) => {
-
-    let message = ''
-
-    switch (statusCode) {
-      case 1:
-        message = 'Board deletado com sucesso!'
-        break;
-    }
-
-    toast.success(message, {
-      position: 'top-center',
-      autoClose: 1500,
-      hideProgressBar: false,
-      closeButton: true,
-      draggable: true, // Permite arrastar a notificação
-      pauseOnHover: true, // Pausa o fechamento automático ao passar o mouse
-    });
   }
 
   return (
     <div className="bg-black-custom">
       <Header sairSala={exitBoard} handleOpenSugestion={handleOpenSugestion} />
-      <Container>
-        <Button onClick={handleAddBoard}>Adicionar Board</Button>
-        {isLoading ? (
-          <LoaderPage />
-        ) : (
-          <BoardList>
-            {boards.length === 0 ? (
-              <p>Você ainda não possui Boards.</p>
-            ) : (
-              boards.map((board) => (
-                <BoardBox key={board.boardId}>
-                  <h3>{board.boardName}</h3>
-                  <p>Criado em: {board.dateTime}</p>
-                  <p>Squad: {board.squadName}</p>
-                  <p>Área: {board.areaName}</p>
-                  <Actions>
-                    <FaRegTrashAlt
-                      data-tooltip-id="tooltip-trash"
-                      data-tooltip-content="Excluir"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(board.boardId);
-                      }} />
-                    <Tooltip id="tooltip-trash" style={{ fontSize: "12px", padding: "4px 8px" }} />
-                    <FaRegClone
-                      data-tooltip-id="tooltip-clone"
-                      data-tooltip-content="Clonar"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleClone(board.boardId);
-                      }}
-                    />
-                    <Tooltip id="tooltip-clone" style={{ fontSize: "12px", padding: "4px 8px" }} />
-                    <AiOutlineExport
-                      data-tooltip-id="tooltip-export"
-                      data-tooltip-content="Exportar"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleExportBoardToPDF(board.boardId);
-                      }}
-                    />
-                    <Tooltip id="tooltip-export" style={{ fontSize: "12px", padding: "4px 8px" }} />
-                    <FaRegFolderOpen
-                      data-tooltip-id="tooltip-open"
-                      data-tooltip-content="Abrir"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOpen(board.boardId);
-                      }}
-                    />
-                    <Tooltip id="tooltip-open" style={{ fontSize: "12px", padding: "4px 8px" }} />
-                  </Actions>
-                </BoardBox>
-              ))
-            )}
-          </BoardList>
-        )}
-      </Container>
+      {isLoading ?
+        <LoaderPage />
+        :
+        <>
+          {!boards ?
+            <AlignedContainer>
+              <p>Não foi possível carregar os seus Boards.</p>
+            </AlignedContainer>
+            :
+            <Container>
+              <Button onClick={handleAddBoard}>Adicionar Board</Button>
+              {isLoading ? (
+                <LoaderPage />
+              ) : (
+                <BoardList>
+                  {boards.length === 0 ? (
+                    <p>Você ainda não possui Boards.</p>
+                  ) : (
+                    boards.map((board) => (
+                      <BoardBox key={board.boardId}>
+                        <h3>{board.boardName}</h3>
+                        <p>Criado em: {board.dateTime}</p>
+                        <p>Squad: {board.squadName}</p>
+                        <p>Área: {board.areaName}</p>
+                        <Actions>
+                          <FaRegTrashAlt
+                            data-tooltip-id="tooltip-trash"
+                            data-tooltip-content="Excluir"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(board.boardId);
+                            }} />
+                          <Tooltip id="tooltip-trash" style={{ fontSize: "12px", padding: "4px 8px" }} />
+                          <FaRegClone
+                            data-tooltip-id="tooltip-clone"
+                            data-tooltip-content="Clonar"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleClone(board.boardId);
+                            }}
+                          />
+                          <Tooltip id="tooltip-clone" style={{ fontSize: "12px", padding: "4px 8px" }} />
+                          <AiOutlineExport
+                            data-tooltip-id="tooltip-export"
+                            data-tooltip-content="Exportar"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleExportBoardToPDF(board.boardId);
+                            }}
+                          />
+                          <Tooltip id="tooltip-export" style={{ fontSize: "12px", padding: "4px 8px" }} />
+                          <FaRegFolderOpen
+                            data-tooltip-id="tooltip-open"
+                            data-tooltip-content="Abrir"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpen(board.boardId);
+                            }}
+                          />
+                          <Tooltip id="tooltip-open" style={{ fontSize: "12px", padding: "4px 8px" }} />
+                        </Actions>
+                      </BoardBox>
+                    ))
+                  )}
+                </BoardList>
+              )}
+            </Container>}
+        </>}
       {isModalOpen && <SuggestionForm onClose={() => setModalOpen(false)} />}
     </div>
   );
@@ -358,5 +306,15 @@ const Actions = styled.div`
     }
   }
 `;
+
+const AlignedContainer = styled.div`
+  display: flex;
+  flex-direction: column;  /* Alinha os itens em uma coluna */
+  margin-top: 30px;
+  justify-content: top; /* Centraliza verticalmente */
+  align-items: center;     /* Centraliza o conteúdo horizontalmente */
+  height: 100vh;           /* Faz o contêiner ocupar toda a altura da tela */
+`;
+
 
 export default BoardListPage;

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { toast } from 'react-toastify';
+import { emitMessage } from '../generic/Utils'
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom'
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
@@ -28,25 +28,8 @@ export const CreateRoomPage = ({ }) => {
       })
       .catch((error) => {
         console.log("Respoposta da api com erro:", error, error.response?.status)
-        triggerError()
+        emitMessage('error', 905, 3000 )
       });
-  }
-
-  const triggerError = (statusCode) => {
-    let message = 'Ocorreu um erro inesperado. Por favor, tente novamente.'
-
-    if (statusCode == 404) {
-      message = 'Sala inexistente. Por favor, peça um novo ID e tente novamente.'
-    }
-
-    toast.error(message, {
-      position: 'top-center', // Usando string para a posição
-      autoClose: 8000, // Fecha automaticamente após 8 segundos
-      hideProgressBar: false,
-      closeButton: true, // Mostra o botão de fechar
-      draggable: true, // Permite arrastar a notificação
-      pauseOnHover: true, // Pausa o fechamento automático ao passar o mouse
-    });
   }
 
   const handleAbout = () => {

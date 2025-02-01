@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { toast } from 'react-toastify';
+import { emitMessage } from '../generic/Utils'
 import 'react-toastify/dist/ReactToastify.css';
 import SuggestionForm from '../components/SuggestionForm'
 
@@ -30,25 +30,8 @@ export const GuestPage = ({ }) => {
         navigate('/room', { state: { roomId: response.data.roomId, roomName: response.data.roomName, userId: response.data.userId, userName: response.data.userName, moderator: response.data.moderator } });
       })
       .catch((error) => {
-        triggerError(error.response?.status)
+        emitMessage('error' , error.response?.status, 3000)
       });
-  }
-
-  const triggerError = (statusCode) => {
-    let message = 'Ocorreu um erro inesperado. Por favor, tente novamente.'
-
-    if (statusCode == 404) {
-      message = 'Sala inexistente. Por favor, peça um novo ID e tente novamente.'
-    }
-
-    toast.error(message, {
-      position: 'top-center', // Usando string para a posição
-      autoClose: 8000, // Fecha automaticamente após 8 segundos
-      hideProgressBar: false,
-      closeButton: true, // Mostra o botão de fechar
-      draggable: true, // Permite arrastar a notificação
-      pauseOnHover: true, // Pausa o fechamento automático ao passar o mouse
-    });
   }
 
   const handleAbout = () => {

@@ -10,6 +10,7 @@ import Header from './HeaderBoard';
 import Invite from '../components/Invite';
 import SuggestionForm from '../components/SuggestionForm'
 import BoardControls from "./BoardControls";
+import { FRONT_BASE_URL } from "../../constants/apiConstants";
 import { useSocket } from "../../customHooks/useSocket";
 import 'react-toastify/dist/ReactToastify.css';
 import './retro.css';
@@ -252,6 +253,12 @@ export const BoardPage = ({ }) => {
   };
 
 
+   const handleExportBoardToPDF =  () => {
+      const url = `${FRONT_BASE_URL}/board/export/${boardData.boardId}`;
+      window.open(url, "_blank");
+    }
+
+
   return (
     <div className="bg-black-custom">
       <Header
@@ -274,7 +281,8 @@ export const BoardPage = ({ }) => {
         handleAddColumn={handleAddColumn}
         isObfuscated={boardData.isObfuscated}
         handleSetIsObfuscated={handleSetIsObfuscated}
-        isBoardCreator={userLoggedData.isBoardCreator} />
+        isBoardCreator={userLoggedData.isBoardCreator} 
+        handleExportBoard={handleExportBoardToPDF}/>
 
       <DragDropContext onDragEnd={onDragEnd}>
         <div className={cl.root}>

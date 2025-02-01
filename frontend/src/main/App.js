@@ -99,12 +99,12 @@ function App() {
           <Route path="/room/guest/:id" element={<GuestUrlPage />} />
           <Route path="/notification" element={<NotificationPage />} />
           <Route path="/board" element={<BoardPage />} />
-          <Route path="/export" element={<ExportPDFPage />} />
           <Route path="/board/guest/:id" element={<GuestUrlRetroPage />} />
+          <Route path="/board/export/:id" element={<ExportPDFPage/>} />
           <Route
             path="/board/create"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute>0
                 <CreateBoardPage />
               </ProtectedRoute>
             }

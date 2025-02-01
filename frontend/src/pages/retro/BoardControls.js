@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FaClock } from 'react-icons/fa';
+import { AiOutlineExport } from "react-icons/ai";
 import { FaNoteSticky, FaUserPen } from "react-icons/fa6";
 import { FaUsers, FaPlay, FaStop, FaPlus } from 'react-icons/fa';
 import { MdOutlineBlurCircular } from "react-icons/md";
@@ -209,7 +210,7 @@ const ActionButton = styled.button`
 
 
 
-const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInput, isRunningTimer, handleInputTimerChange, handleStartTimer, handlePauseTimer, handleAddColumn, handleSetIsObfuscated, isObfuscated, isBoardCreator, isInvalidFormat }) => {
+const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInput, isRunningTimer, handleInputTimerChange, handleStartTimer, handlePauseTimer, handleAddColumn, handleSetIsObfuscated, isObfuscated, isBoardCreator, isInvalidFormat, handleExportBoard }) => {
   const [isModalOpen, setModalOpen] = useState(false);
 
   const handleModalAddCollmnSubmit = (collunName) => {
@@ -282,15 +283,18 @@ const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInpu
       {isBoardCreator && (
         <BoardActions>
           <ActionBox>
-            <ActionButton onClick={() => setModalOpen(true)} color="#10b981">
+            <ActionButton onClick={() => setModalOpen(true)} color="#1E3A5F">
               <FaPlus /> Incluir Coluna
             </ActionButton>
+            <ActionButton onClick={() => handleExportBoard()} color="#1E3A5F">
+              <AiOutlineExport /> Exportar Board
+            </ActionButton>
             {isObfuscated ?
-              (<ActionButton onClick={() => handleSetIsObfuscated(false)} color="#4169E1" >
+              (<ActionButton onClick={() => handleSetIsObfuscated(false)} color="#1E3A5F" >
                 <MdOutlineBlurCircular /> Revelar Cards
               </ActionButton>)
               :
-              (<ActionButton onClick={() => handleSetIsObfuscated(true)} color="#4169E1" >
+              (<ActionButton onClick={() => handleSetIsObfuscated(true)} color="#1E3A5F" >
                 <MdOutlineBlurCircular /> Ocultar cards
               </ActionButton>)
             }
