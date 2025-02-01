@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import styled from "@emotion/styled";
 import { Dropdown } from 'react-bootstrap';
 import { v4 as uuidv4 } from 'uuid';
-import { MdMoreVert, MdEdit, MdCheck } from 'react-icons/md';
+import { MdMoreVert, MdEdit, MdCheck, MdDeblur } from 'react-icons/md';
+import { FaNoteSticky, FaUserPen } from "react-icons/fa6";
 import { IoIosAddCircleOutline } from 'react-icons/io';
 import { FaRegTrashAlt, FaPalette } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
 import './retro.css';
 import ModalAddCard from './ModalAddCard';
 
-const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDeleteColumn, onDeleteAllCard, onUpdatecolorCards, userLoggedData }) => {
+const ColumnHeader = ({ columnTitle, countCards, onAddCard, index, onUpdateTitleColumn, onDeleteColumn, onDeleteAllCard, onUpdatecolorCards, userLoggedData }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(columnTitle || 'Título da Coluna');
   const [isModalOpen, setModalOpen] = useState(false);
@@ -206,10 +207,18 @@ const ColumnHeader = ({ columnTitle, onAddCard, index, onUpdateTitleColumn, onDe
         </Dropdown>
 
       </TitleContainer>
-
-      <AddIconContainer>
-        <StyledIoIosAddCircleOutline onClick={() => setModalOpen(true)} />
-      </AddIconContainer>
+      <ContainerIcons>
+        <CountCardContainer>
+          <FaNoteSticky />
+          <CardBadge>{countCards}</CardBadge>
+        </CountCardContainer>
+        <AddIconContainer>
+          <StyledIoIosAddCircleOutline onClick={() => setModalOpen(true)} />
+        </AddIconContainer>
+        <AddIconContainer>
+          <StyledMdDeblur onClick={() => setModalOpen(true)} />
+        </AddIconContainer>
+      </ContainerIcons>
     </ColumnHeaderContainer>
   );
 };
@@ -256,6 +265,18 @@ const IconContainer = styled.div`
 `;
 
 const StyledIoIosAddCircleOutline = styled(IoIosAddCircleOutline)`
+  color: #10b981;  // Cor do ícone 
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;  
+  font-size: 22px;  
+  
+  &:hover {
+    transform: scale(1.4); 
+  }
+`;
+
+
+const StyledMdDeblur = styled(MdDeblur)`
   color: #10b981;  // Cor do ícone 
   cursor: pointer;
   transition: color 0.3s ease, transform 0.2s ease;  
@@ -320,4 +341,32 @@ const iconMarginStyle = {
 const AddIconContainer = styled.div`
   cursor: pointer;
   transition: color 0.2s ease;
+`;
+
+
+const ContainerIcons = styled.div`
+  display: flex;
+  justify-content: space-between; /* Distribui os itens igualmente */
+  align-items: center; /* Centraliza verticalmente */
+  width: 100%; /* Ocupa toda a largura disponível */
+  padding: 10px; /* Espaçamento interno opcional */
+`;
+
+const CountCardContainer = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 22px;
+  color: #fff;
+`;
+
+const CardBadge = styled.span`
+  position: absolute;
+  top: -7px;
+  right: -5px;
+  background-color: #D8968C;
+  color: black;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
 `;

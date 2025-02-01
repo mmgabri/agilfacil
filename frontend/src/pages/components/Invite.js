@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import '../../styles/Invite.css';
 import { FRONT_BASE_URL } from "../../constants/apiConstants";
+import styled from "@emotion/styled";
 
 const Invite = ({ id, onClose, service }) => {
   const [copied, setCopied] = useState(false);
@@ -32,14 +33,30 @@ const Invite = ({ id, onClose, service }) => {
               className="invite-url"
               onClick={handleCopy} // Copia a URL ao clicar no input
             />
-            <button className="copy-button">
+            <CopyButtonStyled>
               {copied ? 'Copiado!' : 'Copiar URL'}
-            </button>
+            </CopyButtonStyled>
           </div>
         </CopyToClipboard>
       </div>
     </div>
   );
 };
+
+const CopyButtonStyled = styled.button`
+  background-color: #1E3A5F; 
+  margin-bottom:15px;
+  margin-top:8px;
+  color: white; 
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  
+  &:hover {
+    transform: scale(1.1); 
+  }
+`;
 
 export default Invite;

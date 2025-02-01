@@ -115,3 +115,18 @@ export const AddColumnIcon = styled(IoIosAddCircleOutline)`
     transform: scale(1.2); 
   }
 `;
+
+export const TextArea = styled.textarea`
+  width: 100%; /* O campo de texto ocupa toda a largura do grupo */
+  padding: 10px; /* Espaço interno no campo */
+  border: 1px solid #ccc; /* Borda padrão */
+  border-radius: 5px; /* Bordas arredondadas */
+  font-size: 13px; /* Tamanho da fonte do campo de entrada */
+  background-color: #ffffff; /* Cor de fundo do campo */
+  resize: none; /* Impede o redimensionamento do campo de texto */
+
+  &:focus {
+    border-color: #10b981; /* Cor da borda ao focar no campo */
+    outline: none; /* Remove a borda padrão de foco */
+  }
+`;

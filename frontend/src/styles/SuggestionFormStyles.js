@@ -9,7 +9,7 @@ export const Title = styled.h2`
 
 export const TitleAddCard = styled.h2`
   font-size: 20px;
-  color: #4169E1;
+  color: #c0c0c0;
   text-align: center;
   margin-bottom: 25px;
 `;
@@ -45,6 +45,7 @@ export const Input = styled.input`
 export const TextArea = styled.textarea`
   width: 100%; /* O campo de texto ocupa toda a largura do grupo */
   padding: 10px; /* Espaço interno no campo */
+  margin-botton: 300px;
   border: 1px solid #ccc; /* Borda padrão */
   border-radius: 5px; /* Bordas arredondadas */
   font-size: 13px; /* Tamanho da fonte do campo de entrada */
@@ -56,3 +57,23 @@ export const TextArea = styled.textarea`
     outline: none; /* Remove a borda padrão de foco */
   }
 `;
+
+export const SubmitButton = styled.button`
+  display: inline-block;
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: #1E3A5F;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 0px;
+  height: 45px;
+  transition: transform 0.1s ease-in-out; /* Suaviza a transformação */
+
+  &:hover {
+    transform: scale(1.05); 
+  }
+ `;

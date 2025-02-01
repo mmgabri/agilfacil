@@ -8,9 +8,9 @@ const grid = 8;
 const scrollContainerHeight = 250;
 
 // Componente para montar as Colunas
-const ColumnContent = ({ cards, title, colorCards, dropProvided, indexColumn, onSaveCard, onDeleteCard, onDeleteAllCard, onUpdateLike, onUpdateTitleColumn, onDeleteColumn, onAddCard, onUpdatecolorCards, userLoggedData, isObfuscated }) => (
+const ColumnContent = ({ cards, title, countCards, colorCards, dropProvided, indexColumn, onSaveCard, onDeleteCard, onDeleteAllCard, onUpdateLike, onUpdateTitleColumn, onDeleteColumn, onAddCard, onUpdatecolorCards, userLoggedData, isObfuscated }) => (
   <InnerContainer>
-    <ColumnHeader columnTitle={title} index={indexColumn} onUpdateTitleColumn={onUpdateTitleColumn} onDeleteColumn={onDeleteColumn} onDeleteAllCard={onDeleteAllCard} onAddCard={onAddCard} onUpdatecolorCards={onUpdatecolorCards} userLoggedData={userLoggedData}></ColumnHeader>
+    <ColumnHeader columnTitle={title} countCards={countCards} index={indexColumn} onUpdateTitleColumn={onUpdateTitleColumn} onDeleteColumn={onDeleteColumn} onDeleteAllCard={onDeleteAllCard} onAddCard={onAddCard} onUpdatecolorCards={onUpdatecolorCards} userLoggedData={userLoggedData}></ColumnHeader>
     <DropZone ref={dropProvided.innerRef}>
       <DraggableCardList cards={cards} indexColumn={indexColumn} onSaveCard={onSaveCard} onDeleteCard={onDeleteCard}  onUpdateLike={onUpdateLike} colorCards={colorCards} userLoggedData={userLoggedData} isObfuscated={isObfuscated}/>
       {dropProvided.placeholder}
@@ -65,6 +65,7 @@ export default function Column(props) {
             <ColumnContent
               cards={cards}
               title={title}
+              countCards={cards.length}
               dropProvided={dropProvided}
               indexColumn={indexColumn}
               onSaveCard={onSaveCard}

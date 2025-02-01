@@ -3,7 +3,7 @@ import axios from "axios";
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import Modal from './Modal';
 import { toast } from 'react-toastify';
-import { Title, FormContainer, FormGroup, Input, TextArea } from '../../styles/SuggestionFormStyles';
+import { Title, FormContainer, FormGroup, Input, TextArea, SubmitButton } from '../../styles/SuggestionFormStyles';
 
 const SuggestionForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -86,7 +86,7 @@ const SuggestionForm = ({ onClose }) => {
               required
             />
           </FormGroup>
-          <button type="submit" className="submit-button">Enviar</button>
+          <SubmitButton type="submit">Enviar</SubmitButton>
         </form>
       </FormContainer>
     </Modal>

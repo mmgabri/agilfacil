@@ -3,7 +3,7 @@ import axios from "axios";
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import Modal from '../components/Modal';
 import { toast } from 'react-toastify';
-import {FormContainer, FormGroup, Input } from '../../styles/SuggestionFormStyles';
+import {FormContainer, FormGroup, Input, SubmitButton } from '../../styles/SuggestionFormStyles';
 
 const ModalAddCollumn = ({ isOpen, onClose, onSubmit}) => {
     const [formData, setFormData] = useState({
@@ -44,7 +44,7 @@ const ModalAddCollumn = ({ isOpen, onClose, onSubmit}) => {
                             required
                         />
                     </FormGroup>
-                    <button type="submit" className="submit-button">Adicionar Coluna</button>
+                    <SubmitButton type="submit">Adicionar Card</SubmitButton>
                 </form>
             </FormContainer>
         </Modal>

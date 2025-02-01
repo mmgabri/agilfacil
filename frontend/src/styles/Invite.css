@@ -39,7 +39,7 @@
   }
   
   .invite-url-container:hover {
-    background: #3a3a3a;
+    background: transparent;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
   }
   
