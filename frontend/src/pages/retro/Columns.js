@@ -93,7 +93,7 @@ export default function Column(props) {
 const getBackgroundColor = (isDraggingOver, isDraggingFrom) => {
   if (isDraggingOver) return "#404040";
   if (isDraggingFrom) return "#585858";
-  return "#282c34";
+  return  "#2c2c2c";  // #backgound_coluna2
 };
 
 const ColumnWrapper = styled.div`
@@ -102,7 +102,6 @@ const ColumnWrapper = styled.div`
   display: flex;
   flex-direction: column;
   opacity: ${({ isDropDisabled }) => (isDropDisabled ? 0.5 : "inherit")};
-  padding: ${grid}px;
   border: ${grid}px;
   padding-bottom: 0;
   transition: background-color 0.2s ease, opacity 0.1s ease;
@@ -133,12 +132,6 @@ const ColumnsContainer = styled.div`
 const DropZone = styled.div`
   min-height: ${scrollContainerHeight}px;
   padding-bottom: ${grid}px;
-`;
-
-const ScrollContainer = styled.div`
-  overflow-x: hidden;
-  overflow-y: auto;
-  max-height: ${scrollContainerHeight}px;
 `;
 
 const InnerContainer = styled.div``;

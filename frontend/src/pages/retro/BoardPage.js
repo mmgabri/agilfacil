@@ -327,7 +327,7 @@ const useStyles = createUseStyles({
   root: {
     backgroundColor: "#1C1C1C",
     boxSizing: "border-box",
-    padding: 10,
+    padding: 5,
     height: "auto", // Ajusta automaticamente a altura conforme o conteúdo
     display: "grid",
     gridAutoFlow: "column",
@@ -341,9 +341,9 @@ const useStyles = createUseStyles({
     minWidth: "250px",
     minHeight: "400px", // Altura mínima para evitar que a coluna encolha demais
     height: "auto", // Permite que a coluna se ajuste conforme o conteúdo
-    backgroundColor: "#282c34",
+    backgroundColor:  '#2c2c2c',  //"#282c34",#backgound_coluna1
     border: "1px solid #444",
-    borderRadius: "8px",
+
     boxSizing: "border-box",
     padding: "0px",
     transition: "width 0.3s ease, height 0.3s ease", // Animação também para a altura

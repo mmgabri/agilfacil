@@ -175,7 +175,7 @@ const Container = styled.div`
   box-sizing: border-box;
   padding: 6px;
   min-height: ${imageSize}px;
-  margin-bottom: 8px;
+  margin: 7px;
   user-select: none;
   color: ${colors.N900};
   text-decoration: none;
@@ -198,7 +198,7 @@ const Container = styled.div`
   }
 `;
 const Content = styled.div`
-  display: flex;
+display: flex;
   align-items: center; /* Alinha os itens verticalmente no centro */
   justify-content: space-between; /* Cria um espaço entre os itens (texto e ícone) */
   width: 100%;

@@ -13,8 +13,9 @@ const BoardControlsStyled = styled.div`
 display: flex;
 justify-content: space-between;
 align-items: center;
+margin-top: 5px;
 padding: 0px 10px 0px 10px;
-background-color: #2c2c2c;
+background-color: transparent; // #2c2c2c;
 color: #fff;
 flex-wrap: wrap; /* Adiciona flexibilidade ao layout */
 
@@ -45,7 +46,7 @@ flex-direction: column; /* Alinha conteúdo em coluna */
 align-items: flex-start; /* Alinha à esquerda */
 flex-shrink: 0; /* Evita que a coluna encolha */
 margin: 4px; /* Espaçamento entre colunas */
-background-color: #3c3c3c; /* Fundo para destacar */
+background-color: #2c2c2c; /* Fundo para destacar */
 padding: 5px; /* Espaçamento interno */
 border-radius: 4px; /* Bordas arredondadas */
 box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Sombra leve */
@@ -56,7 +57,6 @@ box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Sombra leve */
   transform: scale(1.1); /* Aumenta o tamanho em 20% */
 }
 `;
-
 
 
 const InfoTitle = styled.div`
@@ -100,13 +100,12 @@ flex-wrap: wrap; /* Adiciona flexibilidade ao layout */
 }
 `;
 
-
 const TimerBox = styled.div`
 display: flex;
 align-items: center;
 justify-content: space-between;
 padding: 10px;
-background-color: #3c3c3c;
+background-color: #2c2c2c;
 border-radius: 8px;
 color: #fff;
 gap: 10px;

@@ -222,18 +222,19 @@ const ColumnHeaderContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
-  border-radius: 8px;
-  background-color: #2c3e50;
+  padding: 0px;
+  background-color: #1E3A5F;
   color: white;
-  border: 2px solid #34495e;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease-in-out;
   width: 100%;
   margin-bottom: 7px;
+  padding: 2px;
 `;
 
 const TitleContainer = styled.div`
+  margin-left: 15px;
+  margin-: 0px;
   display: flex;
   justify-content: space-between;
   width: 100%;
@@ -244,10 +245,11 @@ const Title = styled.div`
   font-size: 17px;
   color: #c0c0c0;
   margin-top: 5px;
-  margin-bottom: 3px;
+  margin-bottom: 0px;
 `;
 
 const IconContainer = styled.div`
+  margin-right: 15px;
   color: #c0c0c0;
   cursor: pointer;
   transition: color 0.2s ease;
@@ -257,10 +259,9 @@ const StyledIoIosAddCircleOutline = styled(IoIosAddCircleOutline)`
   color: #10b981;  // Cor do ícone 
   cursor: pointer;
   transition: color 0.3s ease, transform 0.2s ease;  
-  font-size: 30px;  
+  font-size: 22px;  
   
   &:hover {
-    color: #4169E1; 
     transform: scale(1.4); 
   }
 `;
@@ -272,7 +273,6 @@ const StyledMdMoreVert = styled(MdMoreVert)`
   font-size: 17px;  
   
   &:hover {
-    color: #10b981; 
     transform: scale(1.4); 
   }
 `;
@@ -297,30 +297,6 @@ const StyledMdCheck = styled(MdCheck)`
     background-color: #1c8e61;  // Cor de fundo ao passar o mouse (um tom mais escuro de verde)
   }
 `;
-
-// Paleta de cores estilizada como botões
-const ColorGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
-  gap: 10px;
-  margin-top: 10px;
-`;
-
-const ColorButton = styled.button`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid ${(props) => (props.selected ? '#000' : 'transparent')};
-  background-color: ${(props) => props.color};
-  cursor: pointer;
-  transition: transform 0.3s ease, border-color 0.3s ease;
-
-  &:hover {
-    transform: scale(1.2);
-    border-color: #000;
-  }
-`;
-
 
 const dropdownToggleStyle = {
   padding: 0,
