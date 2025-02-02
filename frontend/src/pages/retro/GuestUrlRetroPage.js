@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { getCurrentUser, fetchUserAttributes } from '@aws-amplify/auth';
 import { emitMessage } from '../generic/Utils'
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useParams } from 'react-router-dom'
@@ -15,27 +16,28 @@ export const GuestUrlRetroPage = ({ }) => {
   let navigate = useNavigate();
 
   useEffect(() => {
+    console.log('useEffect')
 
     const initializeUserData = async () => {
       try {
-        let storedUserlogged = localStorageService.getItem("AGILFACIL_USER_LOGGED");
-        console.log('useEffect', storedUserlogged)
+        localStorageService.removeItem("AGILFACIL_USER_LOGGED");
 
-        if (!storedUserlogged) {
-          const storedUserData = {
-            userId: uuidv4(),
-            userName: '',
-            isBoardCreator: false
-          };
-          localStorageService.setItem("AGILFACIL_USER_LOGGED", storedUserData);
-          directsBoard(storedUserData)
-        } else {
-          directsBoard(storedUserlogged)
-        }
+        const user = await getCurrentUser();
+        const attributes = await fetchUserAttributes(user);
+
+        const userData = { userId: attributes.sub, userName: attributes.name, isBoardCreator: false }
+        localStorageService.setItem("AGILFACIL_USER_LOGGED", userData);
+        directsBoard(userData)
 
       } catch (error) {
-        console.error("Erro ao inicializar os dados do usuário:", error);
-        emitMessage('error',999 )
+        if (error.toString().includes("UserUnAuthenticatedException")) {
+          const userData = { userId: uuidv4(), isBoardCreator: false }
+          localStorageService.setItem("AGILFACIL_USER_LOGGED", userData);
+          directsBoard(userData)
+        } else {
+          console.error("Erro ao inicializar os dados do usuário:", error);
+          emitMessage('error', 999)
+        }
       }
     };
 
@@ -50,7 +52,7 @@ export const GuestUrlRetroPage = ({ }) => {
       navigate('/board', { state: { boardData: response.data, userLoggedData: userLoggedData } });
     } catch (error) {
       console.error("Erro ao obter dados do Board:", error);
-      emitMessage('error',999 )
+      emitMessage('error', 999)
     }
   };
 

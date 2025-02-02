@@ -48,14 +48,12 @@ export const BoardPage = ({ }) => {
     setIsObfuscatedColumnLevelSocket } = useSocket(location.state.userLoggedData.userName, location.state.userLoggedData.userId, location.state.boardData.boardId, 'board')
 
   useEffect(() => {
-    console.log('useEffect-principal', location.state.boardData, location.state.userLoggedData)
+    console.log('useEffect-principal - userLoggedData -> ',location.state.userLoggedData)
     setBoardData(location.state.boardData);
     setuserLoggedData(location.state.userLoggedData);
   }, [location.state.boardData, location.state.userLoggedData]);
 
   useEffect(() => {
-    console.log('useEffect - socketResponse ==>', socketResponse);
-
     if (socketResponse.isTimerControl) {
       if (socketResponse.userId == userLoggedData.userId) return;
 

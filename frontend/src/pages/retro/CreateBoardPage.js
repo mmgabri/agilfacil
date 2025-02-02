@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import Header from './HeaderCreateBoard';
 import SuggestionForm from '../components/SuggestionForm'
+import localStorageService from "../../services/localStorageService";
 import '../../styles/NotificationPage.css';
 import { FormContainer, Title, FormGroup, CheckboxLabel, CheckboxWrapper, StyledForm, SubmitButton, RemoveIcon, AddColumnIcon } from '../../styles/FormStyle'
 
@@ -26,12 +27,29 @@ export const CreateBoardPage = ({ }) => {
   const [userLoggedData, setUserLoggedData] = useState({});
 
   useEffect(() => {
-
     console.log('useEffect - location.state', location.state)
 
-    if (location.state.userLoggedData) {
-      setUserLoggedData(location.state.userLoggedData);
+    const initializeUserData = async () => {
+      try {
+        localStorageService.removeItem("AGILFACIL_USER_LOGGED");
+
+        const userData = { userId: location.state.userLoggedData.userId, userName: location.state.userLoggedData.userName, isBoardCreator: true }
+
+        localStorageService.setItem("AGILFACIL_USER_LOGGED", userData);
+        setUserLoggedData(userData)
+
+      } catch (error) {
+        console.error("Erro ao inicializar os dados do usuário:", error);
+        emitMessage('error', 999)
+      }
+    };
+
+    if (!location.state.userLoggedData) {
+      emitMessage('error', 999, 4000)
+      return
     }
+
+    initializeUserData();
 
     if (location.state.board) {
       setBoard(location.state.board);
@@ -101,10 +119,7 @@ export const CreateBoardPage = ({ }) => {
 
   const exitBoard = async () => {
     try {
-      await signOut(); // Chamando o signOut diretamente
-      //window.location.href = 'https://accounts.google.com/Logout';
-      console.log('Usuário desconectado com sucesso!');
-      //window.location.href = '/'; // Ou use o useNavigate se preferir navegação sem recarregar a página
+      await signOut();
     } catch (error) {
       console.error('Erro ao deslogar', error);
     }

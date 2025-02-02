@@ -14,7 +14,7 @@ function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColum
   const [likeCount, setLikeCount] = useState(0);
   const menuRef = useRef(null);
   const [hoverIndex, setHoverIndex] = useState(null);
-
+  
   useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
     return () => {
@@ -91,21 +91,61 @@ function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColum
       data-testid={card.id}
       data-index={index}
     >
-      <Content  $isObfuscatedBoardLevel={isObfuscatedBoardLevel}  $isObfuscatedColumnLevel={isObfuscatedColumnLevel}>
-        {isEditing ? (
-          <StyledTextarea
-            value={content}
-            rows={4}
-            onChange={(e) => setContent(e.target.value)}
-            onBlur={handleSave}
-            autoFocus
-          />
-        ) : (
-          <div style={{ whiteSpace: 'pre-wrap' }}>
-            {card.content}
-          </div>
-        )}
-      </Content>
+
+      {userLoggedData.userId == card.userId || userLoggedData.isBoardCreator ?
+        <Content>
+          {isEditing ? (
+            <StyledTextarea
+              value={content}
+              rows={4}
+              onChange={(e) => setContent(e.target.value)}
+              onBlur={handleSave}
+              autoFocus
+            />
+          ) : (
+            <div style={{ whiteSpace: 'pre-wrap' }}>
+              {card.content}
+            </div>
+          )}
+        </Content>
+        :
+        <>
+          {isObfuscatedBoardLevel || isObfuscatedColumnLevel ?
+            <ContentBlur>
+              {isEditing ? (
+                <StyledTextarea
+                  value={content}
+                  rows={4}
+                  onChange={(e) => setContent(e.target.value)}
+                  onBlur={handleSave}
+                  autoFocus
+                />
+              ) : (
+                <div style={{ whiteSpace: 'pre-wrap' }}>
+                  {card.content}
+                </div>
+              )}
+            </ContentBlur>
+            :
+            <Content>
+              {isEditing ? (
+                <StyledTextarea
+                  value={content}
+                  rows={4}
+                  onChange={(e) => setContent(e.target.value)}
+                  onBlur={handleSave}
+                  autoFocus
+                />
+              ) : (
+                <div style={{ whiteSpace: 'pre-wrap' }}>
+                  {card.content}
+                </div>
+              )}
+            </Content>
+          }
+        </>
+      }
+
       {card.userId === userLoggedData.userId &&
         <IconContainer ref={menuRef}>
           {isEditing ? (
@@ -133,28 +173,25 @@ function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColum
               </Dropdown.Menu>
             </Dropdown>
           )}
-        </IconContainer>}
+        </IconContainer>
+      }
       <ContainerLike>
         <LikeIconContainer>
           <StyledAiTwotoneLike onClick={handleLikeClick} />
           <Count>{card.likeCount}</Count>
         </LikeIconContainer>
       </ContainerLike>
-    </Container>
+    </Container >
   );
 }
 
 export default memo(CardItem);
 
-
-
-// Estilizações
-
 const getBackgroundColor = (isDragging, isGroupedOver, colorCards) => {
   if (isDragging) return "#D8968C";
   if (isGroupedOver) return "#77DD77";
   if (colorCards) return colorCards
-  //return  "#F0E68C"
+  return "#F0E68C"
 
 };
 
@@ -202,14 +239,16 @@ const Content = styled.div`
   align-items: center; /* Alinha os itens verticalmente no centro */
   justify-content: space-between; /* Cria um espaço entre os itens (texto e ícone) */
   width: 100%;
-  
-  ${({ $isObfuscatedBoardLevel, $isObfuscatedColumnLevel }) =>
-    ($isObfuscatedBoardLevel || $isObfuscatedColumnLevel) &&
-    `
-      filter: blur(5px);
-      pointer-events: none;
-    `}
-  
+  transition: filter 0.3s ease-in-out; /* Animação suave */
+`;
+
+const ContentBlur = styled.div`
+  display: flex;
+  align-items: center; /* Alinha os itens verticalmente no centro */
+  justify-content: space-between; /* Cria um espaço entre os itens (texto e ícone) */
+  width: 100%;
+  filter: blur(5px);
+  pointer-events: none;
   transition: filter 0.3s ease-in-out; /* Animação suave */
 `;
 

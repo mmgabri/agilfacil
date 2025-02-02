@@ -44,7 +44,7 @@ const ModalAddCollumn = ({ isOpen, onClose, onSubmit}) => {
                             required
                         />
                     </FormGroup>
-                    <SubmitButton type="submit">Adicionar Card</SubmitButton>
+                    <SubmitButton type="submit">Adicionar Coluna</SubmitButton>
                 </form>
             </FormContainer>
         </Modal>

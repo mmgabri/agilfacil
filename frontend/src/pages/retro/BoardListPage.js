@@ -24,15 +24,11 @@ const BoardListPage = () => {
   useEffect(() => {
     const fetchBoards = async () => {
       try {
-        // Obtem Usuário Logado     
         const user = await getCurrentUser();
         const attributes = await fetchUserAttributes(user);
-
-        // Salva dados do usuário no contexto
         const userData = {
           userId: attributes.sub,
           userName: attributes.name,
-          isBoardCreator: true
         };
         setuserLoggedData(userData)
 
@@ -95,7 +91,25 @@ const BoardListPage = () => {
     }
   };
 
-  const handleClone = async (boardId) => {
+  const handleOpenBoard = async (boardId) => {
+    try {
+      setIsLoading(true)
+      const response = await axios.get(`${SERVER_BASE_URL}/retro/${boardId}`)
+      setIsLoading(false)
+      const userData = { userId: userLoggedData.userId, userName: userLoggedData.userName, isBoardCreator: true }
+      navigate('/board', { state: { boardData: response.data, userLoggedData: userData } });
+    } catch (error) {
+      setIsLoading(false)
+      console.log("Resposta da api com erro:", error)
+      emitMessage('error', 902, 3000)
+    }
+  }
+
+  const handleCreateBoard = () => {
+    navigate('/board/create', { state: { userLoggedData: userLoggedData } });
+  };
+
+  const handleCloneBoard = async (boardId) => {
     try {
       const response = await axios.get(`${SERVER_BASE_URL}/retro/${boardId}`)
       console.log('response ==> ', response)
@@ -105,20 +119,6 @@ const BoardListPage = () => {
       emitMessage('error', 903, 3000)
     }
   }
-
-  const handleOpen = async (boardId) => {
-    try {
-      const response = await axios.get(`${SERVER_BASE_URL}/retro/${boardId}`)
-      navigate('/board', { state: { boardData: response.data, userLoggedData: userLoggedData } });
-    } catch (error) {
-      console.log("Resposta da api com erro:", error)
-      emitMessage('error', 902, 3000)
-    }
-  }
-
-  const handleAddBoard = () => {
-    navigate('/board/create', { state: { userLoggedData: userLoggedData } });
-  };
 
   const exitBoard = async () => {
     try {
@@ -130,7 +130,7 @@ const BoardListPage = () => {
     }
   };
 
-  const handleOpenSugestion = () => {
+  const handleOpenBoardSugestion = () => {
     setModalOpen(true);
   }
 
@@ -143,7 +143,7 @@ const BoardListPage = () => {
 
   return (
     <div className="bg-black-custom">
-      <Header sairSala={exitBoard} handleOpenSugestion={handleOpenSugestion} />
+      <Header sairSala={exitBoard} handleOpenBoardSugestion={handleOpenBoardSugestion} />
       {isLoading ?
         <LoaderPage />
         :
@@ -154,7 +154,7 @@ const BoardListPage = () => {
             </AlignedContainer>
             :
             <Container>
-              <Button onClick={handleAddBoard}>Adicionar Board</Button>
+              <Button onClick={handleCreateBoard}>Adicionar Board</Button>
               {isLoading ? (
                 <LoaderPage />
               ) : (
@@ -164,7 +164,7 @@ const BoardListPage = () => {
                   ) : (
                     boards.map((board) => (
                       <BoardBox key={board.boardId}>
-                        <h3>{board.boardName}</h3>
+                        <h6>{board.boardName}</h6>
                         <p>Criado em: {board.dateTime}</p>
                         <p>Squad: {board.squadName}</p>
                         <p>Área: {board.areaName}</p>
@@ -182,7 +182,7 @@ const BoardListPage = () => {
                             data-tooltip-content="Clonar"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleClone(board.boardId);
+                              handleCloneBoard(board.boardId);
                             }}
                           />
                           <Tooltip id="tooltip-clone" style={{ fontSize: "12px", padding: "4px 8px" }} />
@@ -200,7 +200,7 @@ const BoardListPage = () => {
                             data-tooltip-content="Abrir"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleOpen(board.boardId);
+                              handleOpenBoard(board.boardId);
                             }}
                           />
                           <Tooltip id="tooltip-open" style={{ fontSize: "12px", padding: "4px 8px" }} />
@@ -239,7 +239,9 @@ const Button = styled.button`
 const BoardList = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const BoardBox = styled.div`
@@ -251,6 +253,8 @@ const BoardBox = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Sombra mais sutil */
   transition: transform 0.2s ease, box-shadow 0.3s ease, background-color 0.3s ease;
   cursor: pointer; /* Garante que o cursor mude para a mãozinha */
+  width: 350px; /* Largura fixa definida */
+  height: 199px; 
 
   &:hover {
     transform: scale(1.05);
@@ -280,6 +284,7 @@ const BoardBox = styled.div`
   @media (max-width: 768px) {
     /* Estilo para dispositivos menores */
     padding: 15px;
+    width: 250px; 
     h3 {
       font-size: 1.3em;
     }
@@ -293,8 +298,8 @@ const BoardBox = styled.div`
 const Actions = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
-  font-size: 26px;
+  margin-top: 20px;
+  font-size: 21px;
   cursor: pointer;
 
   svg {
