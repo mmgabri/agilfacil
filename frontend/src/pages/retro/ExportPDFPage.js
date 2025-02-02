@@ -9,7 +9,7 @@ import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import LoaderPage from '../generic/LoaderPage';
 import HeaderPage from './HeaderCreateBoard';
 import favicon from '../../images/favicon.ico';
-import { emitMessage } from '../generic/Utils'
+import { emitMessage, formatdateTime } from '../generic/Utils'
 
 const GeneratePDF = () => {
   const { id } = useParams();
@@ -23,6 +23,7 @@ const GeneratePDF = () => {
 
     axios.get(`${SERVER_BASE_URL}/retro/${id}`)
       .then(response => {
+        console.log(response.data)
         setBoardData(response.data);
         setIsLoading(false);
       })
@@ -65,19 +66,19 @@ const GeneratePDF = () => {
 
     // Calcular a posição X para centralizar
     const pageWidth0 = doc.internal.pageSize.getWidth(); // Largura total da página (uso de getWidth())
-    const textWidth0 = doc.getTextWidth("Board de Retrospectiva"); // Largura do texto
+    const textWidth0 = doc.getTextWidth(`${boardData.boardName}`); // Largura do texto
     const xPosition0 = (pageWidth0 - textWidth0) / 2; // Posição X centralizada
 
     const yPosition0 = 32;
 
-    doc.text(`${boardData.squadName}`, xPosition0, yPosition0); // Texto centralizado
+    doc.text(`${boardData.boardName}`, xPosition0, yPosition0); // Texto centralizado
 
 
     //------- Informações do Board (InfoSection) - Seguindo o padrão da tabela
     const infoLines = [
       {
-        leftText: `Criado em: ${boardData.dateTime}`,
-        rightText: `Criado por: ${boardData.squadName}`
+        leftText: `Criado em: ${formatdateTime(boardData.dateTime)}`,
+        rightText: `Criado por: ${boardData.userName}`
       },
       {
         leftText: `Squad: ${boardData.squadName}`,
@@ -85,7 +86,7 @@ const GeneratePDF = () => {
       },
       {
         leftText: `Total de Cards: ${boardData.columns.reduce((acc, col) => acc + col.cards.length, 0)}`,
-        rightText: `Total de Participantes: 16`
+        rightText: `Total de Participantes: ${Array.isArray(boardData.usersOnBoardHistoric) ? boardData.usersOnBoardHistoric.length : 0}`
       },
     ];
 
@@ -187,15 +188,15 @@ const GeneratePDF = () => {
                 <Title>{boardData.boardName}</Title>
 
                 <InfoRow>
-                  <InfoItem><strong>Criado em:</strong>{boardData.dateTime}</InfoItem>
-                  <InfoItem><strong>Criado por:</strong>Marcelo Gabriel</InfoItem>
+                  <InfoItem><strong>Criado em:</strong>{formatdateTime(boardData.dateTime)}</InfoItem>
+                  <InfoItem><strong>Criado por:</strong>{boardData.userName}</InfoItem>
                   <InfoItem><strong>Squad:</strong> {boardData.squadName}</InfoItem>
                   <InfoItem><strong>Área:</strong>{boardData.areaName}</InfoItem>
                 </InfoRow>
 
                 <InfoRow2>
                   <InfoItem><strong>Total de Cards:</strong> {boardData.columns ? boardData.columns.reduce((acc, col) => acc + col.cards.length, 0) : 0}</InfoItem>
-                  <InfoItem><strong>Total de Participantes:</strong>16</InfoItem>
+                  <InfoItem><strong>Total de Participantes:</strong>{Array.isArray(boardData.usersOnBoardHistoric) ? boardData.usersOnBoardHistoric.length : 0}</InfoItem>
                 </InfoRow2>
               </InfoSection>
 

@@ -13,9 +13,20 @@ const connectClientRetro = (boardId, userId) => {
       const updatedBoardData = { ...boardData };
       const userData = { userId: userId }
       const userExists = updatedBoardData.usersOnBoard.some(user => user.userId === userData.userId);
-      if (userExists) resolve (boardData);
+      const userExistsHistoric = updatedBoardData.usersOnBoardHistoric.some(user => user.userId === userData.userId);
 
-      updatedBoardData.usersOnBoard.push(userData);
+      if (userExists && userExistsHistoric) {
+        resolve (boardData)
+      }
+
+      if (!userExists) {
+        updatedBoardData.usersOnBoard.push(userData);
+      };
+
+      if (!userExistsHistoric) {
+        updatedBoardData.usersOnBoardHistoric.push(userData);
+      };
+
       await putTable(config.TABLE_BOARD, updatedBoardData);
 
       resolve(updatedBoardData);
@@ -38,7 +49,6 @@ const disconnectClientRetro = (userIdToRemove, boardId) => {
       // Remove usuário da lista de logado
       const updatedBoardData = { ...boardData };
       updatedBoardData.usersOnBoard = updatedBoardData.usersOnBoard.filter(user => user.userId !== userIdToRemove);
-
 
       // Atualiza o board no banco de dados
       await putTable(config.TABLE_BOARD, updatedBoardData);

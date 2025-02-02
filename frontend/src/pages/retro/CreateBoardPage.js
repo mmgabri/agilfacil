@@ -131,7 +131,7 @@ export const CreateBoardPage = ({ }) => {
     const token = await getToken()
 
     try {
-      const response = await axios.post(SERVER_BASE_URL + '/retro/createBoard', { creatorId: userLoggedData.userId, boardName: formData.boardName, squadName: formData.squadName, areaName: formData.areaName, columns: formData.columns }, {
+      const response = await axios.post(SERVER_BASE_URL + '/retro/createBoard', { creatorId: userLoggedData.userId, userName: userLoggedData.userName, boardName: formData.boardName, squadName: formData.squadName, areaName: formData.areaName, columns: formData.columns }, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'

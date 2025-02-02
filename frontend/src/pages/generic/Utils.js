@@ -1,4 +1,5 @@
 import { toast } from 'react-toastify';
+import { DateTime } from 'luxon';
 
 const errorMessages = {
     0: 'Sua ação foi concluída com sucesso!',
@@ -47,3 +48,11 @@ export const emitMessage = (type, statusCode, autoClose) => {
     }
 
 };
+
+export const formatdateTime = (dateTime) => {
+
+    return DateTime.fromISO(dateTime).toFormat("dd/MM/yyyy HH:mm:ss");
+
+};
+
+

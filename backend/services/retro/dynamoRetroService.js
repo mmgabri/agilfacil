@@ -10,8 +10,6 @@ const putTable = (tableName, item) => {
     docClient
       .send(new PutCommand({ TableName: tableName, Item: item }))
       .then((data) => {
-        console.log(`Item ${item._id} inserido com sucesso na tabela ${tableName}!`);
-        //   const formattedItem = unmarshall(data);
         resolve(item);
       })
       .catch((error) => {

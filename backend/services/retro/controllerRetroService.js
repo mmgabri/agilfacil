@@ -8,21 +8,20 @@ const timeZone = 'America/Sao_Paulo';
 
 const createBoard = async (req, res) => {
   const start = performance.now()
-  const brasiliaTime = DateTime.now().setZone(timeZone);
-  const formattedTime = brasiliaTime.toFormat("dd/MM/yyyy HH:mm:ss");
 
   const boardDb = {
     boardId: uuidv4(),
     creatorId: req.body.creatorId,
-    dateTime: formattedTime,
+    dateTime: DateTime.now().setZone(timeZone).toISO(),
     userName: req.body.userName,
     boardName: req.body.boardName,
     squadName: req.body.squadName,
     areaName: req.body.areaName,
     columns: req.body.columns,
     isObfuscated: false,
-    dateTimeLastUpdate: formattedTime,
+    dateTimeLastUpdate: DateTime.now().setZone(timeZone).toISO(),
     usersOnBoard: [],
+    usersOnBoardHistoric: [],
     cardCreators: []
   };
 

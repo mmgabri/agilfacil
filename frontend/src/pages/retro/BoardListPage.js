@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
-import { emitMessage } from '../generic/Utils'
+import { emitMessage, formatdateTime } from '../generic/Utils'
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 import { signOut, getCurrentUser, fetchUserAttributes, fetchAuthSession } from '@aws-amplify/auth';
@@ -74,6 +74,7 @@ const BoardListPage = () => {
   const handleDelete = async (id) => {
     console.log('handleDelete', id)
     const token = await getToken()
+    setIsLoading(true)
     try {
       const response = await axios.delete(`${SERVER_BASE_URL}/retro/${id}`,
         {
@@ -82,12 +83,13 @@ const BoardListPage = () => {
             'Content-Type': 'application/json',
           },
         })
-      console.log('response -->', response)
       emitMessage('success', 1, 1500)
+      setIsLoading(false)
       setBoards((prevBoards) => prevBoards.filter(board => board.boardId !== id));
     } catch (error) {
       console.log("Resposta da api com erro:", error)
       emitMessage('error', 901, 3000)
+      setIsLoading(false)
     }
   };
 
@@ -110,13 +112,16 @@ const BoardListPage = () => {
   };
 
   const handleCloneBoard = async (boardId) => {
+    setIsLoading(true)
     try {
       const response = await axios.get(`${SERVER_BASE_URL}/retro/${boardId}`)
+      setIsLoading(false)
       console.log('response ==> ', response)
       navigate('/board/create', { state: { userLoggedData: userLoggedData, board: response.data } });
     } catch (error) {
       console.log("Resposta da api com erro:", error)
       emitMessage('error', 903, 3000)
+      setIsLoading(false)
     }
   }
 
@@ -165,7 +170,7 @@ const BoardListPage = () => {
                     boards.map((board) => (
                       <BoardBox key={board.boardId}>
                         <h6>{board.boardName}</h6>
-                        <p>Criado em: {board.dateTime}</p>
+                        <p>Criado em: {formatdateTime(board.dateTime)}</p>
                         <p>Squad: {board.squadName}</p>
                         <p>Área: {board.areaName}</p>
                         <Actions>
@@ -240,7 +245,7 @@ const BoardList = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
 `;
 
