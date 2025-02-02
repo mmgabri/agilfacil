@@ -7,7 +7,7 @@ import { AiTwotoneLike } from 'react-icons/ai';
 
 import { colors } from "@atlaskit/theme";
 
-function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColumn, onSaveCard, onDeleteCard, onUpdateLike, colorCards, userLoggedData, isObfuscated }) {
+function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColumn, onSaveCard, onDeleteCard, onUpdateLike, colorCards, userLoggedData, isObfuscatedBoardLevel, isObfuscatedColumnLevel }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [content, setContent] = useState(card.content);
@@ -91,7 +91,7 @@ function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColum
       data-testid={card.id}
       data-index={index}
     >
-      <Content  $isObfuscated={isObfuscated}>
+      <Content  $isObfuscatedBoardLevel={isObfuscatedBoardLevel}  $isObfuscatedColumnLevel={isObfuscatedColumnLevel}>
         {isEditing ? (
           <StyledTextarea
             value={content}
@@ -198,18 +198,21 @@ const Container = styled.div`
   }
 `;
 const Content = styled.div`
-display: flex;
+  display: flex;
   align-items: center; /* Alinha os itens verticalmente no centro */
   justify-content: space-between; /* Cria um espaço entre os itens (texto e ícone) */
   width: 100%;
-   ${({ $isObfuscated }) =>
-    $isObfuscated &&
+  
+  ${({ $isObfuscatedBoardLevel, $isObfuscatedColumnLevel }) =>
+    ($isObfuscatedBoardLevel || $isObfuscatedColumnLevel) &&
     `
-    filter: blur(5px);
-    pointer-events: none;
-  `}
+      filter: blur(5px);
+      pointer-events: none;
+    `}
+  
   transition: filter 0.3s ease-in-out; /* Animação suave */
 `;
+
 
 
 // Like

@@ -20,7 +20,7 @@ export const CreateBoardPage = ({ }) => {
     boardName: "",
     areaName: "",
     squadName: "",
-    columns: [{ id: uuidv4(), title: "", colorCards: "#F0E68C", cards: [] }]
+    columns: [{ id: uuidv4(), title: "", colorCards: "#F0E68C", isObfuscated: false, cards: [] }]
   });
   const [isModalOpen, setModalOpen] = useState(false);
   const [userLoggedData, setUserLoggedData] = useState({});
@@ -82,6 +82,7 @@ export const CreateBoardPage = ({ }) => {
       id: uuidv4(),
       title: "",
       colorCards: "#F0E68C",
+      isObfuscated: false,
       cards: []
     };
     setFormData((prevData) => ({
@@ -172,7 +173,7 @@ export const CreateBoardPage = ({ }) => {
               onChange={handleFieldChange}
               placeholder="Digite o nome do board"
               required
-              maxLength={30}
+              maxLength={55}
             />
           </FormGroup>
           <FormGroup>

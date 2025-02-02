@@ -104,7 +104,7 @@ function App() {
           <Route
             path="/board/create"
             element={
-              <ProtectedRoute>0
+              <ProtectedRoute>
                 <CreateBoardPage />
               </ProtectedRoute>
             }

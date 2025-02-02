@@ -99,12 +99,24 @@ export const useSocket = (
 
 
 
-  const setIsObfuscatedSocket = useCallback(
+  const setIsObfuscatedBoardLevelSocket = useCallback(
     (payload) => {
       socket.emit("comand_socket_board", {
-        comand: 'set_is_obfuscated',
+        comand: 'set_is_obfuscated_board_level',
         boardId: idSession,
         isObfuscated: payload.isObfuscated,
+      });
+    },
+    [socket, idSession]
+  );
+
+  const setIsObfuscatedColumnLevelSocket = useCallback(
+    (payload) => {
+      socket.emit("comand_socket_board", {
+        comand: 'set_is_obfuscated_column_level',
+        boardId: idSession,
+        isObfuscated: payload.isObfuscated,
+        index: payload.index
       });
     },
     [socket, idSession]
@@ -274,6 +286,7 @@ export const useSocket = (
     updatecolorCardsSocket,
     deleteAllCardSocket,
     timerControlSocket,
-    setIsObfuscatedSocket
+    setIsObfuscatedBoardLevelSocket,
+    setIsObfuscatedColumnLevelSocket
   };
 };

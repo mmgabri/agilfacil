@@ -1,5 +1,5 @@
 const { connectClient, desconnectClient, updateStatusRoom, updateVote } = require('../services/poker/socketService');
-const { connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, saveCard, updatecolorCards, deleteAllCard, setIsObfuscated, disconnectClientRetro } = require('../services/retro/socketRetroService');
+const { connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, saveCard, updatecolorCards, deleteAllCard, setIsObfuscatedBoardLevel, setIsObfuscatedColumnLevel, disconnectClientRetro } = require('../services/retro/socketRetroService');
 const logger = require('../services/generic/cloudWatchLoggerService');
 
 const setupSocketIo = (io) => {
@@ -84,8 +84,11 @@ const setupSocketIo = (io) => {
         case 'timer_control_board':
           onTimerControlBoard(data)
           break;
-        case 'set_is_obfuscated':
-          onSetIsObfuscated(data)
+        case 'set_is_obfuscated_board_level':
+          onSetIsObfuscatedBoardLevel(data)
+          break;
+        case 'set_is_obfuscated_column_level':
+          onSetIsObfuscatedColumnLevel(data)
           break;
         default:
           console.error('Comando Board não previsto - ', data.comand);
@@ -245,16 +248,25 @@ const setupSocketIo = (io) => {
       }
     }
 
-    async function onSetIsObfuscated(data) {
+    async function onSetIsObfuscatedBoardLevel(data) {
       const start = performance.now()
       try {
-        let board = await setIsObfuscated(data.boardId, data.isObfuscated);
+        let board = await setIsObfuscatedBoardLevel(data.boardId, data.isObfuscated);
         io.to(data.boardId).emit('data_board', board);
       } catch (erro) {
-        console.error('Erro socket - onSetIsObfuscated', erro);
+        console.error('Erro socket - onSetIsObfuscatedBoardLevel', erro);
       }
     }
 
+    async function onSetIsObfuscatedColumnLevel(data) {
+      const start = performance.now()
+      try {
+        let board = await setIsObfuscatedColumnLevel(data.boardId, data.isObfuscated, data.index);
+        io.to(data.boardId).emit('data_board', board);
+      } catch (erro) {
+        console.error('Erro socket - onSetIsObfuscatedColumnLevel', erro);
+      }
+    }
 
     async function onDeleteAllCard(data) {
       const start = performance.now()

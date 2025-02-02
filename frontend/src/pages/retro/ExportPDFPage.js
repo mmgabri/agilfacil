@@ -290,7 +290,6 @@ const ButtonWrapper = styled.div`
 `;
 
 
-
 const Table = styled.table`
   width: 100%;
   margin: 1px auto;

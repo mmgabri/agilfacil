@@ -164,11 +164,18 @@ export const updateTitleColumn = (boardData, content, index) => {
   return updatedBoardData;
 }
 
-export const setIsObfuscated = (boardData, isObfuscated) => {
+export const setIsObfuscatedBoardLevel = (boardData, isObfuscated) => {
+  console.log('setIsObfuscatedBoardLevel', isObfuscated)
   const updatedBoardData = { ...boardData };
-  console.log('antes:', boardData);
   updatedBoardData.isObfuscated = isObfuscated; // Atualiza isObfuscated
-  console.log('depois:', updatedBoardData);
+  return updatedBoardData;
+}
+
+export const setIsObfuscatedColumnLevel = (boardData, isObfuscated, index) => {
+  console.log('setIsObfuscatedColumnLevel', index, isObfuscated)
+  const updatedBoardData = { ...boardData };
+  const columnToUpdate = updatedBoardData.columns[index];
+  columnToUpdate.isObfuscated = isObfuscated;
   return updatedBoardData;
 }
 

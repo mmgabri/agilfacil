@@ -150,7 +150,7 @@ const BoardListPage = () => {
         <>
           {!boards ?
             <AlignedContainer>
-              <p>Não foi possível carregar os seus Boards.</p>
+              <p>Não foi possível carregar os seus Board.</p>
             </AlignedContainer>
             :
             <Container>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from "@emotion/styled";
 import { Dropdown } from 'react-bootstrap';
+import { Tooltip } from "react-tooltip";
+import "react-tooltip/dist/react-tooltip.css";
 import { v4 as uuidv4 } from 'uuid';
 import { MdMoreVert, MdEdit, MdCheck, MdDeblur } from 'react-icons/md';
 import { FaNoteSticky, FaUserPen } from "react-icons/fa6";
@@ -10,14 +12,14 @@ import { FaTrashAlt } from "react-icons/fa";
 import './retro.css';
 import ModalAddCard from './ModalAddCard';
 
-const ColumnHeader = ({ columnTitle, countCards, onAddCard, index, onUpdateTitleColumn, onDeleteColumn, onDeleteAllCard, onUpdatecolorCards, userLoggedData }) => {
+const ColumnHeader = ({ columnTitle, countCards, onAddCard, index, onUpdateTitleColumn, onDeleteColumn, onDeleteAllCard, onUpdatecolorCards, userLoggedData, isObfuscatedColumnLevel, handleSetIsObfuscatedColumnLevel }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(columnTitle || 'Título da Coluna');
   const [isModalOpen, setModalOpen] = useState(false);
   const [hoverIndex, setHoverIndex] = useState(null);
   const [selectedColor, setSelectedColor] = useState('#F0E68C');
   const [showColorOptions, setShowColorOptions] = useState(false);
-  const [hoveredColor, setHoveredColor] = useState(null); // Para armazenar a cor sendo destacada
+  const [hoveredColor, setHoveredColor] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
@@ -61,6 +63,10 @@ const ColumnHeader = ({ columnTitle, countCards, onAddCard, index, onUpdateTitle
     onDeleteAllCard(index)
   };
 
+  const onSetIsObfuscatedColumnLevel = (value) => {
+    handleSetIsObfuscatedColumnLevel(value, index)
+  };
+
   const handleModalAddCardSubmit = (value) => {
 
     const newCard = {
@@ -81,7 +87,7 @@ const ColumnHeader = ({ columnTitle, countCards, onAddCard, index, onUpdateTitle
     onUpdatecolorCards(color, index)
   };
 
-
+ 
   return (
     <ColumnHeaderContainer>
       <ModalAddCard
@@ -208,16 +214,30 @@ const ColumnHeader = ({ columnTitle, countCards, onAddCard, index, onUpdateTitle
 
       </TitleContainer>
       <ContainerIcons>
-        <CountCardContainer>
+        <IconsContainer data-tooltip-id={`tooltip-qtd-cards-${index}`} data-tooltip-content='Quantidade de Cards na coluna' >
+        <Tooltip id={`tooltip-qtd-cards-${index}`} style={{ fontSize: "12px", padding: "4px 8px" }} />
           <FaNoteSticky />
           <CardBadge>{countCards}</CardBadge>
-        </CountCardContainer>
-        <AddIconContainer>
+        </IconsContainer>
+        <IconsContainer data-tooltip-id={`tooltip-add-cards-${index}`} data-tooltip-content='Criar card'>
+        <Tooltip id={`tooltip-add-cards-${index}`} style={{ fontSize: "12px", padding: "4px 8px" }} />
           <StyledIoIosAddCircleOutline onClick={() => setModalOpen(true)} />
-        </AddIconContainer>
-        <AddIconContainer>
-          <StyledMdDeblur onClick={() => setModalOpen(true)} />
-        </AddIconContainer>
+        </IconsContainer>
+        {userLoggedData.isBoardCreator &&
+          <>
+            {!isObfuscatedColumnLevel ?
+              (<IconsContainer data-tooltip-id={`tooltip-ocultar-cards-${index}`} data-tooltip-content='Ocultar Cards'>
+                <Tooltip id={`tooltip-ocultar-cards-${index}`} style={{ fontSize: "12px", padding: "4px 8px" }} />
+                <StyledMdDeblur onClick={() => onSetIsObfuscatedColumnLevel(true)} />
+              </IconsContainer>)
+              :
+              (<IconsContainer data-tooltip-id={`tooltip-revelar-cards-${index}`} data-tooltip-content='Revelar Cards'>
+                <Tooltip id={`tooltip-revelar-cards-${index}`} style={{ fontSize: "12px", padding: "4px 8px" }} />
+                <StyledMdDeblur onClick={() => onSetIsObfuscatedColumnLevel(false)} />
+              </IconsContainer>)
+            }
+          </>}
+
       </ContainerIcons>
     </ColumnHeaderContainer>
   );
@@ -338,35 +358,34 @@ const iconMarginStyle = {
   marginRight: 8,
 };
 
-const AddIconContainer = styled.div`
-  cursor: pointer;
-  transition: color 0.2s ease;
-`;
-
 
 const ContainerIcons = styled.div`
   display: flex;
   justify-content: space-between; /* Distribui os itens igualmente */
   align-items: center; /* Centraliza verticalmente */
   width: 100%; /* Ocupa toda a largura disponível */
-  padding: 10px; /* Espaçamento interno opcional */
+  max-width: 1200px; /* Define uma largura máxima para o container */
+  margin-top: 4px; /* Centraliza o container dentro do seu pai */
+  padding: 0 70px; /* Margem interna nas laterais (ajuste conforme necessário) */
+  box-sizing: border-box; /* Garante que o padding seja incluído no cálculo da largura */
 `;
 
-const CountCardContainer = styled.div`
+const IconsContainer = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  font-size: 22px;
-  color: #fff;
+  font-size: 20px;
+  color: #D0D0D0;
 `;
+
 
 const CardBadge = styled.span`
   position: absolute;
   top: -7px;
   right: -5px;
-  background-color: #D8968C;
+  background-color: #DDBB66     ;
   color: black;
-  font-size: 10px;
+  font-size: 9px;
   padding: 2px 6px;
   border-radius: 10px;
 `;

@@ -328,7 +328,7 @@ const updateTitleColumn = (boardId, content, index) => {
   });
 };
 
-const setIsObfuscated = (boardId, isObfuscated) => {
+const setIsObfuscatedBoardLevel = (boardId, isObfuscated) => {
   return new Promise(async (resolve, reject) => {
     try {
       // Obtém os dados do board no banco de dados
@@ -341,6 +341,37 @@ const setIsObfuscated = (boardId, isObfuscated) => {
       // Atualiza isObfuscated
       const updatedBoardData = { ...boardData };
       updatedBoardData.isObfuscated = isObfuscated
+
+      // Salva o board atualizado no banco de dados
+      await putTable(config.TABLE_BOARD, updatedBoardData);
+
+      // Retorna o board atualizado
+      resolve(updatedBoardData);
+    } catch (error) {
+      // Rejeita a promise em caso de erro
+      reject(error);
+    }
+  });
+};
+
+const setIsObfuscatedColumnLevel = (boardId, isObfuscated, index) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Obtém os dados do board no banco de dados
+      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+
+      if (!boardData) {
+        return reject(new Error('Board não encontrado.'));
+      }
+
+      // Verifica se o índice é válido
+      if (index < 0 || index >= boardData.columns.length) {
+        return reject(new Error('Índice inválido para atualizar o título da coluna.'));
+      }
+
+      // Atualiza coluna
+      const updatedBoardData = { ...boardData };
+      updatedBoardData.columns[index].isObfuscated = isObfuscated;
 
       // Salva o board atualizado no banco de dados
       await putTable(config.TABLE_BOARD, updatedBoardData);
@@ -531,4 +562,4 @@ const saveCard = (boardId, content, indexCard, indexColumn) => {
 
 
 
-module.exports = { connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, deleteAllCard, saveCard, updatecolorCards, setIsObfuscated, disconnectClientRetro };
+module.exports = { connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, deleteAllCard, saveCard, updatecolorCards, setIsObfuscatedBoardLevel, setIsObfuscatedColumnLevel, disconnectClientRetro };

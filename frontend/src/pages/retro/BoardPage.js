@@ -5,7 +5,7 @@ import { createUseStyles } from "react-jss";
 import { DragDropContext } from "react-beautiful-dnd";
 import { toast } from 'react-toastify';
 import Columns from "./Columns";
-import { reorderboardData, processCombine, saveCard, deleteCard, updateLike, updateTitleColumn, deleteColumn, addCard, updatecolorCards, deleteAllCards, addCollumn, setIsObfuscated } from "./FunctionsBoard";
+import { reorderboardData, processCombine, saveCard, deleteCard, updateLike, updateTitleColumn, deleteColumn, addCard, updatecolorCards, deleteAllCards, addCollumn, setIsObfuscatedBoardLevel, setIsObfuscatedColumnLevel } from "./FunctionsBoard";
 import Header from './HeaderBoard';
 import Invite from '../components/Invite';
 import SuggestionForm from '../components/SuggestionForm'
@@ -44,8 +44,8 @@ export const BoardPage = ({ }) => {
     updatecolorCardsSocket,
     deleteAllCardSocket,
     timerControlSocket,
-    setIsObfuscatedSocket } = useSocket(location.state.userLoggedData.userName, location.state.userLoggedData.userId, location.state.boardData.boardId, 'board')
-
+    setIsObfuscatedBoardLevelSocket,
+    setIsObfuscatedColumnLevelSocket } = useSocket(location.state.userLoggedData.userName, location.state.userLoggedData.userId, location.state.boardData.boardId, 'board')
 
   useEffect(() => {
     console.log('useEffect-principal', location.state.boardData, location.state.userLoggedData)
@@ -202,6 +202,7 @@ export const BoardPage = ({ }) => {
       id: uuidv4(),
       title: collunName,
       colorCards: "#F0E68C",
+      isObfuscated: false,
       cards: []
     };
     const updatedColumns = addCollumn(boardData, newCollumn);
@@ -209,10 +210,16 @@ export const BoardPage = ({ }) => {
     addCollumnSocket({ newCollumn: newCollumn })
   };
 
-  const handleSetIsObfuscated = (value) => {
-    const updatedBoardData = setIsObfuscated(boardData, value);
-    setBoardData(updatedBoardData); // Atualiza o estado corretamente com o novo boardData
-    setIsObfuscatedSocket({ isObfuscated: value })
+  const handleSetIsObfuscatedBoardLevel = (value) => {
+    const updatedBoardData = setIsObfuscatedBoardLevel(boardData, value);
+    setBoardData(updatedBoardData); 
+    setIsObfuscatedBoardLevelSocket({ isObfuscated: value })
+  };
+
+  const handleSetIsObfuscatedColumnLevel = (value, index) => {
+    const updatedBoardData = setIsObfuscatedColumnLevel(boardData, value, index);
+    setBoardData(updatedBoardData); 
+    setIsObfuscatedColumnLevelSocket({ isObfuscated: value, index: index })
   };
 
   const handleStartTimer = () => {
@@ -279,8 +286,8 @@ export const BoardPage = ({ }) => {
         handleStartTimer={handleStartTimer}
         handlePauseTimer={handlePauseTimer}
         handleAddColumn={handleAddColumn}
-        isObfuscated={boardData.isObfuscated}
-        handleSetIsObfuscated={handleSetIsObfuscated}
+        isObfuscatedBoardLevel={boardData.isObfuscated}
+        handleSetIsObfuscatedBoardLevel={handleSetIsObfuscatedBoardLevel}
         isBoardCreator={userLoggedData.isBoardCreator} 
         handleExportBoard={handleExportBoardToPDF}/>
 
@@ -305,7 +312,9 @@ export const BoardPage = ({ }) => {
                 onUpdatecolorCards={onUpdatecolorCards}
                 indexColumn={index}
                 userLoggedData={userLoggedData}
-                isObfuscated={boardData.isObfuscated}
+                isObfuscatedColumnLevel={column.isObfuscated}
+                isObfuscatedBoardLevel={boardData.isObfuscated}
+                handleSetIsObfuscatedColumnLevel={handleSetIsObfuscatedColumnLevel}
               />
             </div>
           ))}
