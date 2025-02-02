@@ -6,7 +6,7 @@ import { FaClock } from 'react-icons/fa';
 import { AiOutlineExport } from "react-icons/ai";
 import { FaNoteSticky, FaUserPen } from "react-icons/fa6";
 import { FaUsers, FaPlay, FaStop, FaPlus } from 'react-icons/fa';
-import { MdOutlineBlurCircular } from "react-icons/md";
+import { LiaEyeSlashSolid, LiaEyeSolid  } from "react-icons/lia";
 import InputMask from 'react-input-mask';
 import ModalAddCollumn from './ModalAddCollumn';  
 
@@ -86,15 +86,15 @@ const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInpu
               <FaPlus /> Incluir Coluna
             </ActionButton>
             <ActionButton onClick={() => handleExportBoard()} color="#1E3A5F">
-              <AiOutlineExport /> Exportar Board
+              <AiOutlineExport size={19}/> Exportar Board
             </ActionButton>
             {isObfuscatedBoardLevel ?
               (<ActionButton onClick={() => handleSetIsObfuscatedBoardLevel(false)} color="#1E3A5F" >
-                <MdOutlineBlurCircular /> Revelar Cards
+                <LiaEyeSolid size={19} /> Revelar Cards
               </ActionButton>)
               :
               (<ActionButton onClick={() => handleSetIsObfuscatedBoardLevel(true)} color="#1E3A5F" >
-                <MdOutlineBlurCircular /> Ocultar cards
+                <LiaEyeSlashSolid size={19} /> Ocultar cards
               </ActionButton>)
             }
           </ActionBox>

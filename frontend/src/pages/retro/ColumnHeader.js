@@ -5,10 +5,11 @@ import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 import { v4 as uuidv4 } from 'uuid';
 import { MdMoreVert, MdEdit, MdCheck, MdDeblur } from 'react-icons/md';
-import { FaNoteSticky, FaUserPen } from "react-icons/fa6";
+import { FaNoteSticky } from "react-icons/fa6";
 import { IoIosAddCircleOutline } from 'react-icons/io';
 import { FaRegTrashAlt, FaPalette } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
+import { LiaEyeSlashSolid, LiaEyeSolid  } from "react-icons/lia";
 import './retro.css';
 import ModalAddCard from './ModalAddCard';
 
@@ -228,12 +229,12 @@ const ColumnHeader = ({ columnTitle, countCards, onAddCard, index, onUpdateTitle
             {!isObfuscatedColumnLevel ?
               (<IconsContainer data-tooltip-id={`tooltip-ocultar-cards-${index}`} data-tooltip-content='Ocultar Cards'>
                 <Tooltip id={`tooltip-ocultar-cards-${index}`} style={{ fontSize: "12px", padding: "4px 8px" }} />
-                <StyledMdDeblur onClick={() => onSetIsObfuscatedColumnLevel(true)} />
+                <StyledLiaEyeSlashSolid onClick={() => onSetIsObfuscatedColumnLevel(true)} />
               </IconsContainer>)
               :
               (<IconsContainer data-tooltip-id={`tooltip-revelar-cards-${index}`} data-tooltip-content='Revelar Cards'>
                 <Tooltip id={`tooltip-revelar-cards-${index}`} style={{ fontSize: "12px", padding: "4px 8px" }} />
-                <StyledMdDeblur onClick={() => onSetIsObfuscatedColumnLevel(false)} />
+                <StyledLiaEyeSolid onClick={() => onSetIsObfuscatedColumnLevel(false)} />
               </IconsContainer>)
             }
           </>}
@@ -296,7 +297,18 @@ const StyledIoIosAddCircleOutline = styled(IoIosAddCircleOutline)`
 `;
 
 
-const StyledMdDeblur = styled(MdDeblur)`
+const StyledLiaEyeSlashSolid = styled(LiaEyeSlashSolid)`
+  color: #10b981;  // Cor do ícone 
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;  
+  font-size: 22px;  
+  
+  &:hover {
+    transform: scale(1.4); 
+  }
+`;
+
+const StyledLiaEyeSolid = styled(LiaEyeSolid)`
   color: #10b981;  // Cor do ícone 
   cursor: pointer;
   transition: color 0.3s ease, transform 0.2s ease;  
