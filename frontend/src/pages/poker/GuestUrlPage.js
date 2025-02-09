@@ -16,10 +16,14 @@ export const GuestUrlPage = ({ }) => {
     const { id } = useParams(); // Obtém o ID da URL
     let navigate = useNavigate();
     const [isModalOpen, setModalOpen] = useState(false);
-    const [formData, setFormData] = useState({ nickName: '' });
     const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
     const [userLogged, setUserLogged] = useState({});
     const [roomData, setRoomData] = useState({ users: [] });
+    const [formData, setFormData] = useState({
+        nickName: "",
+        roomId: "",
+        roomName: ""
+      });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -122,7 +126,7 @@ export const GuestUrlPage = ({ }) => {
                             type="text"
                             id="nickName"
                             name="nickName"
-                            value={formData.nickName}
+                            value={formData.nickName || ""}
                             onChange={handleChange}
                             placeholder="Digite o seu nome"
                             required
@@ -134,7 +138,7 @@ export const GuestUrlPage = ({ }) => {
                             type="text"
                             id="roomId"
                             name="roomId"
-                            value={roomData.roomId}
+                            value={roomData.roomId || ""}
                             disabled />
                     </FormGroup2>
                     <FormGroup2>
@@ -143,7 +147,7 @@ export const GuestUrlPage = ({ }) => {
                             type="text"
                             id="roomName"
                             name="roomName"
-                            value={roomData.roomName}
+                            value={roomData.roomName || ""}
                             disabled />
                     </FormGroup2>
                     <SubmitButton $marginTop="22px" type="submit">Entrar</SubmitButton>
