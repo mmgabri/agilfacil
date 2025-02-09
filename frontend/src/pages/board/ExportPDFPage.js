@@ -9,7 +9,7 @@ import { IoMdDownload } from "react-icons/io";
 import styled from "styled-components";
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import LoaderPage from '../generic/LoaderPage';
-import Header from '../generic/HeaderPages';
+import Header from '../components/Header';
 import favicon from '../../images/favicon.ico';
 import { emitMessage, formatdateTime, onSignOut } from '../../services/utils'
 import { FRONT_BASE_URL } from "../../constants/apiConstants";

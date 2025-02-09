@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../generic/HeaderPages';
+import Header from '../components/Header';
 
 function SolicitaLoginPage() {
   let navigate = useNavigate();

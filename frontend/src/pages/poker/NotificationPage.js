@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FaExclamationTriangle } from 'react-icons/fa'; // Importar o ícone
 import '../../styles/NotificationPage.css';
-import Header from '../generic/HeaderPages';
+import Header from '../components/Header.js';
 import SuggestionForm from '../components/SuggestionForm'
 
 const NotificationPage = () => {

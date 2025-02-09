@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { emitMessage, onSignOut, onGetToken } from '../../services/utils'
 import SuggestionForm from '../components/SuggestionForm'
-import Header from '../generic/HeaderPages';
+import Header from '../components/Header';
 import LoaderPage from '../generic/LoaderPage';
 import styled from "styled-components";
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
@@ -97,13 +97,13 @@ function CreateAndEnterRoomPage() {
         try {
             setIsLoading(true)
             const response = await axios.get(`${SERVER_BASE_URL}/rooms/${formData.roomId}`)
-            console.log('response -->', response.data)
+            //console.log('response -->', response.data)
             const userData = { ...userAuthenticated, nickName: formData.nickName, isRoomCreator: false };
             setIsLoading(false)
             navigate('/room', { state: { roomData: response.data, userLogged: userData } });
         } catch (error) {
             setIsLoading(false)
-            console.log("Respoposta da api com erro:", error, error.response?.status)
+            //console.log("Respoposta da api com erro:", error, error.response?.status)
             emitMessage('error', error.response?.status, 3000)
         }
     }

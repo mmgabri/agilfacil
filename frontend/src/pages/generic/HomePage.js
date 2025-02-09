@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { GiPokerHand } from 'react-icons/gi';
 import { AiFillLike } from "react-icons/ai";
 import { AiFillDislike } from "react-icons/ai";
-import Header from './HeaderPages';
+import Header from '../components/Header';
 import SuggestionForm from '../components/SuggestionForm'
 import { onSignOut } from '../../services/utils'
 

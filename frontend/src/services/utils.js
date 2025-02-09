@@ -65,12 +65,10 @@ export async function onGetToken() {
 }
 
 export const onSignOut = async () => {
-    console.log('onSignOut')
     try {
         await signOut(); // Faz o logout no Cognito
         localStorage.clear(); // Limpa o localStorage
         sessionStorage.clear(); // Limpa o sessionStorage
-        console.log('Usuário deslogado e tokens removidos.');
     } catch (error) {
         emitMessage('error', 999)
     }

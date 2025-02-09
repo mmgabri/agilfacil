@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { getCurrentUser, fetchUserAttributes, fetchAuthSession } from '@aws-amplify/auth';
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import styled from 'styled-components';
-import Header from '../generic/HeaderPages';
+import Header from '../components/Header';
 import { emitMessage, formatdateTime, onSignOut } from '../../services/utils'
 import SuggestionForm from '../components/SuggestionForm'
 import { FormContainer, FormGroup, StyledForm, SubmitButton } from '../../styles/FormStyle'
@@ -27,7 +27,7 @@ export const GuestUrlPage = ({ }) => {
     };
 
     useEffect(() => {
-        console.log('useEffect')
+        //console.log('useEffect')
 
         const initializeUserData = async () => {
             try {
@@ -64,7 +64,6 @@ export const GuestUrlPage = ({ }) => {
             axios
                 .get(`${SERVER_BASE_URL}/rooms/${id}`)
                 .then((response) => {
-                    console.log('Retorno da API getRoom:', response);
                     setRoomData(response.data)
                 })
                 .catch((error) => {

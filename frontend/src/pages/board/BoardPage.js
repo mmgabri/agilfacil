@@ -7,7 +7,7 @@ import { DragDropContext } from "react-beautiful-dnd";
 import { toast } from 'react-toastify';
 import Columns from "./componentes/Columns";
 import { reorderboardData, processCombine, saveCard, deleteCard, updateLike, updateTitleColumn, deleteColumn, addCard, updatecolorCards, deleteAllCards, addCollumn, setIsObfuscatedBoardLevel, setIsObfuscatedColumnLevel } from "./FunctionsBoard";
-import Header from '../generic/HeaderPages';
+import Header from '../components/Header';
 import Invite from '../components/Invite';
 import SuggestionForm from '../components/SuggestionForm'
 import BoardControls from "./componentes/BoardControls";
@@ -51,7 +51,7 @@ export const BoardPage = ({ }) => {
 
 
   useEffect(() => {
-     console.log('useEffect-principal - userAuthenticated -> ', location.state.userAuthenticated)
+     //console.log('useEffect-principal - userAuthenticated -> ', location.state.userAuthenticated)
 
     const checkAuth = async () => {
       try {

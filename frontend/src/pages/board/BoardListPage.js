@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { FaRegTrashAlt, FaRegFolderOpen, FaRegClone } from 'react-icons/fa';
 import { AiOutlineExport } from "react-icons/ai";
 import styled from 'styled-components';
-import Header from '../generic/HeaderPages';
+import Header from '../components/Header';
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import { FRONT_BASE_URL } from "../../constants/apiConstants";
 import LoaderPage from '../generic/LoaderPage';

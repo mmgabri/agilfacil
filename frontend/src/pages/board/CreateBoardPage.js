@@ -6,7 +6,7 @@ import { emitMessage, onSignOut, onGetToken } from '../../services/utils'
 import { fetchAuthSession, getCurrentUser, fetchUserAttributes } from '@aws-amplify/auth';
 import 'react-toastify/dist/ReactToastify.css';
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
-import Header from '../generic/HeaderPages';
+import Header from '../components/Header';
 import SuggestionForm from '../components/SuggestionForm'
 import { FormContainer, Title, FormGroup, CheckboxLabel, CheckboxWrapper, StyledForm, SubmitButton, RemoveIcon, AddColumnIcon } from '../../styles/FormStyle'
 
@@ -27,7 +27,7 @@ export const CreateBoardPage = ({ }) => {
   const [userAuthenticated, setUserAuthenticated] = useState({});
 
   useEffect(() => {
-    console.log('CreateBoardPage - useEffect - location.state', location.state)
+    //console.log('CreateBoardPage - useEffect - location.state', location.state)
 
     const checkAuth = async () => {
       try {

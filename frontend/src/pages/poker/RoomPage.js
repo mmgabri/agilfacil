@@ -4,7 +4,7 @@ import { fetchAuthSession } from '@aws-amplify/auth';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useSocket } from "../../customHooks/useSocket";
 import "../../styles/Room.css"
-import Header from '../generic/HeaderPages';
+import Header from '../components/Header';
 import StatusSection from '../poker/components/StatusSection';
 import Users from '../poker/components/Users';
 import VotingCards from '../poker/components/VotingCards';
@@ -29,7 +29,7 @@ export const RoomPage = ({ }) => {
   const { socketResponse, updateStatusRoom, votar } = useSocket(location.state.userLogged.nickName, location.state.userLogged.userId, location.state.roomData.roomId, 'poker')
 
   useEffect(() => {
-    console.log("useEffect-principal==>", location.state.userLogged);
+    //console.log("useEffect-principal==>", location.state.userLogged);
 
     const checkAuth = async () => {
       try {

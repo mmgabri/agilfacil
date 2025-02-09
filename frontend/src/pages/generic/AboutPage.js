@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { fetchAuthSession } from '@aws-amplify/auth';
 import { useNavigate } from 'react-router-dom';
-import Header from '../generic/HeaderPages';
+import Header from '../components/Header.js';
 import SuggestionForm from '../components/SuggestionForm'
 import { onSignOut } from '../../services/utils'
 
