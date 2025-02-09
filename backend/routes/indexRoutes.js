@@ -2,7 +2,7 @@ const express = require('express');
 const { validateToken } = require('../services/generic/validateToken'); 
 
 const { createRoom, joinRoom, suggestion, getRoom, healthcheck } = require('../services/poker/controllerService');
-const { createBoard, getBoardByUser, getBoard, deleteBoard} = require('../services/retro/controllerRetroService');
+const { createBoard, getBoardByUser, getBoard, deleteBoard} = require('../services/board/controllerBoardService');
 
 const router = express.Router();
 
@@ -13,13 +13,13 @@ router.post('/suggestion', suggestion);
 router.get('/rooms/:id', getRoom);
 router.get('/healthcheck', healthcheck);
 
-// Retro - Rotas sem autenticação
-router.get('/retro/:boardId', getBoard);
+// Board - Rotas sem autenticação
+router.get('/board/:boardId', getBoard);
 
-// Retro - Rotas com autenticação
-router.get('/retro/getBoardByUser/:creatorId', validateToken, getBoardByUser);
-router.post('/retro/createBoard', validateToken, createBoard);
-router.delete('/retro/:boardId', validateToken, deleteBoard)
-//router.put('/retro/updateBoard', validateToken, UpdateBoard);
+// Board - Rotas com autenticação
+router.get('/board/getBoardByUser/:creatorId', validateToken, getBoardByUser);
+router.post('/board/createBoard', validateToken, createBoard);
+router.delete('/board/:boardId', validateToken, deleteBoard)
+//router.put('/board/updateBoard', validateToken, UpdateBoard);
 
 module.exports = router;

@@ -3,13 +3,11 @@ import axios from "axios";
 import { signOut, fetchAuthSession } from '@aws-amplify/auth';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useLocation } from 'react-router-dom'
-import { emitMessage } from '../generic/Utils'
+import { emitMessage } from '../../services/utils'
 import 'react-toastify/dist/ReactToastify.css';
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
-import Header from './HeaderCreateBoard';
+import Header from './componentes/HeaderCreateBoard';
 import SuggestionForm from '../components/SuggestionForm'
-import localStorageService from "../../services/localStorageService";
-import '../../styles/NotificationPage.css';
 import { FormContainer, Title, FormGroup, CheckboxLabel, CheckboxWrapper, StyledForm, SubmitButton, RemoveIcon, AddColumnIcon } from '../../styles/FormStyle'
 
 export const CreateBoardPage = ({ }) => {
@@ -24,27 +22,21 @@ export const CreateBoardPage = ({ }) => {
     columns: [{ id: uuidv4(), title: "", colorCards: "#F0E68C", isObfuscated: false, cards: [] }]
   });
   const [isModalOpen, setModalOpen] = useState(false);
-  const [userLoggedData, setUserLoggedData] = useState({});
+  const [userAuthenticated, setUserAuthenticated] = useState({});
 
   useEffect(() => {
-    console.log('useEffect - location.state', location.state)
+    //console.log('useEffect - location.state', location.state)
 
     const initializeUserData = async () => {
       try {
-        localStorageService.removeItem("AGILFACIL_USER_LOGGED");
-
-        const userData = { userId: location.state.userLoggedData.userId, userName: location.state.userLoggedData.userName, isBoardCreator: true }
-
-        localStorageService.setItem("AGILFACIL_USER_LOGGED", userData);
-        setUserLoggedData(userData)
+        setUserAuthenticated(location.state.userAuthenticated)
 
       } catch (error) {
-        console.error("Erro ao inicializar os dados do usuário:", error);
         emitMessage('error', 999)
       }
     };
 
-    if (!location.state.userLoggedData) {
+    if (!location.state.userAuthenticated) {
       emitMessage('error', 999, 4000)
       return
     }
@@ -72,7 +64,6 @@ export const CreateBoardPage = ({ }) => {
       const token = session.tokens.idToken.toString();
       return token;
     } catch (error) {
-      console.error("Erro ao obter o token:", error.message);
       throw error;
     }
   }
@@ -121,7 +112,7 @@ export const CreateBoardPage = ({ }) => {
     try {
       await signOut();
     } catch (error) {
-      console.error('Erro ao deslogar', error);
+      emitMessage('error', 999)
     }
   };
 
@@ -131,16 +122,14 @@ export const CreateBoardPage = ({ }) => {
     const token = await getToken()
 
     try {
-      const response = await axios.post(SERVER_BASE_URL + '/retro/createBoard', { creatorId: userLoggedData.userId, userName: userLoggedData.userName, boardName: formData.boardName, squadName: formData.squadName, areaName: formData.areaName, columns: formData.columns }, {
+      const response = await axios.post(SERVER_BASE_URL + '/board/createBoard', { creatorId: userAuthenticated.userId, userName: userAuthenticated.userName, boardName: formData.boardName, squadName: formData.squadName, areaName: formData.areaName, columns: formData.columns }, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
       })
-      console.log('response --> ', response.data)
-      navigate('/board', { state: { boardData: response.data, userLoggedData: userLoggedData } });
+      navigate('/board', { state: { boardData: response.data, userAuthenticated: userAuthenticated } });
     } catch (error) {
-      console.log("Resposta da api com erro:", error, error.response?.status)
       emitMessage('error', 906, 3000)
     }
   }
@@ -152,8 +141,6 @@ export const CreateBoardPage = ({ }) => {
   }
 
   const handleKeepCardsChange = (columnId, isChecked) => {
-    console.log('handleKeepCardsChange', columnId, isChecked);
-    console.log('antes: ', formData)
 
     setFormData((prevFormData) => ({
       ...prevFormData,

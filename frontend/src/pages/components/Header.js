@@ -2,7 +2,7 @@ import React from 'react';
 import { HeaderContainer, Logo, Nav, NavItem, Label } from '../../styles/HeaderStyles';
 import favicon from '../../images/favicon.ico';
 
-const Header = ({handleHome, handleAbout, handleOpen}) => {
+const Header = ({ handleHome, handleAbout, handleOpen, handleSignOut }) => {
 
   return (
     <HeaderContainer>
@@ -11,8 +11,9 @@ const Header = ({handleHome, handleAbout, handleOpen}) => {
         AgilFacil
       </NavItem>
       <Nav>
-      <NavItem onClick={handleOpen}>Sugestões</NavItem>
-      <NavItem onClick={handleAbout}>Sobre</NavItem>
+        <NavItem onClick={handleOpen}>Sugestões</NavItem>
+        <NavItem onClick={handleAbout}>Sobre</NavItem>
+        {handleSignOut && <NavItem onClick={handleSignOut}>Sair</NavItem>}
       </Nav>
     </HeaderContainer>
   );

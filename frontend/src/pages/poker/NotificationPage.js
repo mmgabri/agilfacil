@@ -18,10 +18,6 @@ const NotificationPage = () => {
         navigate("/")
     }
 
-    const handleHomePlanning = () => {
-        navigate("/planning")
-    }
-
     const handleOpen = () => {
         setModalOpen(true);
     }

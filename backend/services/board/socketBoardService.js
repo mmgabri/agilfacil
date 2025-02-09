@@ -1,9 +1,9 @@
 const roomsDb = require('../../database');
 const config = require('../../config');
-const { putTable, getBoardDb } = require('./dynamoRetroService');
+const { putTable, getBoardDb } = require('./dynamoBoardService');
 
 
-const connectClientRetro = (boardId, userId) => {
+const connectClientBoard = (boardId, userId) => {
   return new Promise(async (resolve, reject) => {
     try {
       const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
@@ -36,7 +36,7 @@ const connectClientRetro = (boardId, userId) => {
   });
 };
 
-const disconnectClientRetro = (userIdToRemove, boardId) => {
+const disconnectClientBoard = (userIdToRemove, boardId) => {
   return new Promise(async (resolve, reject) => {
     try {
       // Obtém os dados do board no banco de dados
@@ -572,4 +572,4 @@ const saveCard = (boardId, content, indexCard, indexColumn) => {
 
 
 
-module.exports = { connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, deleteAllCard, saveCard, updatecolorCards, setIsObfuscatedBoardLevel, setIsObfuscatedColumnLevel, disconnectClientRetro };
+module.exports = { connectClientBoard, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, deleteAllCard, saveCard, updatecolorCards, setIsObfuscatedBoardLevel, setIsObfuscatedColumnLevel, disconnectClientBoard };

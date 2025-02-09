@@ -12,14 +12,15 @@ const HeaderRoom = ({ userName, roomName, handleShowInvite, sairSala, handleOpen
         </LogoTop>
         <SubText>Planning Poker</SubText>
       </LogoContainer>
-      <div>
-        <Label>Apelido: {userName}</Label>
-        <Label>Sala: {roomName}</Label>
-      </div>
+      {roomName && userName &&
+        <div>
+          <Label>Apelido: {userName}</Label>
+          <Label>Sala: {roomName}</Label>
+        </div>}
 
       <Nav>
         <NavItem onClick={handleOpen}>Sugestões</NavItem>
-        <NavItem onClick={handleShowInvite}>Convidar</NavItem>
+        {handleShowInvite && <NavItem onClick={handleShowInvite}>Convidar</NavItem>}
         <NavItem onClick={sairSala}>Sair</NavItem>
       </Nav>
     </HeaderContainer>

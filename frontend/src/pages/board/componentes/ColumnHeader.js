@@ -10,8 +10,8 @@ import { IoIosAddCircleOutline } from 'react-icons/io';
 import { FaRegTrashAlt, FaPalette } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
 import { LiaEyeSlashSolid, LiaEyeSolid  } from "react-icons/lia";
-import './retro.css';
-import ModalAddCard from './ModalAddCard';
+import './../../../styles/board.css';
+import ModalAddCard from '../modals/ModalAddCard';
 
 const ColumnHeader = ({ columnTitle, countCards, onAddCard, index, onUpdateTitleColumn, onDeleteColumn, onDeleteAllCard, onUpdatecolorCards, userLoggedData, isObfuscatedColumnLevel, handleSetIsObfuscatedColumnLevel }) => {
   const [isEditing, setIsEditing] = useState(false);

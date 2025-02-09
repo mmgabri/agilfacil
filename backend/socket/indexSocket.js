@@ -1,5 +1,5 @@
 const { connectClient, desconnectClient, updateStatusRoom, updateVote } = require('../services/poker/socketService');
-const { connectClientRetro, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, saveCard, updatecolorCards, deleteAllCard, setIsObfuscatedBoardLevel, setIsObfuscatedColumnLevel, disconnectClientRetro } = require('../services/retro/socketRetroService');
+const { connectClientBoard, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, saveCard, updatecolorCards, deleteAllCard, setIsObfuscatedBoardLevel, setIsObfuscatedColumnLevel, disconnectClientBoard } = require('../services/board/socketBoardService');
 const logger = require('../services/generic/cloudWatchLoggerService');
 
 const setupSocketIo = (io) => {
@@ -99,7 +99,7 @@ const setupSocketIo = (io) => {
     async function onConnectBoard(idSession, userId) {
       const start = performance.now()
       try {
-        let board = await connectClientRetro(idSession, userId);
+        let board = await connectClientBoard(idSession, userId);
         socket.join(idSession);
         io.to(idSession).emit('data_board', board);
       } catch (erro) {
@@ -125,7 +125,7 @@ const setupSocketIo = (io) => {
     async function onDisconnectBoard(userId, idSession) {
       const start = performance.now()
       try {
-        let board = await disconnectClientRetro(userId, idSession);
+        let board = await disconnectClientBoard(userId, idSession);
         io.to(idSession).emit('data_board', board);
       } catch (erro) {
         console.error('Erro socket - onAddCardBoard', erro);

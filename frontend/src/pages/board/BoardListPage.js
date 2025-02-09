@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
-import { emitMessage, formatdateTime } from '../generic/Utils'
+import { emitMessage, formatdateTime } from '../../services/utils'
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 import { signOut, getCurrentUser, fetchUserAttributes, fetchAuthSession } from '@aws-amplify/auth';
@@ -8,35 +8,37 @@ import { useNavigate } from 'react-router-dom'
 import { FaRegTrashAlt, FaRegFolderOpen, FaRegClone } from 'react-icons/fa';
 import { AiOutlineExport } from "react-icons/ai";
 import styled from 'styled-components';
-import Header from './HeaderCreateBoard';
+import Header from './componentes/HeaderCreateBoard';
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import { FRONT_BASE_URL } from "../../constants/apiConstants";
 import LoaderPage from '../generic/LoaderPage';
 import SuggestionForm from '../components/SuggestionForm'
+import localStorageService from "../../services/localStorageService";
 
 const BoardListPage = () => {
   let navigate = useNavigate();
   const [boards, setBoards] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [userLoggedData, setuserLoggedData] = useState({});
+  const [userAuthenticated, setUserAuthenticated] = useState({});
 
   useEffect(() => {
     const fetchBoards = async () => {
       try {
         const user = await getCurrentUser();
         const attributes = await fetchUserAttributes(user);
-        const userData = {
-          userId: attributes.sub,
-          userName: attributes.name,
-        };
-        setuserLoggedData(userData)
+        const userData = {userId: attributes.sub, userName: attributes.name, isVerified: true };
+        const userStorage = {userId: attributes.sub, userName: attributes.name};
+        setUserAuthenticated(userData)
+        
+        localStorageService.removeItem("AGILFACIL_USER_LOGGED");
+        localStorageService.setItem("AGILFACIL_USER_LOGGED", userStorage);
 
         // Obtem Board do Usuário Logado     
         const token = await getToken()
 
         axios
-          .get(`${SERVER_BASE_URL}/retro/getBoardByUser/${attributes.sub}`,
+          .get(`${SERVER_BASE_URL}/board/getBoardByUser/${attributes.sub}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -49,11 +51,10 @@ const BoardListPage = () => {
           })
           .catch((error) => {
             setIsLoading(false);
-            console.log("Resposta da api com erro:", error, error.response?.status)
             emitMessage('error', 999, 3000)
           });
       } catch (error) {
-        console.error("Erro ao obter dados do usuário:", error);
+        emitMessage('error', 999, 4000)
       }
     };
 
@@ -66,17 +67,19 @@ const BoardListPage = () => {
       const token = session.tokens.idToken.toString();
       return token;
     } catch (error) {
-      console.error("Erro ao obter o token:", error.message);
       throw error;
     }
   }
 
   const handleDelete = async (id) => {
-    console.log('handleDelete', id)
+    const isConfirmed = window.confirm("Confirma exclusão do Board?");
+    if (!isConfirmed) {
+      return
+    }
     const token = await getToken()
     setIsLoading(true)
     try {
-      const response = await axios.delete(`${SERVER_BASE_URL}/retro/${id}`,
+      const response = await axios.delete(`${SERVER_BASE_URL}/board/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -87,7 +90,6 @@ const BoardListPage = () => {
       setIsLoading(false)
       setBoards((prevBoards) => prevBoards.filter(board => board.boardId !== id));
     } catch (error) {
-      console.log("Resposta da api com erro:", error)
       emitMessage('error', 901, 3000)
       setIsLoading(false)
     }
@@ -96,30 +98,29 @@ const BoardListPage = () => {
   const handleOpenBoard = async (boardId) => {
     try {
       setIsLoading(true)
-      const response = await axios.get(`${SERVER_BASE_URL}/retro/${boardId}`)
+      const response = await axios.get(`${SERVER_BASE_URL}/board/${boardId}`)
       setIsLoading(false)
-      const userData = { userId: userLoggedData.userId, userName: userLoggedData.userName, isBoardCreator: true }
-      navigate('/board', { state: { boardData: response.data, userLoggedData: userData } });
+      const userData = { ...userAuthenticated, isBoardCreator: true };
+      navigate('/board', { state: { boardData: response.data, userAuthenticated: userData } });
     } catch (error) {
       setIsLoading(false)
-      console.log("Resposta da api com erro:", error)
       emitMessage('error', 902, 3000)
     }
   }
 
   const handleCreateBoard = () => {
-    navigate('/board/create', { state: { userLoggedData: userLoggedData } });
+    const userData = { ...userAuthenticated, isBoardCreator: true };
+    navigate('/board/create', { state: { userAuthenticated: userData } });
   };
 
   const handleCloneBoard = async (boardId) => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`${SERVER_BASE_URL}/retro/${boardId}`)
+      const response = await axios.get(`${SERVER_BASE_URL}/board/${boardId}`)
       setIsLoading(false)
-      console.log('response ==> ', response)
-      navigate('/board/create', { state: { userLoggedData: userLoggedData, board: response.data } });
+      const userData = { ...userAuthenticated, isBoardCreator: true };
+      navigate('/board/create', { state: { userAuthenticated: userData, board: response.data } });
     } catch (error) {
-      console.log("Resposta da api com erro:", error)
       emitMessage('error', 903, 3000)
       setIsLoading(false)
     }
@@ -127,15 +128,16 @@ const BoardListPage = () => {
 
   const exitBoard = async () => {
     try {
+      localStorageService.removeItem("AGILFACIL_USER_LOGGED");
+      sessionStorage.removeItem('AGILFACIL_redirectAfterLogin')
       await signOut();
-      console.log('Usuário desconectado com sucesso!');
       window.location.href = '/';
     } catch (error) {
-      console.error('Erro ao deslogar', error);
+      emitMessage('error', 999, 3000)
     }
   };
 
-  const handleOpenBoardSugestion = () => {
+  const handleOpenBoardSugestion = async () => {
     setModalOpen(true);
   }
 
@@ -148,7 +150,7 @@ const BoardListPage = () => {
 
   return (
     <div className="bg-black-custom">
-      <Header sairSala={exitBoard} handleOpenBoardSugestion={handleOpenBoardSugestion} />
+      <Header sairSala={exitBoard} handleOpenSugestion={handleOpenBoardSugestion} />
       {isLoading ?
         <LoaderPage />
         :

@@ -1,4 +1,5 @@
-import React from "react"; /*--import the react library*/
+import React, { useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import styled from "styled-components";
 import { Authenticator, translations, useAuthenticator } from '@aws-amplify/ui-react';
@@ -7,19 +8,17 @@ import { I18n } from 'aws-amplify/utils';
 import { BrowserRouter, Routes, Route, } from "react-router-dom";
 import HomePage from "../pages/generic/HomePage";
 import AboutPage from "../pages/generic/AboutPage"
-import HomePagePlanning from "../pages/poker/HomePagePlanning";
-import CreateRoomPage from "../pages/poker/CreateRoomPage";
+import CreateAndEnterPage from "../pages/poker/CreateAndEnterPage";
 import RoomPage from "../pages/poker/RoomPage";
-import GuestPage from "../pages/poker/GuestPage";
 import GuestUrlPage from "../pages/poker/GuestUrlPage";
 import NotificationPage from "../pages/poker/NotificationPage"
 
-import BoardPage from "../pages/retro/BoardPage"
-import CreateBoardPage from "../pages/retro/CreateBoardPage"
-import BoardListPage from "../pages/retro/BoardListPage"
-import GuestUrlRetroPage from "../pages/retro/GuestUrlRetroPage";
-import ExportPDFPage from "../pages/retro/ExportPDFPage";
-import '../styles/NotificationPage.css';
+import BoardPage from "../pages/board/BoardPage"
+import CreateBoardPage from "../pages/board/CreateBoardPage"
+import BoardListPage from "../pages/board/BoardListPage"
+import GuestUrlBoardPage from "../pages/board/GuestUrlBoardPage";
+import ExportPDFPage from "../pages/board/ExportPDFPage";
+
 
 I18n.putVocabularies(translations);
 I18n.setLanguage('pt');
@@ -39,8 +38,33 @@ const AuthContainer = styled.div`
   font-family: Arial, sans-serif;
 `;
 
+
 const ProtectedRoute = ({ children }) => {
   const { route } = useAuthenticator((context) => [context.route]);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+
+    switch (route) {
+      case 'signIn': // Salva a URL atual antes de redirecionar para o login
+        sessionStorage.setItem('AGILFACIL_redirectAfterLogin', window.location.pathname);
+        break;
+
+      case 'authenticated': // Redireciona para a URL salva após o login
+        const redirectTo = sessionStorage.getItem('AGILFACIL_redirectAfterLogin');
+        sessionStorage.removeItem('AGILFACIL_redirectAfterLogin');
+        navigate(redirectTo);
+        break;
+
+      case 'signOut': // Limpa a URL salva ao fazer logout
+        sessionStorage.removeItem('AGILFACIL_redirectAfterLogin');
+        break;
+
+      default:
+        break;
+    }
+  }, [route, navigate]);
 
   if (route !== "authenticated") {
     return (
@@ -48,7 +72,7 @@ const ProtectedRoute = ({ children }) => {
         <Authenticator
           socialProviders={["google"]}
           formFields={formFields}
-          hideSignUp={false} 
+          hideSignUp={false}
         />
       </AuthContainer>
     );
@@ -86,42 +110,31 @@ const formFields = {
 function App() {
 
   return (
-    <Authenticator.Provider>
+    <>
       <StyledToastContainer pauseOnFocusLoss={false} />
-      <BrowserRouter>
-        <Routes>
-          <Route exact path="/" element={<HomePage />} />
-          <Route exact path="/planning" element={<HomePagePlanning />} />
-          <Route exact path="/about" element={<AboutPage />} />
-          <Route exact path="createroom" element={<CreateRoomPage />} />
-          <Route exact path="room" element={<RoomPage />} />
-          <Route exact path="guest" element={<GuestPage />} />
-          <Route path="/room/guest/:id" element={<GuestUrlPage />} />
-          <Route path="/notification" element={<NotificationPage />} />
-          <Route path="/board" element={<BoardPage />} />
-          <Route path="/board/guest/:id" element={<GuestUrlRetroPage />} />
-          <Route path="/board/export/:id" element={<ExportPDFPage/>} />
-          <Route
-            path="/board/create"
-            element={
-              <ProtectedRoute>
-                <CreateBoardPage />
-              </ProtectedRoute>
-            }
-          />
-                    <Route
-            path="/boards"
-            element={
-              <ProtectedRoute>
-                <BoardListPage />
-              </ProtectedRoute>
-            }
-          />
-
-        </Routes>
-      </BrowserRouter>
-      </Authenticator.Provider>
+      <Routes>
+        <Route exact path="/" element={<HomePage />} />
+        <Route exact path="/about" element={<AboutPage />} />
+        <Route path="/room/create" element={<ProtectedRoute> <CreateAndEnterPage /> </ProtectedRoute>} />
+        <Route exact path="room" element={<RoomPage />} />
+        <Route path="/room/guest/:id" element={<GuestUrlPage />} />
+        <Route path="/notification" element={<NotificationPage />} />
+        <Route path="/board" element={<BoardPage />} />
+        <Route path="/board/guest/:id" element={<GuestUrlBoardPage />} />
+        <Route path="/board/export/:id" element={<ExportPDFPage />} />
+        <Route path="/board/create" element={<ProtectedRoute> <CreateBoardPage /> </ProtectedRoute>} />
+        <Route path="/boards" element={<ProtectedRoute> <BoardListPage /> </ProtectedRoute>} />
+      </Routes>
+    </>
   );
 }
 
-export default App;
+export default function AppWrapper() {
+  return (
+    <Authenticator.Provider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </Authenticator.Provider>
+  );
+}

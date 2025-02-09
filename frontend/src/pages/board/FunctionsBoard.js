@@ -8,14 +8,10 @@ const reorder = (list, startIndex, endIndex) => {
 export default reorder;
 
 export const reorderboardData = (boardData, source, destination) => {
-  console.log('--- reorderboardData ---')
-  //-const current = [...boardData[source.droppableId]];
   const current = [...boardData.columns.find(col => col.id === source.droppableId).cards];
-  //-const next = [...boardData[destination.droppableId]];
   const next = [...boardData.columns.find(col => col.id === destination.droppableId).cards];
   const target = current[source.index];
 
-  // moving to same list
   if (source.droppableId === destination.droppableId) {
     const reordered = reorder(current, source.index, destination.index);
 
@@ -62,13 +58,9 @@ const processCombineDifferentColumn = (boardData, source, combine) => {
 
   //Obtem card movido
   const sourceCard = sourceCards[source.index];
-  console.log('combineCards ==>', combineCards)
-  console.log('sourceCards ==>', sourceCards)
-  console.log('source.droppableId -->', source.droppableId)
 
   // Remove o item da origem e destino
   sourceCards.splice(source.index, 1);
-  console.log('sourceCards - após remove - ==>', sourceCards)
 
   const combineCardIndex = combineCards.findIndex(
     (x) => x.id === combine.draggableId
@@ -165,14 +157,12 @@ export const updateTitleColumn = (boardData, content, index) => {
 }
 
 export const setIsObfuscatedBoardLevel = (boardData, isObfuscated) => {
-  console.log('setIsObfuscatedBoardLevel', isObfuscated)
   const updatedBoardData = { ...boardData };
   updatedBoardData.isObfuscated = isObfuscated; // Atualiza isObfuscated
   return updatedBoardData;
 }
 
 export const setIsObfuscatedColumnLevel = (boardData, isObfuscated, index) => {
-  console.log('setIsObfuscatedColumnLevel', index, isObfuscated)
   const updatedBoardData = { ...boardData };
   const columnToUpdate = updatedBoardData.columns[index];
   columnToUpdate.isObfuscated = isObfuscated;
@@ -180,7 +170,6 @@ export const setIsObfuscatedColumnLevel = (boardData, isObfuscated, index) => {
 }
 
 export const updatecolorCards = (boardData, colorCards, index) => {
-  console.log('updatecolorCards', index, colorCards, boardData)
   const updatedBoardData = { ...boardData };
   const columnToUpdate = updatedBoardData.columns[index];
   columnToUpdate.colorCards = colorCards;

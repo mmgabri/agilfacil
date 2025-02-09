@@ -1,6 +1,6 @@
 import React from 'react';
-import { HeaderContainer, LogoContainer, LogoTop, LogoText, LogoImage, SubText, Nav, NavItem, Label } from '../../styles/HeaderStyles';
-import favicon from '../../images/favicon.ico';
+import { HeaderContainer, LogoContainer, LogoTop, LogoText, LogoImage, SubText, Nav, NavItem, Label } from '../../../styles/HeaderStyles';
+import favicon from '../../../images/favicon.ico';
 
 const HeaderCreateBoard = ({sairSala, handleOpenSugestion }) => {
   return (

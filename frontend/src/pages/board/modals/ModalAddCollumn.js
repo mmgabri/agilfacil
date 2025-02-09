@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import axios from "axios";
-import { SERVER_BASE_URL } from "../../constants/apiConstants";
-import Modal from '../components/Modal';
+import { SERVER_BASE_URL } from "../../../constants/apiConstants";
+import Modal from '../../components/Modal';
 import { toast } from 'react-toastify';
-import {FormContainer, FormGroup, Input, SubmitButton } from '../../styles/SuggestionFormStyles';
+import {FormContainer, FormGroup, Input, SubmitButton } from '../../../styles/ModalFormStyles';
 
 const ModalAddCollumn = ({ isOpen, onClose, onSubmit}) => {
     const [formData, setFormData] = useState({

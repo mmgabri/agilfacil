@@ -3,7 +3,7 @@ import axios from "axios";
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import Modal from './Modal';
 import { toast } from 'react-toastify';
-import { Title, FormContainer, FormGroup, Input, TextArea, SubmitButton } from '../../styles/SuggestionFormStyles';
+import { Title, FormContainer, FormGroup, Input, TextArea, SubmitButton } from '../../styles/ModalFormStyles';
 
 const SuggestionForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -33,7 +33,6 @@ const SuggestionForm = ({ onClose }) => {
         });
       })
       .catch((error) => {
-        console.log("Respoposta da api com erro:", error, error.response?.status)
         toast.warning('Ops, não foi possível registrar sua sugestão!', {
           position: 'top-center', // Usando string para a posição
           autoClose: 5000, // Fecha automaticamente após 8 segundos

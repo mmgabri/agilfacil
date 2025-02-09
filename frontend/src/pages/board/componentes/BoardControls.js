@@ -6,9 +6,9 @@ import { FaClock } from 'react-icons/fa';
 import { AiOutlineExport } from "react-icons/ai";
 import { FaNoteSticky, FaUserPen } from "react-icons/fa6";
 import { FaUsers, FaPlay, FaStop, FaPlus } from 'react-icons/fa';
-import { LiaEyeSlashSolid, LiaEyeSolid  } from "react-icons/lia";
+import { LiaEyeSlashSolid, LiaEyeSolid } from "react-icons/lia";
 import InputMask from 'react-input-mask';
-import ModalAddCollumn from './ModalAddCollumn';  
+import ModalAddCollumn from '../modals/ModalAddCollumn';
 
 const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInput, isRunningTimer, handleInputTimerChange, handleStartTimer, handlePauseTimer, handleAddColumn, handleSetIsObfuscatedBoardLevel, isObfuscatedBoardLevel, isBoardCreator, isInvalidFormat, handleExportBoard }) => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -27,11 +27,11 @@ const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInpu
     />
   );
 
-  const InfoCard = ({ tooltipId, tooltipText, icon: Icon, count, iconSize  }) => (
+  const InfoCard = ({ tooltipId, tooltipText, icon: Icon, count, iconSize }) => (
     <InfoColumn>
       <CountsContainer data-tooltip-id={tooltipId} data-tooltip-content={tooltipText}>
         <CustomTooltip id={tooltipId} />
-        <Icon size={iconSize}/>
+        <Icon size={iconSize} />
         <CardBadge>{count}</CardBadge>
       </CountsContainer>
     </InfoColumn>
@@ -51,8 +51,8 @@ const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInpu
       />
 
       <InfoBox>
-        <InfoCard tooltipId="tooltip-total-cards" tooltipText="Total de Cards" icon={FaNoteSticky} count={countCard} iconSize={30}/>
-        <InfoCard tooltipId="tooltip-participantes-online" tooltipText="Participantes Online" icon={FaUsers} count={countUserLogged} iconSize={38}/>
+        <InfoCard tooltipId="tooltip-total-cards" tooltipText="Total de Cards" icon={FaNoteSticky} count={countCard} iconSize={30} />
+        <InfoCard tooltipId="tooltip-participantes-online" tooltipText="Participantes Online" icon={FaUsers} count={countUserLogged} iconSize={38} />
         <InfoCard tooltipId="tooltip-participantes-com-card" tooltipText="Participantes que criaram Cards" icon={FaUserPen} count={countUserWithCard} iconSize={38} />
       </InfoBox>
 
@@ -79,26 +79,28 @@ const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInpu
         </TimerControls>
       </TimerBox>
 
-      {isBoardCreator && (
-        <BoardActions>
-          <ActionBox>
-            <ActionButton onClick={() => setModalOpen(true)} color="#1E3A5F">
-              <FaPlus /> Incluir Coluna
-            </ActionButton>
-            <ActionButton onClick={() => handleExportBoard()} color="#1E3A5F">
-              <AiOutlineExport size={19}/> Exportar Board
-            </ActionButton>
-            {isObfuscatedBoardLevel ?
-              (<ActionButton onClick={() => handleSetIsObfuscatedBoardLevel(false)} color="#1E3A5F" >
-                <LiaEyeSolid size={19} /> Revelar Cards
-              </ActionButton>)
-              :
-              (<ActionButton onClick={() => handleSetIsObfuscatedBoardLevel(true)} color="#1E3A5F" >
-                <LiaEyeSlashSolid size={19} /> Ocultar cards
-              </ActionButton>)
-            }
-          </ActionBox>
-        </BoardActions>)}
+      <BoardActions>
+        <ActionBox>
+          <ActionButton onClick={() => setModalOpen(true)} color="#1E3A5F">
+            <FaPlus /> Incluir Coluna
+          </ActionButton>
+          <ActionButton onClick={() => handleExportBoard()} color="#1E3A5F">
+            <AiOutlineExport size={19} /> Exportar Board
+          </ActionButton>
+          {isBoardCreator && (
+            <>
+              {isObfuscatedBoardLevel ?
+                (<ActionButton onClick={() => handleSetIsObfuscatedBoardLevel(false)} color="#1E3A5F" >
+                  <LiaEyeSolid size={19} /> Revelar Cards
+                </ActionButton>)
+                :
+                (<ActionButton onClick={() => handleSetIsObfuscatedBoardLevel(true)} color="#1E3A5F" >
+                  <LiaEyeSlashSolid size={19} /> Ocultar cards
+                </ActionButton>)
+              }
+            </>)}
+        </ActionBox>
+      </BoardActions>
 
 
     </BoardControlsStyled>
@@ -281,7 +283,7 @@ const CountsContainer = styled.div`
   align-items: center;
   font-size: 32px;
   margin: 10px;
-  color: #4169E1;
+  color: #4A6DA7;
   overflow: visible !important;
   `;
 

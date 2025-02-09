@@ -2,7 +2,7 @@ require('dotenv').config();
 const { DateTime } = require('luxon');
 const config = require('../../config');
 const { v4: uuidv4 } = require('uuid');
-const { putTable, getBoardDb, getBoardByUserDb, deleteBoardDb } = require('./dynamoRetroService');
+const { putTable, getBoardDb, getBoardByUserDb, deleteBoardDb } = require('./dynamoBoardService');
 const logger = require('../generic/cloudWatchLoggerService');
 const timeZone = 'America/Sao_Paulo';
 
@@ -29,10 +29,8 @@ const createBoard = async (req, res) => {
     const data = await putTable(config.TABLE_BOARD, boardDb);
     res.status(201).json(data);
     const elapsedTime = (performance.now() - start).toFixed(3);
-    // logger.log('API-RETRO', 'createBoard', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName, '', elapsedTime, 'success', 'Board created successfully.')
   } catch (error) {
     const elapsedTime = (performance.now() - start).toFixed(3);
-    //  logger.log('API-RETRO', 'createBoard', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName, '', elapsedTime, 'failed', error.message)
     return res.status(500).json({ error: 'Error creating board' });
   }
 };
@@ -67,10 +65,8 @@ const getBoardByUser = async (req, res) => {
     const dataItems = await getBoardByUserDb(config.TABLE_BOARD, config.INDEX_NAME_USER, creatorId);
     res.status(200).json(dataItems);
     const elapsedTime = (performance.now() - start).toFixed(3);
-    //  logger.log('API-RETRO', 'getBoardByUser', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName,  '', elapsedTime, 'success', 'Get board successfully.' )
   } catch (error) {
     const elapsedTime = (performance.now() - start).toFixed(3);
-    //   logger.log('API-RETRO', 'getBoardByUser', obj.boardId, obj.boardName, obj.user_id, obj.userName, obj.squadName, obj.areaName,  '', elapsedTime, 'failed', error.message )
     return res.status(500).json({ error: 'Error creating board' });
   }
 };

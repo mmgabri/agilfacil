@@ -28,6 +28,7 @@ const getBoardByUserDb = (tableName, indexNameUser, creatorId) => {
       ExpressionAttributeValues: {
         ':creatorId': { S: creatorId },
       },
+      ScanIndexForward: false,
     };
 
     docClient.send(new QueryCommand(params))

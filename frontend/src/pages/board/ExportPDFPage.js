@@ -7,28 +7,28 @@ import { IoMdDownload } from "react-icons/io";
 import styled from "styled-components";
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import LoaderPage from '../generic/LoaderPage';
-import HeaderPage from './HeaderCreateBoard';
+import HeaderPage from './componentes/HeaderCreateBoard';
 import favicon from '../../images/favicon.ico';
-import { emitMessage, formatdateTime } from '../generic/Utils'
+import { emitMessage, formatdateTime } from '../../services/utils'
+import { FRONT_BASE_URL } from "../../constants/apiConstants";
 
 const GeneratePDF = () => {
   const { id } = useParams();
   const [boardData, setBoardData] = useState(null);
-  const [userLoggedData, setuserLoggedData] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
+
+  const linkUrlBoard = `${FRONT_BASE_URL}/board/guest/${id}`;
 
   useEffect(() => {
-    console.log('useEffect')
+    //console.log('useEffect')
     setIsLoading(true);
 
-    axios.get(`${SERVER_BASE_URL}/retro/${id}`)
+    axios.get(`${SERVER_BASE_URL}/board/${id}`)
       .then(response => {
-        console.log(response.data)
         setBoardData(response.data);
         setIsLoading(false);
       })
       .catch((error) => {
-        console.log("Resposta da api com erro:", error, error.response?.status)
         emitMessage('error', 904, 2000)
         setIsLoading(false);
       });
@@ -87,6 +87,14 @@ const GeneratePDF = () => {
       {
         leftText: `Total de Cards: ${boardData.columns.reduce((acc, col) => acc + col.cards.length, 0)}`,
         rightText: `Total de Participantes: ${Array.isArray(boardData.usersOnBoardHistoric) ? boardData.usersOnBoardHistoric.length : 0}`
+      },
+      {
+        leftText: '',
+        rightText: ''
+      },
+      {
+        leftText: `Link: ${linkUrlBoard}`,
+        rightText: ''
       },
     ];
 
@@ -197,6 +205,10 @@ const GeneratePDF = () => {
                 <InfoRow2>
                   <InfoItem><strong>Total de Cards:</strong> {boardData.columns ? boardData.columns.reduce((acc, col) => acc + col.cards.length, 0) : 0}</InfoItem>
                   <InfoItem><strong>Total de Participantes:</strong>{Array.isArray(boardData.usersOnBoardHistoric) ? boardData.usersOnBoardHistoric.length : 0}</InfoItem>
+                </InfoRow2>
+
+                <InfoRow2>
+                  <InfoItem><strong>Link: </strong>{linkUrlBoard}</InfoItem>
                 </InfoRow2>
               </InfoSection>
 

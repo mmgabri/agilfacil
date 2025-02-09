@@ -67,7 +67,7 @@ export const SubmitButton = styled.button`
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  margin-top: 7px;
+  margin-top: ${(props) => props.$marginTop || '7px'};
   height: 45px;
   transition: transform 0.1s ease-in-out; /* Suaviza a transformação */
 

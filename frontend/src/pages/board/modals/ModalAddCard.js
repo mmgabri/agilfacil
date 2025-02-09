@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import axios from "axios";
-import { SERVER_BASE_URL } from "../../constants/apiConstants";
-import Modal from '../components/Modal';
+import { SERVER_BASE_URL } from "../../../constants/apiConstants";
+import Modal from '../../components/Modal';
 import { toast } from 'react-toastify';
-import { FormContainer, FormGroup, TitleAddCard, SubmitButton, TextArea } from '../../styles/SuggestionFormStyles';
-//import { FormContainer, Title, FormGroup, TextArea } from '../../styles/FormStyle'
+import { FormContainer, FormGroup, TitleAddCard, SubmitButton, TextArea } from '../../../styles/ModalFormStyles';
+
 
 const ModalAddCard = ({ isOpen, onClose, onSubmit, title }) => {
     const [formData, setFormData] = useState({

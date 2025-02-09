@@ -47,10 +47,9 @@ export const useSocket = (
   );
 
 
-  //retro
+  //board
   const addCardSocket = useCallback(
     (payload) => {
-      console.log('addCardSocket')
       socket.emit("comand_socket_board", {
         comand: 'add_card_board',
         boardId: idSession,
@@ -241,9 +240,9 @@ export const useSocket = (
       console.error('useSocket - Error: ', error);
     });
 
-    socketio.on('connect_error', (error) => {
-      console.error('useSocket - Connection error:', error);
-    });
+//    socketio.on('connect_error', (error) => {
+//      console.error('useSocket - Connection error:', error);
+//    });
 
     socketio.on("data_room", (res) => {
       setSocketResponse(res)
@@ -254,17 +253,16 @@ export const useSocket = (
       setSocketResponse(res)
     });
 
-    socketio.on("retro_connection", (res) => {
-      console.log('retro_connection -->', res)
+   // socketio.on("retro_connection", (res) => {
+   //   console.log('retro_connection -->', res)
       //    setSocketResponse(res)
-    });
+  //  });
 
-    socketio.on("retro_disconnect", (res) => {
-      console.log('socket-retro_disconnect -->', res)
-    });
+  //  socketio.on("retro_disconnect", (res) => {
+  //    console.log('socket-retro_disconnect -->', res)
+  //  });
 
     return () => {
-      //console.info('useSocket - Disconnect to the server');
       socketio.disconnect();
     };
   }, [idSession]);

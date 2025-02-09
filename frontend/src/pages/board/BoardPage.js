@@ -4,16 +4,16 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { createUseStyles } from "react-jss";
 import { DragDropContext } from "react-beautiful-dnd";
 import { toast } from 'react-toastify';
-import Columns from "./Columns";
+import Columns from "./componentes/Columns";
 import { reorderboardData, processCombine, saveCard, deleteCard, updateLike, updateTitleColumn, deleteColumn, addCard, updatecolorCards, deleteAllCards, addCollumn, setIsObfuscatedBoardLevel, setIsObfuscatedColumnLevel } from "./FunctionsBoard";
-import Header from './HeaderBoard';
+import Header from './componentes/HeaderBoard';
 import Invite from '../components/Invite';
 import SuggestionForm from '../components/SuggestionForm'
-import BoardControls from "./BoardControls";
+import BoardControls from "./componentes/BoardControls";
 import { FRONT_BASE_URL } from "../../constants/apiConstants";
 import { useSocket } from "../../customHooks/useSocket";
 import 'react-toastify/dist/ReactToastify.css';
-import './retro.css';
+
 
 export const BoardPage = ({ }) => {
   let navigate = useNavigate();
@@ -45,13 +45,13 @@ export const BoardPage = ({ }) => {
     deleteAllCardSocket,
     timerControlSocket,
     setIsObfuscatedBoardLevelSocket,
-    setIsObfuscatedColumnLevelSocket } = useSocket(location.state.userLoggedData.userName, location.state.userLoggedData.userId, location.state.boardData.boardId, 'board')
-
+    setIsObfuscatedColumnLevelSocket } = useSocket(location.state.userAuthenticated.userName, location.state.userAuthenticated.userId, location.state.boardData.boardId, 'board')
+    
   useEffect(() => {
-    console.log('useEffect-principal - boardData -> ',location.state.boardData)
+   // console.log('useEffect-principal - userAuthenticated -> ', location.state.userAuthenticated)
     setBoardData(location.state.boardData);
-    setuserLoggedData(location.state.userLoggedData);
-  }, [location.state.boardData, location.state.userLoggedData]);
+    setuserLoggedData(location.state.userAuthenticated);
+  }, [location.state.boardData, location.state.userAuthenticated]);
 
   useEffect(() => {
     if (socketResponse.isTimerControl) {
@@ -118,9 +118,6 @@ export const BoardPage = ({ }) => {
   };
 
   const onDragEnd = (result) => {
-    console.log('--- onDragEnd ---')
-    console.log('result', result);
-
     const { source, destination, combine } = result;
 
     if (destination) {
@@ -128,6 +125,10 @@ export const BoardPage = ({ }) => {
       const updatedColumns = reorderboardData(boardData, source, destination);
       setBoardData({ ...boardData, columns: updatedColumns });
     } else if (combine) {
+      const isConfirmed = window.confirm("Confirma junção dos Cards?");
+      if (!isConfirmed) {
+        return
+      }
       combineCardSocket({ source, combine })
       const updatedColumns = processCombine(boardData, source, combine);
       setBoardData({ ...boardData, columns: updatedColumns });
@@ -150,12 +151,20 @@ export const BoardPage = ({ }) => {
   };
 
   const onDeleteCard = (indexCard, indexColumn) => {
+    const isConfirmed = window.confirm("Confirma exclusão do Card?");
+    if (!isConfirmed) {
+      return
+    }
     const updatedColumns = deleteCard(boardData, indexCard, indexColumn);
     setBoardData({ ...boardData, updatedColumns });
     deleteCardSocket({ indexCard: indexCard, indexColumn: indexColumn })
   };
 
   const onDeleteAllCard = (indexColumn) => {
+    const isConfirmed = window.confirm("Confirma exclusão de todos os Cards da Coluna?");
+    if (!isConfirmed) {
+      return
+    }
     const updatedColumns = deleteAllCards(boardData, indexColumn);
     setBoardData({ ...boardData, updatedColumns });
     deleteAllCardSocket({ indexColumn: indexColumn })
@@ -180,14 +189,16 @@ export const BoardPage = ({ }) => {
   };
 
   const onDeleteColumn = (index) => {
-    console.log('onDeleteColumn', index)
+    const isConfirmed = window.confirm("Confirma exclusão da Coluna?");
+    if (!isConfirmed) {
+      return
+    }
     const updatedColumns = deleteColumn(boardData, index);
     setBoardData({ ...boardData, updatedColumns });
     deleteColumnSocket({ index: index })
   };
 
   const onAddCard = (newCard, indexColumn) => {
-    console.log('onAddCard')
     const updatedColumns = addCard(boardData, newCard, indexColumn);
     setBoardData({ ...boardData, updatedColumns });
     addCardSocket({ newCard: newCard, indexColumn: indexColumn })
@@ -209,13 +220,13 @@ export const BoardPage = ({ }) => {
 
   const handleSetIsObfuscatedBoardLevel = (value) => {
     const updatedBoardData = setIsObfuscatedBoardLevel(boardData, value);
-    setBoardData(updatedBoardData); 
+    setBoardData(updatedBoardData);
     setIsObfuscatedBoardLevelSocket({ isObfuscated: value })
   };
 
   const handleSetIsObfuscatedColumnLevel = (value, index) => {
     const updatedBoardData = setIsObfuscatedColumnLevel(boardData, value, index);
-    setBoardData(updatedBoardData); 
+    setBoardData(updatedBoardData);
     setIsObfuscatedColumnLevelSocket({ isObfuscated: value, index: index })
   };
 
@@ -257,10 +268,10 @@ export const BoardPage = ({ }) => {
   };
 
 
-   const handleExportBoardToPDF =  () => {
-      const url = `${FRONT_BASE_URL}/board/export/${boardData.boardId}`;
-      window.open(url, "_blank");
-    }
+  const handleExportBoardToPDF = () => {
+    const url = `${FRONT_BASE_URL}/board/export/${boardData.boardId}`;
+    window.open(url, "_blank");
+  }
 
 
   return (
@@ -285,8 +296,8 @@ export const BoardPage = ({ }) => {
         handleAddColumn={handleAddColumn}
         isObfuscatedBoardLevel={boardData.isObfuscated}
         handleSetIsObfuscatedBoardLevel={handleSetIsObfuscatedBoardLevel}
-        isBoardCreator={userLoggedData.isBoardCreator} 
-        handleExportBoard={handleExportBoardToPDF}/>
+        isBoardCreator={userLoggedData.isBoardCreator}
+        handleExportBoard={handleExportBoardToPDF} />
 
       <DragDropContext onDragEnd={onDragEnd}>
         <div className={cl.root}>
@@ -347,7 +358,7 @@ const useStyles = createUseStyles({
     minWidth: "250px",
     minHeight: "400px", // Altura mínima para evitar que a coluna encolha demais
     height: "auto", // Permite que a coluna se ajuste conforme o conteúdo
-    backgroundColor:  '#2c2c2c',  //"#282c34",#backgound_coluna1
+    backgroundColor: '#2c2c2c',  //"#282c34",#backgound_coluna1
     border: "1px solid #444",
 
     boxSizing: "border-box",

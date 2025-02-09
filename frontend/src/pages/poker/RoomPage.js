@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import { signOut } from '@aws-amplify/auth';
 import { useSocket } from "../../customHooks/useSocket";
 import "../../styles/Room.css"
 import Header from '../poker/components/HeaderPlanning';
@@ -12,6 +12,7 @@ import VotingResults from '../poker/components/VotingResults';
 import Progress from '../poker/components/ProgressBar';
 import Invite from '../components/Invite';
 import SuggestionForm from '../components/SuggestionForm'
+import { emitMessage } from '../../services/utils'
 
 export const RoomPage = ({ }) => {
   let navigate = useNavigate();
@@ -62,8 +63,13 @@ export const RoomPage = ({ }) => {
     updateStatusRoom({ status: status, roomId: { roomId } })
   }
 
-  const sairSala = e => {
-    navigate('/');
+  const sairSala = async e => {
+    //navigate('/');
+    try {
+      await signOut();
+    } catch (error) {
+      emitMessage('error', 999)
+    }
   }
 
   const handleOpen = () => {

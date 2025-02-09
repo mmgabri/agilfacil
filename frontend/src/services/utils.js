@@ -11,7 +11,7 @@ const errorMessages = {
     903: 'Erro ao clonar Board. Por favor, tente novamente.',
     904: 'Não foi possível carregar o Board. Por favor, tente novamente.',
     905: 'Não foi possível criar a Sala. Por favor, tente novamente.',
-    906: 'Não foi possível criar o Boarda. Por favor, tente novamente.',
+    906: 'Não foi possível criar o Borda. Por favor, tente novamente.',
     default: 'Ocorreu um erro inesperado. Por favor, tente novamente.'
 };
 
@@ -24,8 +24,6 @@ export const emitMessage = (type, statusCode, autoClose) => {
     if (autoClose) {
         autoClosedefault = autoClose
     }
-
-    console.log(autoClosedefault)
 
     if (type == 'error') {
         toast.error(message, {
