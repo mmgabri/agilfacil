@@ -21,13 +21,45 @@ const StatusSection = ({ roomData, isRoomCreator, handlerupdateStatusRoom }) => 
 
         switch (roomData.status) {
             case "NOVA_VOTACAO":
-                return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_EM_ANDAMENTO")}>Liberar Votação</button>
+                return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_EM_ANDAMENTO")}
+                    style={{
+                        backgroundColor: "#1E3A5F",
+                        borderColor: "#1E3A5F",
+                        transition: "transform 0.2s ease-in-out",
+                    }}
+                    onMouseEnter={(e) => (e.target.style.transform = "scale(1.1)")}
+                    onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
+                >Liberar Votação</button>
             case "VOTACAO_EM_ANDAMENTO":
-                return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_FINALIZADA")}>Finalizar Votação</button>
+                return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_FINALIZADA")}
+                    style={{
+                        backgroundColor: "#1E3A5F",
+                        borderColor: "#1E3A5F",
+                        transition: "transform 0.2s ease-in-out",
+                    }}
+                    onMouseEnter={(e) => (e.target.style.transform = "scale(1.1)")}
+                    onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
+                >Finalizar Votação</button>
             case "VOTACAO_FINALIZADA":
-                return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_ENCERRADA")}>Encerrar Votação</button>
+                return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_ENCERRADA")}
+                    style={{
+                        backgroundColor: "#1E3A5F",
+                        borderColor: "#1E3A5F",
+                        transition: "transform 0.2s ease-in-out",
+                    }}
+                    onMouseEnter={(e) => (e.target.style.transform = "scale(1.1)")}
+                    onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}>
+                    Encerrar Votação</button>
             case "VOTACAO_ENCERRADA":
-                return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_EM_ANDAMENTO")}>Nova Votação</button>
+                return <button type="button" className="btn btn-primary" onClick={() => handlerupdateStatusRoom("VOTACAO_EM_ANDAMENTO")}
+                    style={{
+                        backgroundColor: "#1E3A5F",
+                        borderColor: "#1E3A5F",
+                        transition: "transform 0.2s ease-in-out",
+                    }}
+                    onMouseEnter={(e) => (e.target.style.transform = "scale(1.1)")}
+                    onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
+                >Nova Votação</button>
         }
     };
 
