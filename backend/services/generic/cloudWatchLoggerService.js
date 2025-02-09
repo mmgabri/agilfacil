@@ -73,8 +73,8 @@ class CloudWatchLogger {
 
   // Envia logs para o CloudWatch
 
-  async log(type, interacao, roomId, roomName, userId, userName, moderator, vote, statusRoom, elapsedTime, executionStatus, msg, email, suggestion) {
-    const message = this.createLogObject(type, interacao, roomId, roomName, userId, userName, moderator, vote, statusRoom, elapsedTime, executionStatus, msg, email, suggestion);
+  async log(type, interacao, roomId, roomName, userId, userName, vote, statusRoom, elapsedTime, executionStatus, msg, email, suggestion) {
+    const message = this.createLogObject(type, interacao, roomId, roomName, userId, userName, vote, statusRoom, elapsedTime, executionStatus, msg, email, suggestion);
     const timestamp = Date.now();
     const params = {
       logGroupName: this.logGroupName,
@@ -95,7 +95,7 @@ class CloudWatchLogger {
     }
   }
 
-  createLogObject(type, interacao, roomId, roomName, userId, userName, moderator, vote, statusRoom, elapsedTime, executionStatus, message, email, suggestion) {
+  createLogObject(type, interacao, roomId, roomName, userId, userName, vote, statusRoom, elapsedTime, executionStatus, message, email, suggestion) {
     return {
       timestamp: new Date().toLocaleString(),
       type,
@@ -104,7 +104,6 @@ class CloudWatchLogger {
       roomName,
       userId,
       userName,
-      moderator,
       vote,
       statusRoom,
       elapsedTime,

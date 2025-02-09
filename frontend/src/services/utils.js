@@ -1,5 +1,6 @@
 import { toast } from 'react-toastify';
 import { DateTime } from 'luxon';
+import { signOut, fetchAuthSession } from '@aws-amplify/auth';
 
 const errorMessages = {
     0: 'Sua ação foi concluída com sucesso!',
@@ -11,7 +12,7 @@ const errorMessages = {
     903: 'Erro ao clonar Board. Por favor, tente novamente.',
     904: 'Não foi possível carregar o Board. Por favor, tente novamente.',
     905: 'Não foi possível criar a Sala. Por favor, tente novamente.',
-    906: 'Não foi possível criar o Borda. Por favor, tente novamente.',
+    906: 'Não foi possível criar o Bord. Por favor, tente novamente.',
     default: 'Ocorreu um erro inesperado. Por favor, tente novamente.'
 };
 
@@ -53,4 +54,24 @@ export const formatdateTime = (dateTime) => {
 
 };
 
+export async function onGetToken() {
+    try {
+        const session = await fetchAuthSession();
+        const token = session.tokens.idToken.toString();
+        return token;
+    } catch (error) {
+        throw error;
+    }
+}
 
+export const onSignOut = async () => {
+    console.log('onSignOut')
+    try {
+        await signOut(); // Faz o logout no Cognito
+        localStorage.clear(); // Limpa o localStorage
+        sessionStorage.clear(); // Limpa o sessionStorage
+        console.log('Usuário deslogado e tokens removidos.');
+    } catch (error) {
+        emitMessage('error', 999)
+    }
+};

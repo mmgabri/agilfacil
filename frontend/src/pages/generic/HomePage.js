@@ -1,50 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { signOut, fetchAuthSession } from '@aws-amplify/auth';
 import styled from 'styled-components';
 import { GiPokerHand } from 'react-icons/gi';
 import { AiFillLike } from "react-icons/ai";
 import { AiFillDislike } from "react-icons/ai";
-import Header from '../components/Header';
+import Header from './HeaderPages';
 import SuggestionForm from '../components/SuggestionForm'
+import { onSignOut } from '../../services/utils'
 
 const HomePage = () => {
   let navigate = useNavigate();
   const [isModalOpen, setModalOpen] = useState(false);
+  const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
 
-  const handleAbout = () => {
-    navigate("/about")
-  }
+  useEffect(() => {
 
-  const handleHome = () => {
-    navigate("/")
-  }
+    const checkAuth = async () => {
+      try {
+        const session = await fetchAuthSession();
+        if (session.tokens == undefined) {
+          setUserIsAuthenticated(false)
+        } else {
+          setUserIsAuthenticated(true)
+        }
+      } catch (error) {
+        setUserIsAuthenticated(false)
+      }
+    }
 
-  const handleHomePlanning = () => {
-    navigate("/room/create")
-  }
+    checkAuth();
 
-  const handleHomeBoard = () => {
-    navigate("/boards")
-  }
-
-  const handleOpen = () => {
-    setModalOpen(true);
-  }
+  }, []);
 
 
   return (
     <div className="bg-black-custom">
-      <Header handleHome={handleHome} handleAbout={handleAbout} handleOpen={handleOpen} />
+      <Header
+        goHome={() => navigate("/")}
+        goAbout={() => navigate("/about")}
+        isUserLogged={userIsAuthenticated}
+        signIn={() => navigate('/login')}
+        signOut={onSignOut}
+        showSuggestionsModal={() => setModalOpen(true)} />
+
       <Container>
         <Title>Clique no serviço desejado para acessar:</Title>
 
         <ServiceList>
-          <ServiceItem onClick={handleHomePlanning}>
+          <ServiceItem onClick={() => navigate("/room/create")}>
             <StyledPokerHand />
             <ServiceTitle>Planning Poker</ServiceTitle> {/* Título destacado */}
             <ServiceLink>Estime suas histórias de forma colaborativa e eficaz.</ServiceLink> {/* Descrição */}
           </ServiceItem>
-          <ServiceItem onClick={handleHomeBoard}>
+          <ServiceItem onClick={() => navigate("/boards")}>
             <IconContainer>
               <StyledAiFillDislike />
               <StyledAiFillLike />
@@ -61,7 +70,6 @@ const HomePage = () => {
     </div>
   );
 };
-
 
 export const Container = styled.div`
   max-width: 900px;

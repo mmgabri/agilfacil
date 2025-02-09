@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { v4 as uuidv4 } from 'uuid';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useParams } from 'react-router-dom'
+import { getCurrentUser, fetchUserAttributes, fetchAuthSession } from '@aws-amplify/auth';
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import styled from 'styled-components';
-import Header from '../poker/components/HeaderPlanning';
-import { emitMessage, formatdateTime } from '../../services/utils'
+import Header from '../generic/HeaderPages';
+import { emitMessage, formatdateTime, onSignOut } from '../../services/utils'
 import SuggestionForm from '../components/SuggestionForm'
 import { FormContainer, FormGroup, StyledForm, SubmitButton } from '../../styles/FormStyle'
+import localStorageService from "../../services/localStorageService";
 
 export const GuestUrlPage = ({ }) => {
     const { id } = useParams(); // Obtém o ID da URL
     let navigate = useNavigate();
     const [isModalOpen, setModalOpen] = useState(false);
-    const [formData, setFormData] = useState({ userName: '' });
-    const [roomId, setRoomId] = useState('');
-    const [roomName, setRoomName] = useState('');
+    const [formData, setFormData] = useState({ nickName: '' });
+    const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
+    const [userLogged, setUserLogged] = useState({});
+    const [roomData, setRoomData] = useState({ users: [] });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -23,62 +27,105 @@ export const GuestUrlPage = ({ }) => {
     };
 
     useEffect(() => {
-        axios
-            .get(`${SERVER_BASE_URL}/rooms/${id}`)
-            .then((response) => {
-                //console.log('Retorno da API getRoom:', response);
-                setRoomId(response.data._id)
-                setRoomName(response.data.roomName)
-            })
-            .catch((error) => {
-                navigate('/notification', { state: { statusCode: error.response?.status } });
-            });
+        console.log('useEffect')
+
+        const initializeUserData = async () => {
+            try {
+                const user = await getCurrentUser();
+                const attributes = await fetchUserAttributes(user);
+
+                const userData = { userId: attributes.sub, userName: attributes.name, isVerified: true, isRoomCreator: false };
+                const userStorage = { userId: attributes.sub, userName: attributes.name };
+
+                localStorageService.removeItem("AGILFACIL_USER_LOGGED");
+                localStorageService.setItem("AGILFACIL_USER_LOGGED", userStorage);
+                setUserLogged(userData)
+
+            } catch (error) {
+                if (error.toString().includes("UserUnAuthenticatedException")) {
+                    const userStorage = localStorageService.getItem("AGILFACIL_USER_LOGGED");
+
+                    if (!userStorage) {
+                        const userStorage = { userId: uuidv4() }
+                        const userData = { ...userStorage, isVerified: false, isRoomCreator: false };
+                        localStorageService.setItem("AGILFACIL_USER_LOGGED", userStorage);
+                        setUserLogged(userData)
+                    } else {
+                        const userData = { ...userStorage, isVerified: false, isRoomCreator: false };
+                        setUserLogged(userData)
+                    }
+                } else {
+                    emitMessage('error', 999)
+                }
+            }
+        };
+
+        const getRoom = async () => {
+            axios
+                .get(`${SERVER_BASE_URL}/rooms/${id}`)
+                .then((response) => {
+                    console.log('Retorno da API getRoom:', response);
+                    setRoomData(response.data)
+                })
+                .catch((error) => {
+                    navigate('/notification', { state: { statusCode: error.response?.status } });
+                });
+        }
+
+        const checkAuth = async () => {
+            try {
+                const session = await fetchAuthSession();
+                if (session.tokens == undefined) {
+                    setUserIsAuthenticated(false)
+                } else {
+                    setUserIsAuthenticated(true)
+                }
+            } catch (error) {
+                setUserIsAuthenticated(false)
+            }
+        }
+
+        initializeUserData();
+        getRoom();
+        checkAuth();
 
     }, []);
 
 
-    const handleSubmit = e => {
+    const handleSubmit = async e => {
         e.preventDefault()
 
-        axios
-            .post(SERVER_BASE_URL + '/joinRoom', { roomId: roomId, userName: formData.userName })
-            .then(response => {
-                navigate('/room', { state: { roomId: response.data.roomId, roomName: response.data.roomName, userId: response.data.userId, userName: response.data.userName, moderator: response.data.moderator } });
-            })
-            .catch((error) => {
-                emitMessage('error', 999)
-            });
-    }
+        try {
+            const userData = { ...userLogged, nickName: formData.nickName, isRoomCreator: false };
+            navigate('/room', { state: { roomData: roomData, userLogged: userData } });
 
-    const handleHome = () => {
-        navigate("/")
-    }
-
-    const handleAbout = () => {
-        navigate("/about")
-    }
-
-
-    const handleOpen = () => {
-        setModalOpen(true);
+        } catch (error) {
+            emitMessage('error', 999)
+        }
     }
 
     return (
         <div className="bg-black-custom">
-            <Header handleHome={handleHome} handleAbout={handleAbout} handleOpen={handleOpen} />
+            <Header
+                subText={'Planning Poker'}
+                showSuggestionsModal={() => setModalOpen(true)}
+                isUserLogged={userIsAuthenticated}
+                signIn={() => navigate('/login')}
+                signOut={onSignOut}
+                goHome={() => navigate('/')} />
 
             <FormContainer>
                 <Title>Informe seu nome para entrar na sala de Planning Poker</Title>
                 <StyledForm onSubmit={handleSubmit}>
                     <FormGroup>
-                        <label htmlFor="userName">Digite seu nome*</label>
+                        <label htmlFor="nickName">Digite seu nome*</label>
                         <input
                             type="text"
-                            id="userName"
-                            name="userName"
-                            value={formData.userName}
+                            id="nickName"
+                            name="nickName"
+                            value={formData.nickName}
                             onChange={handleChange}
-                            placeholder="Digite o nome do board"
+                            placeholder="Digite o seu nome"
                             required
                             maxLength={55} />
                     </FormGroup>
@@ -88,7 +135,7 @@ export const GuestUrlPage = ({ }) => {
                             type="text"
                             id="roomId"
                             name="roomId"
-                            value={roomId}
+                            value={roomData.roomId}
                             disabled />
                     </FormGroup2>
                     <FormGroup2>
@@ -97,7 +144,7 @@ export const GuestUrlPage = ({ }) => {
                             type="text"
                             id="roomName"
                             name="roomName"
-                            value={roomName}
+                            value={roomData.roomName}
                             disabled />
                     </FormGroup2>
                     <SubmitButton $marginTop="22px" type="submit">Entrar</SubmitButton>

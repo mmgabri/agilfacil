@@ -8,7 +8,7 @@ import { I18n } from 'aws-amplify/utils';
 import { BrowserRouter, Routes, Route, } from "react-router-dom";
 import HomePage from "../pages/generic/HomePage";
 import AboutPage from "../pages/generic/AboutPage"
-import CreateAndEnterPage from "../pages/poker/CreateAndEnterPage";
+import CreateAndEnterPage from "../pages/poker/CreateAndEnterRoomPage";
 import RoomPage from "../pages/poker/RoomPage";
 import GuestUrlPage from "../pages/poker/GuestUrlPage";
 import NotificationPage from "../pages/poker/NotificationPage"
@@ -18,6 +18,7 @@ import CreateBoardPage from "../pages/board/CreateBoardPage"
 import BoardListPage from "../pages/board/BoardListPage"
 import GuestUrlBoardPage from "../pages/board/GuestUrlBoardPage";
 import ExportPDFPage from "../pages/board/ExportPDFPage";
+import SolicitaLoginPage from '../pages/generic/SolicitaLoginPage';
 
 
 I18n.putVocabularies(translations);
@@ -54,7 +55,12 @@ const ProtectedRoute = ({ children }) => {
       case 'authenticated': // Redireciona para a URL salva após o login
         const redirectTo = sessionStorage.getItem('AGILFACIL_redirectAfterLogin');
         sessionStorage.removeItem('AGILFACIL_redirectAfterLogin');
-        navigate(redirectTo);
+
+        if (redirectTo == '/login') {
+          navigate('/');
+        } else {
+          navigate(redirectTo);
+        }
         break;
 
       case 'signOut': // Limpa a URL salva ao fazer logout
@@ -113,6 +119,7 @@ function App() {
     <>
       <StyledToastContainer pauseOnFocusLoss={false} />
       <Routes>
+        <Route path="/login" element={<ProtectedRoute> <SolicitaLoginPage /> </ProtectedRoute>} />
         <Route exact path="/" element={<HomePage />} />
         <Route exact path="/about" element={<AboutPage />} />
         <Route path="/room/create" element={<ProtectedRoute> <CreateAndEnterPage /> </ProtectedRoute>} />

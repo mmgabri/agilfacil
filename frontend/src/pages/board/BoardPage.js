@@ -1,33 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
+import { fetchAuthSession } from '@aws-amplify/auth';
 import { useNavigate, useLocation } from 'react-router-dom'
 import { createUseStyles } from "react-jss";
 import { DragDropContext } from "react-beautiful-dnd";
 import { toast } from 'react-toastify';
 import Columns from "./componentes/Columns";
 import { reorderboardData, processCombine, saveCard, deleteCard, updateLike, updateTitleColumn, deleteColumn, addCard, updatecolorCards, deleteAllCards, addCollumn, setIsObfuscatedBoardLevel, setIsObfuscatedColumnLevel } from "./FunctionsBoard";
-import Header from './componentes/HeaderBoard';
+import Header from '../generic/HeaderPages';
 import Invite from '../components/Invite';
 import SuggestionForm from '../components/SuggestionForm'
 import BoardControls from "./componentes/BoardControls";
 import { FRONT_BASE_URL } from "../../constants/apiConstants";
 import { useSocket } from "../../customHooks/useSocket";
 import 'react-toastify/dist/ReactToastify.css';
+import { emitMessage, onSignOut } from '../../services/utils'
 
 
 export const BoardPage = ({ }) => {
   let navigate = useNavigate();
+  const location = useLocation();
+
+  const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
   const [timeInput, setTimeInput] = useState("00:00"); // Tempo digitado pelo usuário
   const [timer, setTimer] = useState(0); // Tempo em segundos
   const [isRunningTimer, setIsRunningTimer] = useState(false); // Status do cronômetro
   const [isInvalidFormat, setIsInvalidFormat] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
-  const location = useLocation();
   const [boardData, setBoardData] = useState({ columns: [] });
   const cl = useStyles();
-  const handleShowInvite = () => setShowInvite(true);
-  const handleCloseInvite = () => setShowInvite(false);
   const [userLoggedData, setuserLoggedData] = useState({});
 
   const {
@@ -46,11 +48,29 @@ export const BoardPage = ({ }) => {
     timerControlSocket,
     setIsObfuscatedBoardLevelSocket,
     setIsObfuscatedColumnLevelSocket } = useSocket(location.state.userAuthenticated.userName, location.state.userAuthenticated.userId, location.state.boardData.boardId, 'board')
-    
+
+
   useEffect(() => {
-   // console.log('useEffect-principal - userAuthenticated -> ', location.state.userAuthenticated)
+     console.log('useEffect-principal - userAuthenticated -> ', location.state.userAuthenticated)
+
+    const checkAuth = async () => {
+      try {
+        const session = await fetchAuthSession();
+        if (session.tokens == undefined) {
+          setUserIsAuthenticated(false)
+        } else {
+          setUserIsAuthenticated(true)
+        }
+
+      } catch (error) {
+        setUserIsAuthenticated(false)
+      }
+    }
+
     setBoardData(location.state.boardData);
     setuserLoggedData(location.state.userAuthenticated);
+    checkAuth();
+
   }, [location.state.boardData, location.state.userAuthenticated]);
 
   useEffect(() => {
@@ -135,14 +155,6 @@ export const BoardPage = ({ }) => {
     }
 
   };
-
-  const exitBoard = e => {
-    navigate('/');
-  }
-
-  const handleOpenSugestion = () => {
-    setModalOpen(true);
-  }
 
   const onSaveCard = (content, indexCard, indexColumn) => {
     const updatedColumns = saveCard(boardData, content, indexCard, indexColumn);
@@ -277,11 +289,16 @@ export const BoardPage = ({ }) => {
   return (
     <div className="bg-black-custom">
       <Header
+        subText={'Board Interativo'}
+        showSuggestionsModal={() => setModalOpen(true)}
         boardName={boardData.boardName}
-        handleShowInvite={handleShowInvite}
-        handleCloseInvite={handleCloseInvite}
-        sairSala={exitBoard}
-        handleOpenSugestion={handleOpenSugestion} />
+        showInviteModal={() => setShowInvite(true)}
+        handleCloseInvite={() => setShowInvite(false)}
+        isUserLogged={userIsAuthenticated}
+        signIn={() => navigate('/login')}
+        signOut={onSignOut}
+        goHome={() => navigate('/')}
+      />
 
       <BoardControls
         countCard={onCountCards()}
@@ -330,7 +347,7 @@ export const BoardPage = ({ }) => {
       </DragDropContext>
 
       {isModalOpen && <SuggestionForm onClose={() => setModalOpen(false)} />}
-      {showInvite && <Invite id={boardData.boardId} onClose={handleCloseInvite} service={'board'} />}
+      {showInvite && <Invite id={boardData.boardId} onClose={() => setShowInvite(false)} service={'board'} />}
     </div>
   );
 }

@@ -72,14 +72,40 @@ const getBoardDb = (tableName, boardId) => {
   });
 };
 
-const deleteBoardDb = (tableName, boardId, dateTime) => {
+const getRoomDb = (tableName, roomId) => {
+  return new Promise((resolve, reject) => {
+    const params = {
+      TableName: tableName,
+      KeyConditionExpression: 'roomId = :roomId',
+      ExpressionAttributeValues: {
+        ':roomId': { S: roomId },
+      },
+    };
+
+    docClient.send(new QueryCommand(params))
+      .then((data) => {
+        if (data.Items && data.Items.length > 0) {
+          const formattedItem = unmarshall(data.Items[0]);
+          resolve(formattedItem);
+        } else {
+          reject('NOT_FOUND');
+        }
+      })
+      .catch((err) => {
+        console.error('Erro ao consultar dados da tabela board:', err);
+        reject('Erro ao consultar dados da tabela boad');
+      });
+  });
+};
+
+const deleteBoardDb = (tableName, boardId, createdAt) => {
   return new Promise(async (resolve, reject) => {
 
     const params = {
       TableName: tableName,
       Key: {
         boardId: { S: boardId },
-        dateTime: { S: dateTime }
+        createdAt: { S: createdAt }
       }
     };
 
@@ -94,4 +120,4 @@ const deleteBoardDb = (tableName, boardId, dateTime) => {
   });
 };
 
-module.exports = { putTable, getBoardByUserDb, getBoardDb, deleteBoardDb }
+module.exports = { putTable, getBoardByUserDb, getBoardDb, getRoomDb, deleteBoardDb }

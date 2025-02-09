@@ -9,6 +9,10 @@ const REGION = 'ap-south-1'
 
 const TABLE_BOARD = 'board'
 
-const INDEX_NAME_USER = 'gsi_board_user'
+const TABLE_ROOM = 'room'
 
-module.exports = { PORT, CORS_OPTIONS, TABLE_BOARD, INDEX_NAME_USER, REGION  };
+const BOARD_INDEX_NAME_USER = 'gsi_board_user'
+
+const ROOM_INDEX_NAME_USER = 'gsi_board_user'
+
+module.exports = { PORT, CORS_OPTIONS, TABLE_BOARD, TABLE_ROOM, BOARD_INDEX_NAME_USER, REGION, ROOM_INDEX_NAME_USER  };

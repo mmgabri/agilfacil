@@ -3,25 +3,44 @@ import { useParams } from 'react-router-dom'
 import jsPDF from "jspdf";
 import axios from "axios";
 import "jspdf-autotable";
+import { fetchAuthSession } from '@aws-amplify/auth';
+import { useNavigate } from 'react-router-dom'
 import { IoMdDownload } from "react-icons/io";
 import styled from "styled-components";
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import LoaderPage from '../generic/LoaderPage';
-import HeaderPage from './componentes/HeaderCreateBoard';
+import Header from '../generic/HeaderPages';
 import favicon from '../../images/favicon.ico';
-import { emitMessage, formatdateTime } from '../../services/utils'
+import { emitMessage, formatdateTime, onSignOut } from '../../services/utils'
 import { FRONT_BASE_URL } from "../../constants/apiConstants";
+import SuggestionForm from '../components/SuggestionForm'
 
 const GeneratePDF = () => {
   const { id } = useParams();
+  let navigate = useNavigate();
+
   const [boardData, setBoardData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
 
   const linkUrlBoard = `${FRONT_BASE_URL}/board/guest/${id}`;
 
   useEffect(() => {
-    //console.log('useEffect')
     setIsLoading(true);
+
+    const checkAuth = async () => {
+      try {
+        const session = await fetchAuthSession();
+        if (session.tokens == undefined) {
+          setUserIsAuthenticated(false)
+        } else {
+          setUserIsAuthenticated(true)
+        }
+      } catch (error) {
+        setUserIsAuthenticated(false)
+      }
+    }
 
     axios.get(`${SERVER_BASE_URL}/board/${id}`)
       .then(response => {
@@ -32,6 +51,8 @@ const GeneratePDF = () => {
         emitMessage('error', 904, 2000)
         setIsLoading(false);
       });
+
+    checkAuth();
 
   }, []);
 
@@ -77,7 +98,7 @@ const GeneratePDF = () => {
     //------- Informações do Board (InfoSection) - Seguindo o padrão da tabela
     const infoLines = [
       {
-        leftText: `Criado em: ${formatdateTime(boardData.dateTime)}`,
+        leftText: `Criado em: ${formatdateTime(boardData.createdAt)}`,
         rightText: `Criado por: ${boardData.userName}`
       },
       {
@@ -171,7 +192,14 @@ const GeneratePDF = () => {
 
   return (
     <div className="bg-black-custom">
-      <HeaderPage />
+      <Header
+        subText={'Board Interativo'}
+        showSuggestionsModal={() => setModalOpen(true)}
+        isUserLogged={userIsAuthenticated}
+        signIn={() => navigate('/login')}
+        signOut={onSignOut}
+        goHome={() => navigate('/')} />
+        
       {isLoading ?
         <LoaderPage />
         :
@@ -196,7 +224,7 @@ const GeneratePDF = () => {
                 <Title>{boardData.boardName}</Title>
 
                 <InfoRow>
-                  <InfoItem><strong>Criado em:</strong>{formatdateTime(boardData.dateTime)}</InfoItem>
+                  <InfoItem><strong>Criado em:</strong>{formatdateTime(boardData.createdAt)}</InfoItem>
                   <InfoItem><strong>Criado por:</strong>{boardData.userName}</InfoItem>
                   <InfoItem><strong>Squad:</strong> {boardData.squadName}</InfoItem>
                   <InfoItem><strong>Área:</strong>{boardData.areaName}</InfoItem>
@@ -233,6 +261,7 @@ const GeneratePDF = () => {
                   ))}
                 </tbody>
               </Table>
+              {isModalOpen && <SuggestionForm onClose={() => setModalOpen(false)} />}
             </Container>}
 
         </>}

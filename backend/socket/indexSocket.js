@@ -1,4 +1,4 @@
-const { connectClient, desconnectClient, updateStatusRoom, updateVote } = require('../services/poker/socketService');
+const { connectClient, desconnectClient, updateStatusRoom, updateVote } = require('../services/poker/socketPokerService');
 const { connectClientBoard, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, saveCard, updatecolorCards, deleteAllCard, setIsObfuscatedBoardLevel, setIsObfuscatedColumnLevel, disconnectClientBoard } = require('../services/board/socketBoardService');
 const logger = require('../services/generic/cloudWatchLoggerService');
 

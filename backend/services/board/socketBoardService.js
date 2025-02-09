@@ -1,162 +1,130 @@
 const roomsDb = require('../../database');
 const config = require('../../config');
-const { putTable, getBoardDb } = require('./dynamoBoardService');
+const { putTable, getBoardDb } = require('../database/dynamoService');
 
 
-const connectClientBoard = (boardId, userId) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
-      if (!boardData) {
-        return reject(new Error('Board não encontrado.'));
-      }
-      const updatedBoardData = { ...boardData };
-      const userData = { userId: userId }
-      const userExists = updatedBoardData.usersOnBoard.some(user => user.userId === userData.userId);
-      const userExistsHistoric = updatedBoardData.usersOnBoardHistoric.some(user => user.userId === userData.userId);
+const connectClientBoard = async (boardId, userId) => {
 
-      if (userExists && userExistsHistoric) {
-        resolve (boardData)
-      }
+  const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
 
-      if (!userExists) {
-        updatedBoardData.usersOnBoard.push(userData);
-      };
+  if (!boardData) {
+    throw new Error("Board não encontrado.");
+  }
 
-      if (!userExistsHistoric) {
-        updatedBoardData.usersOnBoardHistoric.push(userData);
-      };
+  const updatedBoardData = { ...boardData };
+  const userData = { userId: userId }
+  const userExists = updatedBoardData.usersOnBoard.some(user => user.userId === userData.userId);
+  const userExistsHistoric = updatedBoardData.usersOnBoardHistoric.some(user => user.userId === userData.userId);
 
-      await putTable(config.TABLE_BOARD, updatedBoardData);
+  if (userExists && userExistsHistoric) {
+    return boardData
+  }
 
-      resolve(updatedBoardData);
-    } catch (error) {
-      reject(error);
-    }
-  });
-};
+  if (!userExists) {
+    updatedBoardData.usersOnBoard.push(userData);
+  };
 
-const disconnectClientBoard = (userIdToRemove, boardId) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Obtém os dados do board no banco de dados
-      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+  if (!userExistsHistoric) {
+    updatedBoardData.usersOnBoardHistoric.push(userData);
+  };
 
-      if (!boardData) {
-        return reject(new Error('Board não encontrado.'));
-      }
+  await putTable(config.TABLE_BOARD, updatedBoardData);
 
-      // Remove usuário da lista de logado
-      const updatedBoardData = { ...boardData };
-      updatedBoardData.usersOnBoard = updatedBoardData.usersOnBoard.filter(user => user.userId !== userIdToRemove);
-
-      // Atualiza o board no banco de dados
-      await putTable(config.TABLE_BOARD, updatedBoardData);
-
-      // Retorna o board atualizado
-      resolve(updatedBoardData);
-    } catch (error) {
-      // Rejeita a promise em caso de erro
-      reject(error);
-    }
-  });
+  return updatedBoardData;
 };
 
 
+const disconnectClientBoard = async (userIdToRemove, boardId) => {
 
-const addCardBoard = (boardId, newCard, indexColumn) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      //obtem board
-      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+  const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
 
-      //inclui card
-      const updatedBoard = { ...boardData };
-      const column = updatedBoard.columns[indexColumn];
-      column.cards.push(newCard);
+  if (!boardData) {
+    throw new Error("Board não encontrado.");
+  }
 
-      //Adiciona usuario a lista de usuários que criacaram card
-      const userData = { userId: newCard.userId }
-      const userExists = updatedBoard.cardCreators.some(user => user.userId === userData.userId);
-      if (!userExists) updatedBoard.cardCreators.push(userData);
+  // Remove usuário da lista de logado
+  const updatedBoardData = { ...boardData };
+  updatedBoardData.usersOnBoard = updatedBoardData.usersOnBoard.filter(user => user.userId !== userIdToRemove);
 
-      //salva dados
-      await putTable(config.TABLE_BOARD, updatedBoard);
+  await putTable(config.TABLE_BOARD, updatedBoardData);
 
-      //retorna
-      resolve(updatedBoard)
-    } catch (error) {
-      reject(error)
-    }
-  });
+  return updatedBoardData;
+};
+
+
+const addCardBoard = async (boardId, newCard, indexColumn) => {
+
+  const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+
+  //inclui card
+  const updatedBoard = { ...boardData };
+  const column = updatedBoard.columns[indexColumn];
+  column.cards.push(newCard);
+
+  //Adiciona usuario a lista de usuários que criacaram card
+  const userData = { userId: newCard.userId }
+  const userExists = updatedBoard.cardCreators.some(user => user.userId === userData.userId);
+  if (!userExists) updatedBoard.cardCreators.push(userData);
+
+  await putTable(config.TABLE_BOARD, updatedBoard);
+  return updatedBoard
 }
 
-const reorderBoard = (boardId, source, destination) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Obtém o board no banco de dados
-      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+const reorderBoard = async (boardId, source, destination) => {
 
-      const sourceColumn = boardData.columns.find(col => col.id === source.droppableId);
-      const destinationColumn = boardData.columns.find(col => col.id === destination.droppableId);
+  const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
 
-      const currentCards = [...sourceColumn.cards];
-      const targetCard = currentCards[source.index];
+  const sourceColumn = boardData.columns.find(col => col.id === source.droppableId);
+  const destinationColumn = boardData.columns.find(col => col.id === destination.droppableId);
 
-      if (source.droppableId === destination.droppableId) {
-        // Reordenação dentro da mesma coluna
-        const reorderedCards = reorder(currentCards, source.index, destination.index);
+  const currentCards = [...sourceColumn.cards];
+  const targetCard = currentCards[source.index];
 
-        const updatedColumns = boardData.columns.map(column =>
-          column.id === source.droppableId ? { ...column, cards: reorderedCards } : column
-        );
+  if (source.droppableId === destination.droppableId) {
+    // Reordenação dentro da mesma coluna
+    const reorderedCards = reorder(currentCards, source.index, destination.index);
 
-        const updatedBoard = {
-          ...boardData, // Inclui todos os campos existentes no board
-          columns: updatedColumns, // Atualiza apenas as colunas
-        };
+    const updatedColumns = boardData.columns.map(column =>
+      column.id === source.droppableId ? { ...column, cards: reorderedCards } : column
+    );
 
-        // Salva os dados no banco
-        await putTable(config.TABLE_BOARD, updatedBoard);
+    const updatedBoard = {
+      ...boardData, // Inclui todos os campos existentes no board
+      columns: updatedColumns, // Atualiza apenas as colunas
+    };
 
-        resolve(updatedBoard);
+    // Salva os dados no banco
+    await putTable(config.TABLE_BOARD, updatedBoard);
+    return updatedBoard;
+  } else {
+    // Movendo entre colunas diferentes
+    const sourceCards = [...sourceColumn.cards];
+    const destinationCards = [...destinationColumn.cards];
+
+    // Remove o card da coluna de origem
+    sourceCards.splice(source.index, 1);
+    // Adiciona o card à coluna de destino
+    destinationCards.splice(destination.index, 0, targetCard);
+
+    const updatedColumns = boardData.columns.map(column => {
+      if (column.id === source.droppableId) {
+        return { ...column, cards: sourceCards };
+      } else if (column.id === destination.droppableId) {
+        return { ...column, cards: destinationCards };
       } else {
-        // Movendo entre colunas diferentes
-        const sourceCards = [...sourceColumn.cards];
-        const destinationCards = [...destinationColumn.cards];
-
-        // Remove o card da coluna de origem
-        sourceCards.splice(source.index, 1);
-        // Adiciona o card à coluna de destino
-        destinationCards.splice(destination.index, 0, targetCard);
-
-        const updatedColumns = boardData.columns.map(column => {
-          if (column.id === source.droppableId) {
-            return { ...column, cards: sourceCards };
-          } else if (column.id === destination.droppableId) {
-            return { ...column, cards: destinationCards };
-          } else {
-            return column;
-          }
-        });
-
-        const updatedBoard = {
-          ...boardData,
-          columns: updatedColumns,
-        };
-
-        // Salva os dados no banco
-        await putTable(config.TABLE_BOARD, updatedBoard);
-
-        resolve(updatedBoard);
+        return column;
       }
-    } catch (error) {
-      console.error('Erro ao reordenar:', error);
-      reject(error);
-    }
-  });
-};
+    });
 
+    const updatedBoard = {
+      ...boardData,
+      columns: updatedColumns,
+    };
+
+    await putTable(config.TABLE_BOARD, updatedBoard);
+    return updatedBoard;
+  }
+};
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -166,33 +134,28 @@ const reorder = (list, startIndex, endIndex) => {
 };
 
 
-const processCombine = (boardId, source, combine) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Obtém os dados do board no banco de dados
-      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+const processCombine = async (boardId, source, combine) => {
 
-      if (!boardData) {
-        return reject(new Error('Board não encontrado.'));
-      }
+  const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
 
-      let result;
-      if (combine.droppableId === source.droppableId) {
-        result = processCombineSameColumn(boardData, source, combine);
-      } else {
-        result = processCombineDifferentColumn(boardData, source, combine);
-      }
+  if (!boardData) {
+    throw new Error("Board não encontrado.");
+  }
 
-      const updatedBoard = { ...boardData, columns: result };
+  let result;
+  if (combine.droppableId === source.droppableId) {
+    result = processCombineSameColumn(boardData, source, combine);
+  } else {
+    result = processCombineDifferentColumn(boardData, source, combine);
+  }
 
-      await putTable(config.TABLE_BOARD, updatedBoard);
+  const updatedBoard = { ...boardData, columns: result };
 
-      resolve(updatedBoard);
-    } catch (error) {
-      reject(error);
-    }
-  });
+  await putTable(config.TABLE_BOARD, updatedBoard);
+
+  return updatedBoard;
 };
+
 
 const processCombineDifferentColumn = (boardData, source, combine) => {
   const sourceCards = [...boardData.columns.find(col => col.id === source.droppableId).cards];
@@ -251,325 +214,223 @@ const processCombineSameColumn = (boardData, source, combine) => {
   return updatedColumns;
 };
 
-const deleteColumn = (boardId, index) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Obtém os dados do board no banco de dados
-      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+const deleteColumn = async (boardId, index) => {
 
-      if (!boardData) {
-        return reject(new Error('Board não encontrado.'));
-      }
+  const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
 
-      // Remove a coluna pelo índice
-      const updatedBoardData = { ...boardData };
-      if (index < 0 || index >= updatedBoardData.columns.length) {
-        return reject(new Error('Índice inválido para deletar a coluna.'));
-      }
+  if (!boardData) {
+    throw new Error("Board não encontrado.");
+  }
 
-      updatedBoardData.columns.splice(index, 1);
+  // Remove a coluna pelo índice
+  const updatedBoardData = { ...boardData };
+  if (index < 0 || index >= updatedBoardData.columns.length) {
+    throw new Error("Índice inválido para deletar a coluna.");
+  }
 
-      // Atualiza o board no banco de dados
-      await putTable(config.TABLE_BOARD, updatedBoardData);
+  updatedBoardData.columns.splice(index, 1);
 
-      // Retorna o board atualizado
-      resolve(updatedBoardData);
-    } catch (error) {
-      // Rejeita a promise em caso de erro
-      reject(error);
-    }
-  });
-};
 
-const addColumn = (boardId, newCollumn) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Obtém os dados do board no banco de dados
-      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
-
-      if (!boardData) {
-        return reject(new Error('Board não encontrado.'));
-      }
-
-      // Adiciona a coluna pelo índice
-      const updatedBoardData = { ...boardData };
-      updatedBoardData.columns.push(newCollumn);
-
-      // Atualiza o board no banco de dados
-      await putTable(config.TABLE_BOARD, updatedBoardData);
-
-      // Retorna o board atualizado
-      resolve(updatedBoardData);
-    } catch (error) {
-      reject(error);
-    }
-  });
+  await putTable(config.TABLE_BOARD, updatedBoardData);
+  return updatedBoardData;
 };
 
 
-const updateTitleColumn = (boardId, content, index) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Obtém os dados do board no banco de dados
-      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+const addColumn = async (boardId, newCollumn) => {
 
-      if (!boardData) {
-        return reject(new Error('Board não encontrado.'));
-      }
+  const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
 
-      // Verifica se o índice é válido
-      if (index < 0 || index >= boardData.columns.length) {
-        return reject(new Error('Índice inválido para atualizar o título da coluna.'));
-      }
+  if (!boardData) {
+    throw new Error("Board não encontrado.");
+  }
 
-      // Atualiza o título da coluna
-      const updatedBoardData = { ...boardData };
-      updatedBoardData.columns[index].title = content;
+  // Adiciona a coluna pelo índice
+  const updatedBoardData = { ...boardData };
+  updatedBoardData.columns.push(newCollumn);
 
-      // Salva o board atualizado no banco de dados
-      await putTable(config.TABLE_BOARD, updatedBoardData);
 
-      // Retorna o board atualizado
-      resolve(updatedBoardData);
-    } catch (error) {
-      // Rejeita a promise em caso de erro
-      reject(error);
-    }
-  });
-};
-
-const setIsObfuscatedBoardLevel = (boardId, isObfuscated) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Obtém os dados do board no banco de dados
-      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
-
-      if (!boardData) {
-        return reject(new Error('Board não encontrado.'));
-      }
-
-      // Atualiza isObfuscated
-      const updatedBoardData = { ...boardData };
-      updatedBoardData.isObfuscated = isObfuscated
-
-      // Salva o board atualizado no banco de dados
-      await putTable(config.TABLE_BOARD, updatedBoardData);
-
-      // Retorna o board atualizado
-      resolve(updatedBoardData);
-    } catch (error) {
-      // Rejeita a promise em caso de erro
-      reject(error);
-    }
-  });
-};
-
-const setIsObfuscatedColumnLevel = (boardId, isObfuscated, index) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Obtém os dados do board no banco de dados
-      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
-
-      if (!boardData) {
-        return reject(new Error('Board não encontrado.'));
-      }
-
-      // Verifica se o índice é válido
-      if (index < 0 || index >= boardData.columns.length) {
-        return reject(new Error('Índice inválido para atualizar o título da coluna.'));
-      }
-
-      // Atualiza coluna
-      const updatedBoardData = { ...boardData };
-      updatedBoardData.columns[index].isObfuscated = isObfuscated;
-
-      // Salva o board atualizado no banco de dados
-      await putTable(config.TABLE_BOARD, updatedBoardData);
-
-      // Retorna o board atualizado
-      resolve(updatedBoardData);
-    } catch (error) {
-      // Rejeita a promise em caso de erro
-      reject(error);
-    }
-  });
-};
-
-const updatecolorCards = (boardId, colorCards, index) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Obtém os dados do board no banco de dados
-      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
-
-      if (!boardData) {
-        return reject(new Error('Board não encontrado.'));
-      }
-
-      // Verifica se o índice é válido
-      if (index < 0 || index >= boardData.columns.length) {
-        return reject(new Error('Índice inválido para atualizar o título da coluna.'));
-      }
-
-      // Atualiza o título da coluna
-      const updatedBoardData = { ...boardData };
-      updatedBoardData.columns[index].colorCards = colorCards;
-
-      // Salva o board atualizado no banco de dados
-      await putTable(config.TABLE_BOARD, updatedBoardData);
-
-      // Retorna o board atualizado
-      resolve(updatedBoardData);
-    } catch (error) {
-      // Rejeita a promise em caso de erro
-      reject(error);
-    }
-  });
-};
-
-const updateLike = (boardId, isIncrement, indexCard, indexColumn) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Obtém os dados do board no banco de dados
-      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
-
-      if (!boardData) {
-        return reject(new Error('Board não encontrado.'));
-      }
-
-      // Verifica se os índices fornecidos são válidos
-      if (indexColumn < 0 || indexColumn >= boardData.columns.length) {
-        return reject(new Error('Índice de coluna inválido.'));
-      }
-
-      if (indexCard < 0 || indexCard >= boardData.columns[indexColumn].cards.length) {
-        return reject(new Error('Índice de card inválido.'));
-      }
-
-      // Atualiza a contagem de likes do card
-      const updatedBoardData = { ...boardData };
-      const columnToUpdate = updatedBoardData.columns[indexColumn];
-      const countLike = columnToUpdate.cards[indexCard].likeCount;
-      const countLikeUpdate = isIncrement ? countLike + 1 : countLike - 1;
-
-      columnToUpdate.cards[indexCard].likeCount = countLikeUpdate;
-
-      // Salva os dados atualizados no banco de dados
-      await putTable(config.TABLE_BOARD, updatedBoardData);
-
-      // Retorna o board atualizado
-      resolve(updatedBoardData);
-    } catch (error) {
-      // Rejeita a promise em caso de erro
-      reject(error);
-    }
-  });
+  await putTable(config.TABLE_BOARD, updatedBoardData);
+  return updatedBoardData;
 };
 
 
-const deleteCard = (boardId, indexCard, indexColumn) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Obtém os dados do board no banco de dados
-      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+const updateTitleColumn = async (boardId, content, index) => {
 
-      if (!boardData) {
-        return reject(new Error('Board não encontrado.'));
-      }
+  const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
 
-      // Verifica se os índices fornecidos são válidos
-      if (indexColumn < 0 || indexColumn >= boardData.columns.length) {
-        return reject(new Error('Índice de coluna inválido.'));
-      }
+  if (!boardData) {
+    throw new Error("Board não encontrado.");
+  }
 
-      if (indexCard < 0 || indexCard >= boardData.columns[indexColumn].cards.length) {
-        return reject(new Error('Índice de card inválido.'));
-      }
+  if (index < 0 || index >= boardData.columns.length) {
+    throw new Error('Índice inválido para atualizar o título da coluna.');
+  }
 
-      // Atualiza a estrutura de dados para remover o card
-      const updatedBoardData = { ...boardData };
-      const columnToUpdate = updatedBoardData.columns[indexColumn];
-      columnToUpdate.cards.splice(indexCard, 1);
+  // Atualiza o título da coluna
+  const updatedBoardData = { ...boardData };
+  updatedBoardData.columns[index].title = content;
 
-      // Salva os dados atualizados no banco de dados
-      await putTable(config.TABLE_BOARD, updatedBoardData);
 
-      // Retorna o board atualizado
-      resolve(updatedBoardData);
-    } catch (error) {
-      // Rejeita a promise em caso de erro
-      reject(error);
-    }
-  });
+  await putTable(config.TABLE_BOARD, updatedBoardData);
+  return updatedBoardData;
 };
 
-const deleteAllCard = (boardId, indexColumn) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Obtém os dados do board no banco de dados
-      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+const setIsObfuscatedBoardLevel = async (boardId, isObfuscated) => {
 
-      if (!boardData) {
-        return reject(new Error('Board não encontrado.'));
-      }
+  const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
 
-      // Verifica se os índices fornecidos são válidos
-      if (indexColumn < 0 || indexColumn >= boardData.columns.length) {
-        return reject(new Error('Índice de coluna inválido.'));
-      }
+  if (!boardData) {
+    throw new Error("Board não encontrado.");
+  }
 
-      // Atualiza a estrutura de dados para remover o card
-      const updatedBoardData = { ...boardData };
-      const columnToUpdate = updatedBoardData.columns[indexColumn];
-      columnToUpdate.cards = [];
+  // Atualiza isObfuscated
+  const updatedBoardData = { ...boardData };
+  updatedBoardData.isObfuscated = isObfuscated
 
-      // Salva os dados atualizados no banco de dados
-      await putTable(config.TABLE_BOARD, updatedBoardData);
 
-      // Retorna o board atualizado
-      resolve(updatedBoardData);
-    } catch (error) {
-      // Rejeita a promise em caso de erro
-      reject(error);
-    }
-  });
+  await putTable(config.TABLE_BOARD, updatedBoardData);
+  return updatedBoardData;
 };
 
-const saveCard = (boardId, content, indexCard, indexColumn) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Obtém os dados do board no banco de dados
-      const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+const setIsObfuscatedColumnLevel = async (boardId, isObfuscated, index) => {
 
-      if (!boardData) {
-        return reject(new Error('Board não encontrado.'));
-      }
+  const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
 
-      // Verifica se os índices fornecidos são válidos
-      if (indexColumn < 0 || indexColumn >= boardData.columns.length) {
-        return reject(new Error('Índice de coluna inválido.'));
-      }
+  if (!boardData) {
+    throw new Error("Board não encontrado.");
+  }
 
-      if (indexCard < 0 || indexCard >= boardData.columns[indexColumn].cards.length) {
-        return reject(new Error('Índice de card inválido.'));
-      }
+  if (index < 0 || index >= boardData.columns.length) {
+    throw new Error("Índice inválido para atualizar o título da coluna.");
+  }
 
-      // Atualiza o conteúdo do card
-      const updatedBoardData = { ...boardData };
-      const columnToUpdate = updatedBoardData.columns[indexColumn];
-      columnToUpdate.cards[indexCard].content = content;
+  // Atualiza coluna
+  const updatedBoardData = { ...boardData };
+  updatedBoardData.columns[index].isObfuscated = isObfuscated;
 
-      // Salva os dados atualizados no banco de dados
-      await putTable(config.TABLE_BOARD, updatedBoardData);
+  await putTable(config.TABLE_BOARD, updatedBoardData);
+  return updatedBoardData;
+};
 
-      // Retorna o board atualizado
-      resolve(updatedBoardData);
-    } catch (error) {
-      // Rejeita a promise em caso de erro
-      reject(error);
-    }
-  });
+const updatecolorCards = async (boardId, colorCards, index) => {
+
+  const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+
+  if (!boardData) {
+    throw new Error("Board não encontrado.");
+  }
+
+  if (index < 0 || index >= boardData.columns.length) {
+    throw new Error("Índice inválido para atualizar o título da coluna.");
+  }
+
+  // Atualiza o título da coluna
+  const updatedBoardData = { ...boardData };
+  updatedBoardData.columns[index].colorCards = colorCards;
+
+  await putTable(config.TABLE_BOARD, updatedBoardData);
+  return updatedBoardData;
+};
+
+const updateLike = async (boardId, isIncrement, indexCard, indexColumn) => {
+
+  const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+
+  if (!boardData) {
+    throw new Error("Board não encontrado.");
+  }
+
+  if (indexColumn < 0 || indexColumn >= boardData.columns.length) {
+    throw new Error("Índice de coluna inválido.");
+  }
+
+  if (indexCard < 0 || indexCard >= boardData.columns[indexColumn].cards.length) {
+    throw new Error("Índice de card inválido.");
+  }
+
+  // Atualiza a contagem de likes do card
+  const updatedBoardData = { ...boardData };
+  const columnToUpdate = updatedBoardData.columns[indexColumn];
+  const countLike = columnToUpdate.cards[indexCard].likeCount;
+  const countLikeUpdate = isIncrement ? countLike + 1 : countLike - 1;
+
+  columnToUpdate.cards[indexCard].likeCount = countLikeUpdate;
+
+  await putTable(config.TABLE_BOARD, updatedBoardData);
+  return updatedBoardData;
 };
 
 
+const deleteCard = async (boardId, indexCard, indexColumn) => {
+
+  const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+
+  if (!boardData) {
+    throw new Error("Board não encontrado.");
+  }
+
+  if (indexColumn < 0 || indexColumn >= boardData.columns.length) {
+    throw new Error("Índice de coluna inválido.");
+  }
+
+  if (indexCard < 0 || indexCard >= boardData.columns[indexColumn].cards.length) {
+    throw new Error("Índice de card inválido.");
+  }
+
+  // Atualiza a estrutura de dados para remover o card
+  const updatedBoardData = { ...boardData };
+  const columnToUpdate = updatedBoardData.columns[indexColumn];
+  columnToUpdate.cards.splice(indexCard, 1);
+
+  await putTable(config.TABLE_BOARD, updatedBoardData);
+  return updatedBoardData;
+};
+
+const deleteAllCard = async (boardId, indexColumn) => {
+
+  const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+
+  if (!boardData) {
+    throw new Error("Board não encontrado.");
+  }
+
+  if (indexColumn < 0 || indexColumn >= boardData.columns.length) {
+    throw new Error("Índice de coluna inválido.");
+  }
+
+  // Atualiza a estrutura de dados para remover o card
+  const updatedBoardData = { ...boardData };
+  const columnToUpdate = updatedBoardData.columns[indexColumn];
+  columnToUpdate.cards = [];
+
+
+  await putTable(config.TABLE_BOARD, updatedBoardData);
+  return updatedBoardData;
+};
+
+const saveCard = async (boardId, content, indexCard, indexColumn) => {
+
+  const boardData = await getBoardDb(config.TABLE_BOARD, boardId);
+
+  if (!boardData) {
+    throw new Error("Board não encontrado.");
+  }
+
+  if (indexColumn < 0 || indexColumn >= boardData.columns.length) {
+    throw new Error("Índice de coluna inválido.");
+  }
+
+  if (indexCard < 0 || indexCard >= boardData.columns[indexColumn].cards.length) {
+    throw new Error("Índice de card inválido.");
+  }
+
+  // Atualiza o conteúdo do card
+  const updatedBoardData = { ...boardData };
+  const columnToUpdate = updatedBoardData.columns[indexColumn];
+  columnToUpdate.cards[indexCard].content = content;
+
+  await putTable(config.TABLE_BOARD, updatedBoardData);
+  return updatedBoardData;
+};
 
 module.exports = { connectClientBoard, addCardBoard, reorderBoard, processCombine, deleteColumn, addColumn, updateTitleColumn, updateLike, deleteCard, deleteAllCard, saveCard, updatecolorCards, setIsObfuscatedBoardLevel, setIsObfuscatedColumnLevel, disconnectClientBoard };

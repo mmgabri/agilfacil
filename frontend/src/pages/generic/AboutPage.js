@@ -1,45 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { fetchAuthSession } from '@aws-amplify/auth';
 import { useNavigate } from 'react-router-dom';
+import Header from '../generic/HeaderPages';
 import SuggestionForm from '../components/SuggestionForm'
-import Header from '../components/Header';
+import { onSignOut } from '../../services/utils'
 
 function AboutPage() {
   let navigate = useNavigate();
   const [isModalOpen, setModalOpen] = useState(false);
+  const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
 
-  const handleAbout = () => {
-    navigate("/about")
-  }
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const session = await fetchAuthSession();
+        if (session.tokens == undefined) {
+          setUserIsAuthenticated(false)
+        } else {
+          setUserIsAuthenticated(true)
+        }
+      } catch (error) {
+        setUserIsAuthenticated(false)
+      }
+    }
 
-  const handleHome = () => {
-    navigate("/")
-  }
+    checkAuth();
 
-  const handleOpen = () => {
-    setModalOpen(true);
-  }
+  }, []);
 
 
   return (
     <div className="bg-black-custom">
-      <Header handleHome={handleHome} handleAbout={handleAbout} handleOpen={handleOpen} />
+      <Header
+        showSuggestionsModal={() => setModalOpen(true)}
+        isUserLogged={userIsAuthenticated}
+        signIn={() => navigate('/login')}
+        signOut={onSignOut}
+        goHome={() => navigate('/')} />
       <Container>
         <Title>Sobre o AgilFacil</Title>
         <Paragraph>
-          O AgilFacil tem o propósito de fornecer ferramentas e recursos que simplificam a implementação de práticas ágeis, como o Planning Poker. O AgilFacil acredita que a agilidade não deve ser um desafio, mas sim uma oportunidade de aprimorar a colaboração e a eficiência nas equipes. Ao promover metodologias como o Planning Poker, o AgilFacil ajuda empresas a alcançar seus objetivos com mais clareza e envolvimento.
+          O AgilFacil tem o propósito de fornecer ferramentas e recursos que simplificam a implementação de práticas ágeis, como o Planning Poker e Board Interativo.
         </Paragraph>
         <Paragraph>
-          Em um ambiente corporativo cada vez mais dinâmico, onde a agilidade e a colaboração são essenciais para o sucesso, o Planning Poker se destaca como uma ferramenta poderosa. Sua simplicidade não apenas facilita o processo de estimativa, mas também promove um espírito de equipe que é fundamental para alcançar os objetivos comuns. Adotar o Planning Poker, através do suporte do AgilFacil, pode ser um passo significativo para empresas que buscam otimizar seus processos e maximizar a eficácia de suas equipes.
+          Em um ambiente corporativo cada vez mais dinâmico, onde a agilidade e a colaboração são essenciais para o sucesso, as ferramentas Planning Poker e Board Interativo se destacam como uma ferramenta poderosa.
         </Paragraph>
-        <Paragraph>A simplicidade do Planning Poker oferece diversos benefícios para empresas e equipes:</Paragraph>
-        <List>
-          <ListItem><strong>Colaboração Aumentada:</strong> A técnica incentiva a participação de todos, independentemente de seu nível de experiência, criando um ambiente onde cada voz é ouvida.</ListItem>
-          <ListItem><strong>Visibilidade e Clareza:</strong> As discussões que cercam cada estimativa ajudam a esclarecer requisitos e expectativas, resultando em uma compreensão mais profunda das tarefas em questão.</ListItem>
-          <ListItem><strong>Rapidez e Eficiência:</strong> O formato estruturado do Planning Poker torna o processo de estimativa mais ágil, permitindo que as equipes cheguem a consensos rapidamente, sem prolongar excessivamente as reuniões.</ListItem>
-          <ListItem><strong>Engajamento da Equipe:</strong> A natureza lúdica do método, combinada com a simplicidade, mantém os membros da equipe motivados e engajados, tornando a estimativa uma parte prazerosa do processo de planejamento.</ListItem>
-          <ListItem><strong>Melhoria Contínua:</strong> A prática regular do Planning Poker permite que as equipes ajustem suas estimativas com o tempo, aprendendo com as experiências anteriores e melhorando sua precisão.</ListItem>
-        </List>
       </Container>
       {isModalOpen && <SuggestionForm onClose={() => setModalOpen(false)} />}
     </div>

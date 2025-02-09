@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
-import { emitMessage, formatdateTime } from '../../services/utils'
+import { emitMessage, formatdateTime, onSignOut, onGetToken } from '../../services/utils'
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
-import { signOut, getCurrentUser, fetchUserAttributes, fetchAuthSession } from '@aws-amplify/auth';
+import { getCurrentUser, fetchUserAttributes, fetchAuthSession } from '@aws-amplify/auth';
 import { useNavigate } from 'react-router-dom'
 import { FaRegTrashAlt, FaRegFolderOpen, FaRegClone } from 'react-icons/fa';
 import { AiOutlineExport } from "react-icons/ai";
 import styled from 'styled-components';
-import Header from './componentes/HeaderCreateBoard';
+import Header from '../generic/HeaderPages';
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
 import { FRONT_BASE_URL } from "../../constants/apiConstants";
 import LoaderPage from '../generic/LoaderPage';
@@ -21,21 +21,36 @@ const BoardListPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setModalOpen] = useState(false);
   const [userAuthenticated, setUserAuthenticated] = useState({});
+  const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
 
   useEffect(() => {
+
+    const checkAuth = async () => {
+      try {
+        const session = await fetchAuthSession();
+        if (session.tokens == undefined) {
+          setUserIsAuthenticated(false)
+        } else {
+          setUserIsAuthenticated(true)
+        }
+      } catch (error) {
+        setUserIsAuthenticated(false)
+      }
+    }
+
     const fetchBoards = async () => {
       try {
         const user = await getCurrentUser();
         const attributes = await fetchUserAttributes(user);
-        const userData = {userId: attributes.sub, userName: attributes.name, isVerified: true };
-        const userStorage = {userId: attributes.sub, userName: attributes.name};
+        const userData = { userId: attributes.sub, userName: attributes.name, isVerified: true };
+        const userStorage = { userId: attributes.sub, userName: attributes.name };
         setUserAuthenticated(userData)
-        
+
         localStorageService.removeItem("AGILFACIL_USER_LOGGED");
         localStorageService.setItem("AGILFACIL_USER_LOGGED", userStorage);
 
         // Obtem Board do Usuário Logado     
-        const token = await getToken()
+        const token = await onGetToken()
 
         axios
           .get(`${SERVER_BASE_URL}/board/getBoardByUser/${attributes.sub}`,
@@ -59,24 +74,15 @@ const BoardListPage = () => {
     };
 
     fetchBoards();
+    checkAuth();
   }, []);
-
-  async function getToken() {
-    try {
-      const session = await fetchAuthSession();
-      const token = session.tokens.idToken.toString();
-      return token;
-    } catch (error) {
-      throw error;
-    }
-  }
 
   const handleDelete = async (id) => {
     const isConfirmed = window.confirm("Confirma exclusão do Board?");
     if (!isConfirmed) {
       return
     }
-    const token = await getToken()
+    const token = await onGetToken()
     setIsLoading(true)
     try {
       const response = await axios.delete(`${SERVER_BASE_URL}/board/${id}`,
@@ -109,8 +115,7 @@ const BoardListPage = () => {
   }
 
   const handleCreateBoard = () => {
-    const userData = { ...userAuthenticated, isBoardCreator: true };
-    navigate('/board/create', { state: { userAuthenticated: userData } });
+    navigate('/board/create', { state: { userAuthenticated: userAuthenticated } });
   };
 
   const handleCloneBoard = async (boardId) => {
@@ -118,29 +123,12 @@ const BoardListPage = () => {
     try {
       const response = await axios.get(`${SERVER_BASE_URL}/board/${boardId}`)
       setIsLoading(false)
-      const userData = { ...userAuthenticated, isBoardCreator: true };
-      navigate('/board/create', { state: { userAuthenticated: userData, board: response.data } });
+      navigate('/board/create', { state: { userAuthenticated: userAuthenticated, board: response.data } });
     } catch (error) {
       emitMessage('error', 903, 3000)
       setIsLoading(false)
     }
   }
-
-  const exitBoard = async () => {
-    try {
-      localStorageService.removeItem("AGILFACIL_USER_LOGGED");
-      sessionStorage.removeItem('AGILFACIL_redirectAfterLogin')
-      await signOut();
-      window.location.href = '/';
-    } catch (error) {
-      emitMessage('error', 999, 3000)
-    }
-  };
-
-  const handleOpenBoardSugestion = async () => {
-    setModalOpen(true);
-  }
-
 
   const handleExportBoardToPDF = async (boardId) => {
     const url = `${FRONT_BASE_URL}/board/export/${boardId}`;
@@ -150,14 +138,21 @@ const BoardListPage = () => {
 
   return (
     <div className="bg-black-custom">
-      <Header sairSala={exitBoard} handleOpenSugestion={handleOpenBoardSugestion} />
+      <Header
+        subText={'Board Interativo'}
+        showSuggestionsModal={() => setModalOpen(true)}
+        isUserLogged={userIsAuthenticated}
+        signIn={() => navigate('/login')}
+        signOut={onSignOut}
+        goHome={() => navigate('/')} />
+      
       {isLoading ?
         <LoaderPage />
         :
         <>
           {!boards ?
             <AlignedContainer>
-              <p>Não foi possível carregar os seus Board.</p>
+              <p>Não foi possível carregar os seus Boards.</p>
             </AlignedContainer>
             :
             <Container>
@@ -172,7 +167,7 @@ const BoardListPage = () => {
                     boards.map((board) => (
                       <BoardBox key={board.boardId}>
                         <h6>{board.boardName}</h6>
-                        <p>Criado em: {formatdateTime(board.dateTime)}</p>
+                        <p>Criado em: {formatdateTime(board.createdAt)}</p>
                         <p>Squad: {board.squadName}</p>
                         <p>Área: {board.areaName}</p>
                         <Actions>

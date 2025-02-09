@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FaExclamationTriangle } from 'react-icons/fa'; // Importar o ícone
 import '../../styles/NotificationPage.css';
-import Header from '../components/Header';
+import Header from '../generic/HeaderPages';
 import SuggestionForm from '../components/SuggestionForm'
 
 const NotificationPage = () => {
@@ -10,23 +10,9 @@ const NotificationPage = () => {
     const [isModalOpen, setModalOpen] = useState(false);
     let navigate = useNavigate();
 
-    const handleAbout = () => {
-        navigate("/about")
-    }
-
-    const handleHome = () => {
-        navigate("/")
-    }
-
-    const handleOpen = () => {
-        setModalOpen(true);
-    }
-
-
-
     return (
         <div className="bg-black-custom">
-            <Header handleHome={handleHome} handleAbout={handleAbout} handleOpen={handleOpen} />
+            <Header goHome={() => navigate("/") } goAbout={ () => navigate("/about")} handleOpen={() => setModalOpen(true)} />
             <div className="error-message">
                 <FaExclamationTriangle className="error-icon" />
                 {location.state.statusCode == 404 ?

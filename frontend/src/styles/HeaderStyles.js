@@ -33,6 +33,12 @@ export const LogoTop = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  
+  &:hover {
+    background-color: #61dafb;
+    color: #282c34;
+  }
 `;
 
 export const LogoImage = styled.img`
@@ -40,6 +46,7 @@ export const LogoImage = styled.img`
   height: 32px;
   margin-right: 10px;
 `;
+
 
 export const LogoText = styled.span`
   font-weight: 500; /* Medium equivalente */
@@ -70,6 +77,7 @@ export const Nav = styled.nav`
 
 export const NavItem = styled.a`
   text-decoration: none;
+  cursor: pointer;
   color: white;
   font-size: 1rem;
   padding: 0.5rem 1rem;

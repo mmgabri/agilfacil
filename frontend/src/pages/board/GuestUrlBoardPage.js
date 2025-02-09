@@ -5,7 +5,6 @@ import { emitMessage } from '../../services/utils'
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useParams } from 'react-router-dom'
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
-//import "../../styles/CreateRoomAndGuest.css"
 import LoaderPage from "../generic/LoaderPage"
 import localStorageService from "../../services/localStorageService";
 import { v4 as uuidv4 } from 'uuid';

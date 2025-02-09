@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { signOut, fetchAuthSession } from '@aws-amplify/auth';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useLocation } from 'react-router-dom'
-import { emitMessage } from '../../services/utils'
+import { emitMessage, onSignOut, onGetToken } from '../../services/utils'
+import { fetchAuthSession, getCurrentUser, fetchUserAttributes } from '@aws-amplify/auth';
 import 'react-toastify/dist/ReactToastify.css';
 import { SERVER_BASE_URL } from "../../constants/apiConstants";
-import Header from './componentes/HeaderCreateBoard';
+import Header from '../generic/HeaderPages';
 import SuggestionForm from '../components/SuggestionForm'
 import { FormContainer, Title, FormGroup, CheckboxLabel, CheckboxWrapper, StyledForm, SubmitButton, RemoveIcon, AddColumnIcon } from '../../styles/FormStyle'
 
 export const CreateBoardPage = ({ }) => {
   let navigate = useNavigate();
   const location = useLocation();
+
   const [board, setBoard] = useState(null);
+  const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
 
   const [formData, setFormData] = useState({
     boardName: "",
@@ -25,25 +27,40 @@ export const CreateBoardPage = ({ }) => {
   const [userAuthenticated, setUserAuthenticated] = useState({});
 
   useEffect(() => {
-    //console.log('useEffect - location.state', location.state)
+    console.log('CreateBoardPage - useEffect - location.state', location.state)
 
-    const initializeUserData = async () => {
+    const checkAuth = async () => {
       try {
-        setUserAuthenticated(location.state.userAuthenticated)
-
+        const session = await fetchAuthSession();
+        if (session.tokens == undefined) {
+          setUserIsAuthenticated(false)
+        } else {
+          setUserIsAuthenticated(true)
+        }
       } catch (error) {
-        emitMessage('error', 999)
+        setUserIsAuthenticated(false)
       }
-    };
-
-    if (!location.state.userAuthenticated) {
-      emitMessage('error', 999, 4000)
-      return
     }
 
-    initializeUserData();
+    const buildUserAuthenticated = async () => {
+      try {
+        const user = await getCurrentUser();
+        const attributes = await fetchUserAttributes(user);
+        const userData = { userId: attributes.sub, userName: attributes.name, isVerified: true };
+        setUserAuthenticated(userData)
+      } catch (error) {
+        console.error('Erro ao obter usuário: ', error)
+        emitMessage('error', 999)
+      }
+    }
 
-    if (location.state.board) {
+    if (location.state?.userAuthenticated) {
+      setUserAuthenticated(location.state.userAuthenticated)
+    } else {
+      buildUserAuthenticated()
+    }
+
+    if (location.state?.board) {
       setBoard(location.state.board);
       setFormData({
         boardName: location.state.board.boardName,
@@ -56,17 +73,9 @@ export const CreateBoardPage = ({ }) => {
       });
     }
 
-  }, []);
+    checkAuth();
 
-  async function getToken() {
-    try {
-      const session = await fetchAuthSession();
-      const token = session.tokens.idToken.toString();
-      return token;
-    } catch (error) {
-      throw error;
-    }
-  }
+  }, [location.state?.board, location.state?.userAuthenticated]);
 
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
@@ -108,18 +117,10 @@ export const CreateBoardPage = ({ }) => {
   };
 
 
-  const exitBoard = async () => {
-    try {
-      await signOut();
-    } catch (error) {
-      emitMessage('error', 999)
-    }
-  };
-
   const handleSubmit = async e => {
     e.preventDefault()
 
-    const token = await getToken()
+    const token = await onGetToken()
 
     try {
       const response = await axios.post(SERVER_BASE_URL + '/board/createBoard', { creatorId: userAuthenticated.userId, userName: userAuthenticated.userName, boardName: formData.boardName, squadName: formData.squadName, areaName: formData.areaName, columns: formData.columns }, {
@@ -128,16 +129,12 @@ export const CreateBoardPage = ({ }) => {
           'Content-Type': 'application/json'
         },
       })
-      navigate('/board', { state: { boardData: response.data, userAuthenticated: userAuthenticated } });
+      const userData = { ...userAuthenticated, isBoardCreator: true };
+      navigate('/board', { state: { boardData: response.data, userAuthenticated: userData } });
     } catch (error) {
+      console.error('Erro ao criar Board : ', error)
       emitMessage('error', 906, 3000)
     }
-  }
-
-
-
-  const handleOpenSugestion = () => {
-    setModalOpen(true);
   }
 
   const handleKeepCardsChange = (columnId, isChecked) => {
@@ -161,7 +158,14 @@ export const CreateBoardPage = ({ }) => {
 
   return (
     <div className="bg-black-custom">
-      <Header sairSala={exitBoard} handleOpenSugestion={handleOpenSugestion} />
+      <Header
+        subText={'Board Interativo'}
+        showSuggestionsModal={() => setModalOpen(true)}
+        isUserLogged={userIsAuthenticated}
+        signIn={() => navigate('/login')}
+        signOut={onSignOut}
+        goHome={() => navigate('/')} />
+
       <FormContainer>
         <Title>Preencha os campos abaixo para criar o Board interativo</Title>
         <StyledForm onSubmit={handleSubmit}>

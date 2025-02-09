@@ -2,7 +2,7 @@ require('dotenv').config();
 const { DateTime } = require('luxon');
 const config = require('../../config');
 const { v4: uuidv4 } = require('uuid');
-const { putTable, getBoardDb, getBoardByUserDb, deleteBoardDb } = require('./dynamoBoardService');
+const { putTable, getBoardDb, getBoardByUserDb, deleteBoardDb } = require('../database/dynamoService');
 const logger = require('../generic/cloudWatchLoggerService');
 const timeZone = 'America/Sao_Paulo';
 
@@ -12,7 +12,7 @@ const createBoard = async (req, res) => {
   const boardDb = {
     boardId: uuidv4(),
     creatorId: req.body.creatorId,
-    dateTime: DateTime.now().setZone(timeZone).toISO(),
+    createdAt: DateTime.now().setZone(timeZone).toISO(),
     userName: req.body.userName,
     boardName: req.body.boardName,
     squadName: req.body.squadName,
@@ -62,7 +62,7 @@ const getBoardByUser = async (req, res) => {
     const { creatorId } = req.params
 
   try {
-    const dataItems = await getBoardByUserDb(config.TABLE_BOARD, config.INDEX_NAME_USER, creatorId);
+    const dataItems = await getBoardByUserDb(config.TABLE_BOARD, config.BOARD_INDEX_NAME_USER, creatorId);
     res.status(200).json(dataItems);
     const elapsedTime = (performance.now() - start).toFixed(3);
   } catch (error) {
@@ -78,7 +78,7 @@ const deleteBoard = async (req, res) => {
 
   try {
     const board = await getBoardDb(config.TABLE_BOARD, boardId);
-    await deleteBoardDb(config.TABLE_BOARD, boardId, board.dateTime);
+    await deleteBoardDb(config.TABLE_BOARD, boardId, board.createdAt);
     res.status(204).json("sucess!");
     //const elapsedTime = (performance.now() - start).toFixed(3);
   } catch (error) {

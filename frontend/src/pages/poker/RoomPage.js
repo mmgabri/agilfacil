@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom'
+import { fetchAuthSession } from '@aws-amplify/auth';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { signOut } from '@aws-amplify/auth';
 import { useSocket } from "../../customHooks/useSocket";
 import "../../styles/Room.css"
-import Header from '../poker/components/HeaderPlanning';
+import Header from '../generic/HeaderPages';
 import StatusSection from '../poker/components/StatusSection';
 import Users from '../poker/components/Users';
 import VotingCards from '../poker/components/VotingCards';
@@ -12,41 +12,48 @@ import VotingResults from '../poker/components/VotingResults';
 import Progress from '../poker/components/ProgressBar';
 import Invite from '../components/Invite';
 import SuggestionForm from '../components/SuggestionForm'
-import { emitMessage } from '../../services/utils'
+import { onSignOut } from '../../services/utils'
 
 export const RoomPage = ({ }) => {
   let navigate = useNavigate();
   const location = useLocation();
+  const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [roomName, setRoomName] = useState("");
   const [nota, setNota] = useState("");
-  const [roomId, setRoomId] = useState([]);
-  const [moderator, setModerator] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
-  const [roomData, setRoomData] = useState({
-    roomName: '',
-    status: '',
-    users: [],
-    _id: ''
-  });
+  const [roomData, setRoomData] = useState({ users: [] });
+  const [userLogged, setUserLogged] = useState({});
 
   const cards = [1, 2, 3, 5, 8, 13, 21, "?"];
-  const handleShowInvite = () => setShowInvite(true);
-  const handleCloseInvite = () => setShowInvite(false);
 
-  const { isConnected, socketResponse, updateStatusRoom, votar } = useSocket(location.state.userName, location.state.userId, location.state.roomId, 'poker')
+  const { socketResponse, updateStatusRoom, votar } = useSocket(location.state.userLogged.nickName, location.state.userLogged.userId, location.state.roomData.roomId, 'poker')
 
   useEffect(() => {
-    // console.log("useEffect-principal==>", location.state.userId, location.state.userName, location.state.roomId, location.state.roomName)
-    setUserName(location.state.userName)
-    setRoomId(location.state.roomId)
-    setRoomName(location.state.roomName)
-    setModerator(location.state.moderator)
-  }, []);
+    console.log("useEffect-principal==>", location.state.userLogged);
+
+    const checkAuth = async () => {
+      try {
+        const session = await fetchAuthSession();
+        if (session.tokens == undefined) {
+          setUserIsAuthenticated(false)
+        } else {
+          setUserIsAuthenticated(true)
+        }
+
+      } catch (error) {
+        setUserIsAuthenticated(false)
+      }
+    }
+
+    setRoomData(location.state.roomData);
+    setUserLogged(location.state.userLogged);
+
+    checkAuth();
+  }, [location.state]);
 
 
   useEffect(() => {
+    //console.log('useEffect - socketResponse -->', socketResponse)
     if (socketResponse.users) {
       setRoomData(socketResponse)
       if (roomData.status == 'VOTACAO_ENCERRADA')
@@ -59,32 +66,28 @@ export const RoomPage = ({ }) => {
     votar({ vote: nota })
   }
 
-  const handlerupdateStatusRoom = (status) => {
-    updateStatusRoom({ status: status, roomId: { roomId } })
-  }
-
-  const sairSala = async e => {
-    //navigate('/');
-    try {
-      await signOut();
-    } catch (error) {
-      emitMessage('error', 999)
-    }
-  }
-
-  const handleOpen = () => {
-    setModalOpen(true);
+  const handlerUpdateStatusRoom = (status) => {
+    updateStatusRoom({ status: status, roomId: roomData.roomId })
   }
 
 
   return (
 
     <div className="bg-black-custom">
+      <Header
+        userName={userLogged.nickName}
+        roomName={roomData.roomName}
+        subText={'Planning Poker'}
+        showSuggestionsModal={() => setModalOpen(true)}
+        showInviteModal={() => setShowInvite(true)}
+        handleCloseInvite={() => setShowInvite(false)}
+        isUserLogged={userIsAuthenticated}
+        signIn={() => navigate('/login')}
+        signOut={onSignOut}
+        goHome={() => navigate('/')} />
 
-      <Header userName={userName} roomName={roomName} handleShowInvite={handleShowInvite} handleCloseInvite={handleCloseInvite} sairSala={sairSala} handleOpen={handleOpen} />
-      <StatusSection roomData={roomData} moderator={moderator} handlerupdateStatusRoom={handlerupdateStatusRoom} />
-
-      {showInvite && <Invite id={roomId} onClose={handleCloseInvite} service={'poker'} />}
+      <StatusSection roomData={roomData} isRoomCreator={userLogged.isRoomCreator} handlerupdateStatusRoom={handlerUpdateStatusRoom} />
+      {showInvite && <Invite id={roomData.roomId} onClose={() => setShowInvite(false)} service={'poker'} />}
 
       {roomData.status == "VOTACAO_FINALIZADA"
         ?

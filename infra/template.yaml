@@ -19,20 +19,20 @@ Parameters:
 
 Resources:
 
-  TableBoard: 
+  TableBoardBoard: 
     Type: AWS::DynamoDB::Table
     Properties: 
       AttributeDefinitions: 
         - AttributeName: "creatorId"
           AttributeType: "S"
-        - AttributeName: "dateTime"
+        - AttributeName: "createdAt"
           AttributeType: "S"
         - AttributeName: "boardId"
           AttributeType: "S"
       KeySchema: 
         - AttributeName: "boardId"
           KeyType: "HASH"
-        - AttributeName: "dateTime"
+        - AttributeName: "createdAt"
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: 'board'
@@ -42,7 +42,7 @@ Resources:
           KeySchema: 
             - AttributeName: "creatorId"
               KeyType: "HASH"
-            - AttributeName: "dateTime"
+            - AttributeName: "createdAt"
               KeyType: "RANGE"
           Projection: 
             ProjectionType: INCLUDE
@@ -52,3 +52,35 @@ Resources:
               - userName
               - squadName
               - areaName
+
+  TableBoardRoom: 
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      AttributeDefinitions: 
+        - AttributeName: "creatorId"
+          AttributeType: "S"
+        - AttributeName: "createdAt"
+          AttributeType: "S"
+        - AttributeName: "roomId"
+          AttributeType: "S"
+      KeySchema: 
+        - AttributeName: "roomId"
+          KeyType: "HASH"
+        - AttributeName: "createdAt"
+          KeyType: "RANGE"
+      BillingMode: PAY_PER_REQUEST
+      TableName: 'room'
+
+      GlobalSecondaryIndexes: 
+        - IndexName: "gsi_room_user"
+          KeySchema: 
+            - AttributeName: "creatorId"
+              KeyType: "HASH"
+            - AttributeName: "createdAt"
+              KeyType: "RANGE"
+          Projection: 
+            ProjectionType: INCLUDE
+            NonKeyAttributes: 
+              - roomId
+              - roomName
+              - userName

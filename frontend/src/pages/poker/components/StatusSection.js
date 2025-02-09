@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const StatusSection = ({ roomData, moderator, handlerupdateStatusRoom }) => {
+const StatusSection = ({ roomData, isRoomCreator, handlerupdateStatusRoom }) => {
 
     const handleBuildStatus = () => {
 
@@ -35,7 +35,7 @@ const StatusSection = ({ roomData, moderator, handlerupdateStatusRoom }) => {
         <div style={{ padding: '0.8rem', display: 'flex', justifyContent: 'center' }}>
             <StatusContainer>
                 {handleBuildStatus()}
-                {moderator
+                {isRoomCreator
                     ? <>{handleBuildButtonStatus()}</>
                     : <></>}
             </StatusContainer>
