@@ -9,7 +9,7 @@ import { FaNoteSticky } from "react-icons/fa6";
 import { IoIosAddCircleOutline } from 'react-icons/io';
 import { FaRegTrashAlt, FaPalette } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
-import { LiaEyeSlashSolid, LiaEyeSolid  } from "react-icons/lia";
+import { LiaEyeSlashSolid, LiaEyeSolid } from "react-icons/lia";
 import './../../../styles/board.css';
 import ModalAddCard from '../modals/ModalAddCard';
 
@@ -88,7 +88,7 @@ const ColumnHeader = ({ columnTitle, countCards, onAddCard, index, onUpdateTitle
     onUpdatecolorCards(color, index)
   };
 
- 
+
   return (
     <ColumnHeaderContainer>
       <ModalAddCard
@@ -214,14 +214,16 @@ const ColumnHeader = ({ columnTitle, countCards, onAddCard, index, onUpdateTitle
         </Dropdown>
 
       </TitleContainer>
-      <ContainerIcons>
+      <ContainerIcons isBoardCreator={userLoggedData.isBoardCreator}>
+        {/** 
         <IconsContainer data-tooltip-id={`tooltip-qtd-cards-${index}`} data-tooltip-content='Quantidade de Cards na coluna' >
         <Tooltip id={`tooltip-qtd-cards-${index}`} style={{ fontSize: "12px", padding: "4px 8px" }} />
           <FaNoteSticky />
           <CardBadge>{countCards}</CardBadge>
         </IconsContainer>
+        */}
         <IconsContainer data-tooltip-id={`tooltip-add-cards-${index}`} data-tooltip-content='Criar card'>
-        <Tooltip id={`tooltip-add-cards-${index}`} style={{ fontSize: "12px", padding: "4px 8px" }} />
+          <Tooltip id={`tooltip-add-cards-${index}`} style={{ fontSize: "12px", padding: "4px 8px" }} />
           <StyledIoIosAddCircleOutline onClick={() => setModalOpen(true)} />
         </IconsContainer>
         {userLoggedData.isBoardCreator &&
@@ -373,7 +375,7 @@ const iconMarginStyle = {
 
 const ContainerIcons = styled.div`
   display: flex;
-  justify-content: space-between; /* Distribui os itens igualmente */
+  justify-content: ${(props) => (props.isBoardCreator ? 'space-around' : 'center')};
   align-items: center; /* Centraliza verticalmente */
   width: 100%; /* Ocupa toda a largura disponível */
   max-width: 1200px; /* Define uma largura máxima para o container */

@@ -4,17 +4,19 @@ import { Dropdown } from "react-bootstrap";
 import { MdMoreVert, MdEdit, MdCheck } from 'react-icons/md';
 import { CiTrash } from "react-icons/ci";
 import { AiTwotoneLike } from 'react-icons/ai';
+import ModalAddCard from '../modals/ModalAddCard';
 
 import { colors } from "@atlaskit/theme";
 
 function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColumn, onSaveCard, onDeleteCard, onUpdateLike, colorCards, userLoggedData, isObfuscatedBoardLevel, isObfuscatedColumnLevel }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isModalEditCardOpen, setModalEditCardOpen] = useState(false);
   const [content, setContent] = useState(card.content);
   const [likeCount, setLikeCount] = useState(0);
   const menuRef = useRef(null);
   const [hoverIndex, setHoverIndex] = useState(null);
-  
+
   useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
     return () => {
@@ -55,14 +57,15 @@ function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColum
   };
 
   const handleEdit = () => {
-    setIsEditing(true);
-    setIsMenuOpen(false);
+    // setIsEditing(true);
+    // setIsMenuOpen(false);
+    setModalEditCardOpen(true)
   };
 
-  const handleSave = () => {
+  const handleSave = (value) => {
     setIsEditing(false);
     setIsMenuOpen(false);
-    onSaveCard(content, index, indexColumn);
+    onSaveCard(value, index, indexColumn);
   };
 
   const handleDelete = () => {
@@ -79,7 +82,7 @@ function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColum
     setLikeCount(likeCount === 0 ? 1 : 0);
   };
 
-  return (
+    return (
     <Container
       ref={provided.innerRef}
       {...provided.draggableProps}
@@ -91,6 +94,15 @@ function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColum
       data-testid={card.id}
       data-index={index}
     >
+      <ModalAddCard
+        isOpen={isModalEditCardOpen}
+        onClose={() => setModalEditCardOpen(false)}
+        onSubmit={handleSave}
+        title={"Atualização de Card"}
+        isUpdateCard={true}
+        content={card.content}
+      />
+
 
       {userLoggedData.userId == card.userId || userLoggedData.isBoardCreator ?
         <Content>

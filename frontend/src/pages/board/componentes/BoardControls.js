@@ -13,30 +13,14 @@ import ModalAddCollumn from '../modals/ModalAddCollumn';
 const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInput, isRunningTimer, handleInputTimerChange, handleStartTimer, handlePauseTimer, handleAddColumn, handleSetIsObfuscatedBoardLevel, isObfuscatedBoardLevel, isBoardCreator, isInvalidFormat, handleExportBoard }) => {
   const [isModalOpen, setModalOpen] = useState(false);
 
-  const CustomTooltip = ({ id }) => (
-    <Tooltip
-      id={id}
-      place="bottom"
-      offset={{ top: 60 }}
-      style={{
-        fontSize: '12px',
-
-        padding: '3px',
-        marginTop: '30px',
-      }}
-    />
-  );
-
-  const InfoCard = ({ tooltipId, tooltipText, icon: Icon, count, iconSize }) => (
-    <InfoColumn>
-      <CountsContainer data-tooltip-id={tooltipId} data-tooltip-content={tooltipText}>
-        <CustomTooltip id={tooltipId} />
-        <Icon size={iconSize} />
-        <CardBadge>{count}</CardBadge>
-      </CountsContainer>
-    </InfoColumn>
-  );
-
+  const InfoCard = ({ text, icon, count, iconSize }) => {
+    return (
+      <InfoCardContainer>
+        <Text>{text}</Text> 
+        <Count>{count}</Count> {/* Contagem (valor) abaixo */}
+      </InfoCardContainer>
+    );
+  };
 
   const handleModalAddCollmnSubmit = (collunName) => {
     handleAddColumn(collunName)
@@ -49,12 +33,12 @@ const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInpu
         onClose={() => setModalOpen(false)}
         onSubmit={handleModalAddCollmnSubmit}
       />
+<InfoBox>
+  <InfoCard text="Total de Cards no board" icon={FaNoteSticky} count={countCard} iconSize={30} />
+  <InfoCard text="Participantes Online" icon={FaUsers} count={countUserLogged} iconSize={30} />
+  <InfoCard text="Participantes com Card" icon={FaUserPen} count={countUserWithCard} iconSize={30} />
+</InfoBox>
 
-      <InfoBox>
-        <InfoCard tooltipId="tooltip-total-cards" tooltipText="Total de Cards" icon={FaNoteSticky} count={countCard} iconSize={30} />
-        <InfoCard tooltipId="tooltip-participantes-online" tooltipText="Participantes Online" icon={FaUsers} count={countUserLogged} iconSize={38} />
-        <InfoCard tooltipId="tooltip-participantes-com-card" tooltipText="Participantes que criaram Cards" icon={FaUserPen} count={countUserWithCard} iconSize={38} />
-      </InfoBox>
 
       <TimerBox>
         <TimerIconClock />
@@ -84,9 +68,10 @@ const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInpu
           <ActionButton onClick={() => setModalOpen(true)} color="#1E3A5F">
             <FaPlus /> Incluir Coluna
           </ActionButton>
+          {!isObfuscatedBoardLevel &&
           <ActionButton onClick={() => handleExportBoard()} color="#1E3A5F">
             <AiOutlineExport size={19} /> Exportar Board
-          </ActionButton>
+          </ActionButton>}
           {isBoardCreator && (
             <>
               {isObfuscatedBoardLevel ?
@@ -139,24 +124,6 @@ box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para destacar */
 margin: 0px;
 `;
 
-
-const InfoColumn = styled.div`
-display: flex;
-flex-direction: column; /* Alinha conteúdo em coluna */
-align-items: flex-start; /* Alinha à esquerda */
-flex-shrink: 0; /* Evita que a coluna encolha */
-margin: 4px; /* Espaçamento entre colunas */
-background-color: transparent //#2c2c2c; /* Fundo para destacar */
-padding: 5px; /* Espaçamento interno */
-border-radius: 4px; /* Bordas arredondadas */
-box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Sombra leve */
-
- transition: transform 0.2s ease-in-out; /* Suaviza a transformação */
-
-&:hover {
-  transform: scale(1.1); /* Aumenta o tamanho em 20% */
-}
-`;
 
 const BoardActions = styled.div`
 display: flex;
@@ -277,27 +244,45 @@ const ActionButton = styled.button`
   }
 `;
 
-const CountsContainer = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  font-size: 32px;
-  margin: 10px;
-  color: #4A6DA7;
-  overflow: visible !important;
-  `;
 
-const CardBadge = styled.span`
-  position: absolute;
-  top: -7px;
-  right: -5px;
-  background-color: #fff;
-  color: black;
-  font-size: 12px;
-  padding: 2px 6px;
+
+
+
+
+
+const InfoCardContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
   border-radius: 10px;
+  background-color: #1E3A5F;
+  width: 85px;
+  height: 50px;
+  margin-right: 5px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+`;
+
+const Text = styled.div`
+  font-size: 10px;
+  color: #fff;
+  margin-bottom: 0px;
+  text-align: center;
+  font-weight: 500;
 `;
 
 
+const Count = styled.div`
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+`;
 
 export default BoardControls;
