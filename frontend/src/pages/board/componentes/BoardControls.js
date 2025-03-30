@@ -10,13 +10,14 @@ import { LiaEyeSlashSolid, LiaEyeSolid } from "react-icons/lia";
 import InputMask from 'react-input-mask';
 import ModalAddCollumn from '../modals/ModalAddCollumn';
 
-const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInput, isRunningTimer, handleInputTimerChange, handleStartTimer, handlePauseTimer, handleAddColumn, handleSetIsObfuscatedBoardLevel, isObfuscatedBoardLevel, isBoardCreator, isInvalidFormat, handleExportBoard }) => {
+const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInput, isRunningTimer, handleInputTimerChange, handleStartTimer, handlePauseTimer, handleAddColumn, handleSetIsObfuscatedBoardLevel, isObfuscatedBoardLevel, isBoardCreator, isInvalidFormat, handleExportBoard, isObfuscatedCardLevel }) => {
+
   const [isModalOpen, setModalOpen] = useState(false);
 
   const InfoCard = ({ text, icon, count, iconSize }) => {
     return (
       <InfoCardContainer>
-        <Text>{text}</Text> 
+        <Text>{text}</Text>
         <Count>{count}</Count> {/* Contagem (valor) abaixo */}
       </InfoCardContainer>
     );
@@ -33,11 +34,11 @@ const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInpu
         onClose={() => setModalOpen(false)}
         onSubmit={handleModalAddCollmnSubmit}
       />
-<InfoBox>
-  <InfoCard text="Total de Cards no board" icon={FaNoteSticky} count={countCard} iconSize={30} />
-  <InfoCard text="Participantes Online" icon={FaUsers} count={countUserLogged} iconSize={30} />
-  <InfoCard text="Participantes com Card" icon={FaUserPen} count={countUserWithCard} iconSize={30} />
-</InfoBox>
+      <InfoBox>
+        <InfoCard text="Total de Cards no board" icon={FaNoteSticky} count={countCard} iconSize={30} />
+        <InfoCard text="Participantes Online" icon={FaUsers} count={countUserLogged} iconSize={30} />
+        <InfoCard text="Participantes com Card" icon={FaUserPen} count={countUserWithCard} iconSize={30} />
+      </InfoBox>
 
 
       <TimerBox>
@@ -65,13 +66,6 @@ const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInpu
 
       <BoardActions>
         <ActionBox>
-          <ActionButton onClick={() => setModalOpen(true)} color="#1E3A5F">
-            <FaPlus /> Incluir Coluna
-          </ActionButton>
-          {!isObfuscatedBoardLevel &&
-          <ActionButton onClick={() => handleExportBoard()} color="#1E3A5F">
-            <AiOutlineExport size={19} /> Exportar Board
-          </ActionButton>}
           {isBoardCreator && (
             <>
               {isObfuscatedBoardLevel ?
@@ -84,6 +78,13 @@ const BoardControls = ({ countCard, countUserLogged, countUserWithCard, timeInpu
                 </ActionButton>)
               }
             </>)}
+          <ActionButton onClick={() => setModalOpen(true)} color="#1E3A5F">
+            <FaPlus /> Incluir Coluna
+          </ActionButton>
+          {(!isObfuscatedBoardLevel && !isObfuscatedCardLevel) &&
+            <ActionButton onClick={() => handleExportBoard()} color="#1E3A5F">
+              <AiOutlineExport size={19} /> Exportar Board
+            </ActionButton>}
         </ActionBox>
       </BoardActions>
 

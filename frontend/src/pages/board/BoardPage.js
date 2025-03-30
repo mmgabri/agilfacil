@@ -285,6 +285,9 @@ export const BoardPage = ({ }) => {
     window.open(url, "_blank");
   }
 
+  const verifyObfuscatedCardLevel = () => {
+    return boardData.columns.some(column => column.isObfuscated);
+  };
 
   return (
     <div className="bg-black-custom">
@@ -314,7 +317,8 @@ export const BoardPage = ({ }) => {
         isObfuscatedBoardLevel={boardData.isObfuscated}
         handleSetIsObfuscatedBoardLevel={handleSetIsObfuscatedBoardLevel}
         isBoardCreator={userLoggedData.isBoardCreator}
-        handleExportBoard={handleExportBoardToPDF} />
+        handleExportBoard={handleExportBoardToPDF} 
+        isObfuscatedCardLevel={verifyObfuscatedCardLevel()}/>
 
       <DragDropContext onDragEnd={onDragEnd}>
         <div className={cl.root}>
