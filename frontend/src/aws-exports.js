@@ -11,8 +11,8 @@ const awsmobile = {
             "profile",
             "aws.cognito.signin.user.admin"
         ],
-        "redirectSignIn": "https://agilfacil.com.br/boards",
-        "redirectSignOut": "https://agilfacil.com.br/",
+        "redirectSignIn": "https://agilfacil.com/boards",
+        "redirectSignOut": "https://agilfacil.com/",
         "responseType": "code",
         "options": {
             "prompt": "select_account"
