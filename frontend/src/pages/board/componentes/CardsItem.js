@@ -158,7 +158,7 @@ function CardItem({ card, isDragging, provided, index, isGroupedOver, indexColum
         </>
       }
 
-      {card.userId === userLoggedData.userId &&
+      {(card.userId === userLoggedData.userId || userLoggedData.isBoardCreator) &&
         <IconContainer ref={menuRef}>
           {isEditing ? (
             <StyledMdCheck onClick={handleSave} style={{ cursor: "pointer" }} />
@@ -375,5 +375,3 @@ const StyledMdCheck = styled(MdCheck)`
     background-color: #1c8e61;  // Cor de fundo ao passar o mouse (um tom mais escuro de verde)
   }
 `;
-
-
