@@ -45,8 +45,8 @@ git clone https://github.com/mmgabri/agilfacil.git
   server {
     listen 80;
     listen [::]:80;
-    server_name 54.160.193.178 agilfacil.com.br www.agilfacil.com.br;
-    return 301 https://$host$request_uri;
+    server_name 43.204.145.116 agilfacil.com www.agilfacil.com agilfacil.com.br www.agilfacil.com.br;
+    return 301 https://agilfacil.com$request_uri;
 
     location /socket/ {
          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -65,7 +65,7 @@ git clone https://github.com/mmgabri/agilfacil.git
 
 #### No browser de sua preferência, coloque o ip publico do host para abrir a pagina principal, por ex:
 ```bash
-  http://54.160.193.178/
+  http://43.204.145.116/
 ```
 
 
@@ -83,13 +83,13 @@ git clone https://github.com/mmgabri/agilfacil.git
 
 ```bash
   sudo apt install certbot python3-certbot-nginx -y
-  sudo certbot --nginx -d agilfacil.com.br -d www.agilfacil.com.br
+  sudo certbot --nginx -d agilfacil.com -d www.agilfacil.com
   sudo certbot renew --dry-run
 ```
 #### Atualize a configuração do nginx com o código abaixo
 ```bash
   server {
-    server_name agilfacil.com.br;
+    server_name agilfacil.com;
 
     # Configuração para a aplicação principal
     location / {
@@ -98,8 +98,8 @@ git clone https://github.com/mmgabri/agilfacil.git
 
     listen [::]:443 ssl ipv6only=on; # managed by Certbot
     listen 443 ssl; # managed by Certbot
-    ssl_certificate /etc/letsencrypt/live/agilfacil.com.br/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/agilfacil.com.br/privkey.pem; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/agilfacil.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/agilfacil.com/privkey.pem; # managed by Certbot
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 }
@@ -107,11 +107,23 @@ git clone https://github.com/mmgabri/agilfacil.git
 server {
     listen 80;
     listen [::]:80;
-    server_name agilfacil.com.br;
+    server_name agilfacil.com agilfacil.com.br www.agilfacil.com.br;
 
-    # Redireciona todas as solicitações para HTTPS
-    return 301 https://$host$request_uri;
+    # Redireciona todas as solicitações para agilfacil.com com HTTPS
+    return 301 https://agilfacil.com$request_uri;
 }
+
+server {
+    listen 443 ssl;
+    server_name agilfacil.com.br www.agilfacil.com.br;
+
+    ssl_certificate /etc/letsencrypt/live/agilfacil.com.br/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/agilfacil.com.br/privkey.pem;
+
+    # Redireciona agilfacil.com.br para agilfacil.com
+    return 301 https://agilfacil.com$request_uri;
+}
+
 ```
 #### Executar comando para restartar o nginx
 ```bash
