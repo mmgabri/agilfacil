@@ -117,9 +117,6 @@ server {
     listen 443 ssl;
     server_name agilfacil.com.br www.agilfacil.com.br;
 
-    ssl_certificate /etc/letsencrypt/live/agilfacil.com.br/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/agilfacil.com.br/privkey.pem;
-
     # Redireciona agilfacil.com.br para agilfacil.com
     return 301 https://agilfacil.com$request_uri;
 }
