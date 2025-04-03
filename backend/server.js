@@ -24,9 +24,9 @@ app.use(routes);
 if (process.env.NODE_ENV === 'prod') {
   // Carrega os certificados para HTTPS em produção
   options = {
-    key: fs.readFileSync('/etc/letsencrypt/live/agilfacil.com/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/agilfacil.com/cert.pem'),
-    ca: fs.readFileSync('/etc/letsencrypt/live/agilfacil.com/chain.pem'),
+    key: fs.readFileSync('/etc/letsencrypt/live/agilfacil.com.br/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/agilfacil.com.br/cert.pem'),
+    ca: fs.readFileSync('/etc/letsencrypt/live/agilfacil.com.br/chain.pem'),
   };
 
   const httpsServer = https.createServer(options, app);
